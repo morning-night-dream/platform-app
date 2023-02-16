@@ -1,0 +1,91 @@
+services:
+  postgres:
+    container_name: ${APP_NAME}-postgres
+    image: postgres:${POSTGRES_VERSION}-alpine
+    ports:
+      - 54321:5432
+    environment:
+      TZ: UTC
+      LANG: ja_JP.UTF-8
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+      POSTGRES_HOST_AUTH_METHOD: trust
+    restart: always
+  redis:
+    container_name: ${APP_NAME}-redis
+    image: redis:${REDIS_VERSION}-alpine
+    ports:
+      - 63791:6379
+    restart: always
+  firebase:
+    container_name: ${APP_NAME}-firebase
+    build:
+      context: .
+      dockerfile: firebase/Dockerfile
+      args:
+        NODE_VERSION: ${NODE_VERSION}
+    ports:
+      - 9091:9099
+    volumes:
+      - ./firebase:/firebase
+    restart: always
+  app-core:
+    container_name: ${APP_NAME}-app-core
+    build:
+      context: .
+      dockerfile: appcore/Dockerfile
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
+    ports:
+      - 8081:8080
+    environment:
+      DOMAIN: http://localhost:8081
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
+      REDIS_URL: redis:6379
+      API_KEY: local
+      ENV: ${ENV}
+      FIREBASE_SECRET: '{"type": "service_account","project_id": "emulator"}'
+      FIREBASE_API_ENDPOINT: http://firebase:9099/identitytoolkit.googleapis.com
+      FIREBASE_API_KEY: emulator
+      FIREBASE_AUTH_EMULATOR_HOST: firebase:9099
+    volumes:
+      - ./appcore/go/pkg:/go/pkg
+      - ../:/app
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+      - firebase
+  app-gateway:
+    container_name: ${APP_NAME}-app-gateway
+    build:
+      context: .
+      dockerfile: appgateway/Dockerfile
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
+    ports:
+      - 8082:8080
+    environment:
+      APP_CORE_URL: http://app-core:8080
+    volumes:
+      - ./appgateway/go/pkg:/go/pkg
+      - ../:/app
+    restart: always
+    depends_on:
+      - app-core
+  db-migration:
+    container_name: ${APP_NAME}-db-migration
+    build:
+      context: .
+      dockerfile: migration/Dockerfile
+      args:
+        GOLANG_VERSION: ${GOLANG_VERSION}
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
+    volumes:
+      - ../:/app
+    restart: always
+    depends_on:
+      - postgres

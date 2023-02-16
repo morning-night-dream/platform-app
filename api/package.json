@@ -1,0 +1,15 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "": ""
+  },
+  "keywords": [],
+  "author": "morning-night-dream",
+  "license": "MIT",
+  "devDependencies": {
+    "@stoplight/spectral-cli": "^6.6.0",
+    "widdershins": "^4.0.1"
+  }
+}

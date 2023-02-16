@@ -1,0 +1,8 @@
+.migrate.sh
+main
+doc
+tmp
+.vscode
+.secret.env
+
+dist/
