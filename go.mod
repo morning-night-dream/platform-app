@@ -12,7 +12,7 @@ require (
 	github.com/go-chi/cors v1.2.1
 	github.com/google/uuid v1.3.0
 	github.com/lib/pq v1.10.7
-	github.com/mattn/go-sqlite3 v1.14.16
+	github.com/mattn/go-sqlite3/v2 v2.0.3+incompatible
 	github.com/newrelic/go-agent/v3 v3.20.3
 	github.com/newrelic/go-agent/v3/integrations/nrzap v1.0.1
 	github.com/pkg/errors v0.9.1
