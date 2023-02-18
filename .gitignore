@@ -2,7 +2,6 @@
 main
 doc
 tmp
-.vscode
 .secret.env
 
 dist/
