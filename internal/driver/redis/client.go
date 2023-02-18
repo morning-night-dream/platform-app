@@ -17,7 +17,7 @@ type Client struct {
 	client *redis.Client
 }
 
-// キャッシュへの保存期間は1週間　TODO: 環境変数設定
+// キャッシュへの保存期間は1週間　TODO: 環境変数設定.
 const ttl = 7 * 24 * time.Hour
 
 type Cache struct {

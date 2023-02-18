@@ -19,7 +19,6 @@ func main() {
 	}
 
 	app, err := firebase.NewApp(ctx, conf)
-
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -62,5 +61,4 @@ func main() {
 	}
 
 	log.Printf("%+v", res.Data())
-
 }
