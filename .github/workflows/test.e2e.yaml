@@ -65,13 +65,13 @@ jobs:
           go run cmd/appcore/main.go &
           echo CORE_PID=$! >> $GITHUB_ENV
           sleep 30
-      - name: Go run gateway
+      - name: Go run api
         env:
           PORT: 8082
           APP_CORE_URL: http://localhost:8081
         run: |
-          go run cmd/appgateway/main.go &
-          echo GATEWAY_PID=$! >> $GITHUB_ENV
+          go run cmd/appapi/main.go &
+          echo API_PID=$! >> $GITHUB_ENV
           sleep 30
       - name: Go test e2e
         env:
@@ -84,5 +84,5 @@ jobs:
         if: always()
         run: |
           kill ${{ env.CORE_PID }}
-          kill ${{ env.GATEWAY_PID }}
+          kill ${{ env.API_PID }}
           kill ${{ env.FIREBASE_PID }}

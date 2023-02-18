@@ -58,11 +58,11 @@ services:
       - postgres
       - redis
       - firebase
-  app-gateway:
-    container_name: ${APP_NAME}-app-gateway
+  app-api:
+    container_name: ${APP_NAME}-app-api
     build:
       context: .
-      dockerfile: appgateway/Dockerfile
+      dockerfile: appapi/Dockerfile
       args:
         GOLANG_VERSION: ${GOLANG_VERSION}
     ports:
