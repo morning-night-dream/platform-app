@@ -26,6 +26,6 @@ jobs:
         run: |
           go test ./internal/...  -coverpkg=./... -coverprofile ./coverage.txt
       - name: Upload coverage
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

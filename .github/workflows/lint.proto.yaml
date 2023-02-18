@@ -3,6 +3,7 @@ run-name: ${{ github.ref_name }} by @${{ github.actor }} [${{ github.workflow }}
 on:
   pull_request:
     paths:
+      - .github/workflows/lint.proto.yaml
       - proto/**/*.proto
 jobs:
   lint:

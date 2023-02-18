@@ -1,4 +1,4 @@
-name: container push
+name: deploy container
 run-name: ${{ github.ref_name }} by @${{ github.actor }} [${{ github.workflow }}]
 on:
   # pull_request:
@@ -54,8 +54,8 @@ jobs:
         id: generate_token
         uses: tibdex/github-app-token@v1
         with:
-          app_id: ${{ secrets.MY_GITHUB_APP_ID }}
-          private_key: ${{ secrets.MY_GITHUB_APP_PRIVATE_KEY }}
+          app_id: ${{ secrets.BOT_GITHUB_APP_ID }}
+          private_key: ${{ secrets.BOT_GITHUB_APP_PRIVATE_KEY }}
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -72,8 +72,8 @@ jobs:
         id: generate_token
         uses: tibdex/github-app-token@v1
         with:
-          app_id: ${{ secrets.MY_GITHUB_APP_ID }}
-          private_key: ${{ secrets.MY_GITHUB_APP_PRIVATE_KEY }}
+          app_id: ${{ secrets.BOT_GITHUB_APP_ID }}
+          private_key: ${{ secrets.BOT_GITHUB_APP_PRIVATE_KEY }}
       - name: Dispatch
         run: |
           curl -X POST \
