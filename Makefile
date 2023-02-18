@@ -43,7 +43,7 @@ test:
 
 .PHONY: e2e
 e2e:
-	@go test ./e2e/... -tags e2e -count=1
+	@go test ./e2e/... -count=1
 
 .PHONY: gen
 gen:

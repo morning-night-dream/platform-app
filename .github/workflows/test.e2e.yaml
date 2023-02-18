@@ -79,7 +79,7 @@ jobs:
           GATEWAY_ENDPOINT: http://localhost:8082
           API_KEY: e2e
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
-        run: go test ./e2e/... -tags e2e
+        run: go test ./e2e/...
       - name: Shutdown
         if: always()
         run: |
