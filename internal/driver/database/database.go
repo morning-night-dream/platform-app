@@ -9,7 +9,6 @@ import (
 
 func NewClient(dsn string) *ent.Client {
 	client, err := ent.Open("postgres", dsn)
-
 	if err != nil {
 		panic(err)
 	}

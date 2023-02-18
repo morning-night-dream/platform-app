@@ -66,12 +66,20 @@ buflint:
 apilint:
 	@(cd api && npx spectral lint openapi.yaml)
 
-.PHONY: up
-up:
+.PHONY: ymlint
+ymlint:
+	@yamlfmt -lint && actionlint
+
+.PHONY: ymlfmt
+ymlfmt:
+	@yamlfmt
+
+.PHONY: dup
+dup:
 	@docker compose --project-name ${APP_NAME} --file ./.docker/docker-compose.yaml up -d
 
-.PHONY: down
-down:
+.PHONY: ddown
+ddown:
 	@docker compose --project-name ${APP_NAME} down
 
 .PHONY: psql
