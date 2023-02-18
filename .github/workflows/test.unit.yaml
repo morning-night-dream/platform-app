@@ -1,9 +1,6 @@
 name: unit test
 run-name: ${{ github.ref_name }} by @${{ github.actor }} [${{ github.workflow }}]
 on:
-  push:
-    branches:
-      - "main"
   pull_request:
     paths:
       - .github/workflows/test.unit.yaml

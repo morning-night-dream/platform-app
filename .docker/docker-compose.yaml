@@ -31,8 +31,8 @@ services:
     volumes:
       - ./firebase:/firebase
     restart: always
-  app-core:
-    container_name: ${APP_NAME}-app-core
+  core:
+    container_name: ${APP_NAME}-core
     build:
       context: .
       dockerfile: appcore/Dockerfile
@@ -58,8 +58,8 @@ services:
       - postgres
       - redis
       - firebase
-  app-api:
-    container_name: ${APP_NAME}-app-api
+  api:
+    container_name: ${APP_NAME}-api
     build:
       context: .
       dockerfile: appapi/Dockerfile
@@ -68,13 +68,13 @@ services:
     ports:
       - 8082:8080
     environment:
-      APP_CORE_URL: http://app-core:8080
+      APP_CORE_URL: http://core:8080
     volumes:
-      - ./appgateway/go/pkg:/go/pkg
+      - ./appapi/go/pkg:/go/pkg
       - ../:/app
     restart: always
     depends_on:
-      - app-core
+      - core
   db-migration:
     container_name: ${APP_NAME}-db-migration
     build:

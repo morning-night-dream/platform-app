@@ -17,10 +17,10 @@ func GetCoreEndpoint(t *testing.T) string {
 	return os.Getenv("CORE_ENDPOINT")
 }
 
-func GetGatewayEndpoint(t *testing.T) string {
+func GetAPIEndpoint(t *testing.T) string {
 	t.Helper()
 
-	return os.Getenv("GATEWAY_ENDPOINT")
+	return os.Getenv("API_ENDPOINT")
 }
 
 func GetDSN(t *testing.T) string {

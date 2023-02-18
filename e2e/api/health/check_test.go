@@ -12,10 +12,10 @@ import (
 	"github.com/morning-night-dream/platform-app/e2e/helper"
 )
 
-func TestGatewayE2EHealthCheck(t *testing.T) {
+func TestAPIE2EHealthCheck(t *testing.T) {
 	t.Parallel()
 
-	url := helper.GetGatewayEndpoint(t)
+	url := helper.GetAPIEndpoint(t)
 
 	t.Run("ヘルスチェックが成功する", func(t *testing.T) {
 		t.Parallel()

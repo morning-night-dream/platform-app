@@ -14,12 +14,12 @@ import (
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
-func TestGatewayE2EArticleList(t *testing.T) {
+func TestAPIE2EArticleList(t *testing.T) {
 	t.Parallel()
 
 	size := uint32(10)
 
-	url := helper.GetGatewayEndpoint(t)
+	url := helper.GetAPIEndpoint(t)
 
 	t.Run("記事が一覧できる", func(t *testing.T) {
 		t.Parallel()
