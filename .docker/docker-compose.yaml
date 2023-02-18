@@ -1,7 +1,7 @@
 services:
   postgres:
     container_name: ${APP_NAME}-postgres
-    image: postgres:${POSTGRES_VERSION}-alpine
+    image: postgres:14.6-alpine
     ports:
       - 54321:5432
     environment:
@@ -15,7 +15,7 @@ services:
     restart: always
   redis:
     container_name: ${APP_NAME}-redis
-    image: redis:${REDIS_VERSION}-alpine
+    image: redis:7.0.7-alpine
     ports:
       - 63791:6379
     restart: always
@@ -24,8 +24,6 @@ services:
     build:
       context: .
       dockerfile: firebase/Dockerfile
-      args:
-        NODE_VERSION: ${NODE_VERSION}
     ports:
       - 9091:9099
     volumes:
@@ -36,8 +34,6 @@ services:
     build:
       context: .
       dockerfile: appcore/Dockerfile
-      args:
-        GOLANG_VERSION: ${GOLANG_VERSION}
     ports:
       - 8081:8080
     environment:
@@ -63,8 +59,6 @@ services:
     build:
       context: .
       dockerfile: appapi/Dockerfile
-      args:
-        GOLANG_VERSION: ${GOLANG_VERSION}
     ports:
       - 8082:8080
     environment:
@@ -80,8 +74,6 @@ services:
     build:
       context: .
       dockerfile: migration/Dockerfile
-      args:
-        GOLANG_VERSION: ${GOLANG_VERSION}
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres?sslmode=disable
     volumes:
