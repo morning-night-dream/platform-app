@@ -1,0 +1,19 @@
+name: lint proto
+on:
+  pull_request:
+    paths:
+      - proto/**/*.proto
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Buf
+        uses: bufbuild/buf-setup-action@v1
+        with:
+          version: 'latest'
+      - name: Buf format
+        run: buf format -d --exit-code
+      - name: Buf lint
+        working-directory: ./proto
+        run: buf lint
