@@ -76,7 +76,7 @@ jobs:
       - name: Go test e2e
         env:
           CORE_ENDPOINT: http://localhost:8081
-          GATEWAY_ENDPOINT: http://localhost:8082
+          API_ENDPOINT: http://localhost:8082
           API_KEY: e2e
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
         run: go test ./e2e/...
