@@ -1,10 +1,10 @@
-name: diff
+name: diff code
 run-name: ${{ github.ref_name }} by @${{ github.actor }} [${{ github.workflow }}]
 on:
   pull_request:
     paths:
       - .github/workflows/diff.yaml
-      - api/**/*.proto
+      - proto/**/*.proto
       - "**/*.go"
       - go.mod
       - go.sum
