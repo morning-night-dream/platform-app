@@ -21,4 +21,5 @@ jobs:
         working-directory: ./proto
         run: buf lint
       - name: Format check proto
+        working-directory: ./proto
         run: buf format -d --exit-code
