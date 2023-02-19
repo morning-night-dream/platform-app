@@ -56,12 +56,12 @@ gen:
 	@oapi-codegen -generate types -package openapi ./api/openapi.yaml > ./pkg/openapi/types.gen.go
 	@oapi-codegen -generate chi-server -package openapi ./api/openapi.yaml > ./pkg/openapi/server.gen.go
 	@oapi-codegen -generate client -package openapi ./api/openapi.yaml > ./pkg/openapi/client.gen.go
-	@buf generate --template ./proto/buf.gen.yaml
+	@(cd proto && buf generate --template buf.gen.yaml)
 	@go mod tidy
 
 .PHONY: bufmt
 bufmt:
-	@buf format -w
+	@(cd proto && buf format -w)
 
 .PHONY: buflint
 buflint:

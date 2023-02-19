@@ -7,7 +7,7 @@ import (
 	"github.com/bufbuild/connect-go"
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/google/uuid"
-	articlev1 "github.com/morning-night-dream/platform-app/pkg/connect/proto/article/v1"
+	articlev1 "github.com/morning-night-dream/platform-app/pkg/connect/article/v1"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 

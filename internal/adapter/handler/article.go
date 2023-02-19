@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/morning-night-dream/platform-app/internal/adapter/gateway"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
-	articlev1 "github.com/morning-night-dream/platform-app/pkg/connect/proto/article/v1"
+	articlev1 "github.com/morning-night-dream/platform-app/pkg/connect/article/v1"
 	"github.com/pkg/errors"
 )
 
