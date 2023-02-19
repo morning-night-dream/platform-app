@@ -36,9 +36,9 @@ jobs:
         run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua install -t oapi-codegen
       - name: Generate openapi code
         run: |
-          oapi-codegen -generate types -package openapi openapi.yaml > ./pkg/openapi/types.gen.go
-          oapi-codegen -generate chi-server -package openapi openapi.yaml > ./pkg/openapi/server.gen.go
-          oapi-codegen -generate client -package openapi openapi.yaml > ./pkg/openapi/client.gen.go
+          oapi-codegen -generate types -package openapi ./api/openapi.yaml > ./pkg/openapi/types.gen.go
+          oapi-codegen -generate chi-server -package openapi ./api/openapi.yaml > ./pkg/openapi/server.gen.go
+          oapi-codegen -generate client -package openapi ./api/openapi.yaml > ./pkg/openapi/client.gen.go
       - name: Generate go code
         run: go generate ./...
       - name: Go mod tidy
