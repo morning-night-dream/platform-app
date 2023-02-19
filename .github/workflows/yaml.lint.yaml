@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Install yamlfmt
         run: |
-          version=$(cat aqua.yaml | grep yamlfmt | tr "@" "\n")
+          version=$(cat aqua.yaml | grep yamlfmt | tr "@" " ")
           echo "${version}"
           echo "${version[1]}"
           go install github.com/google/yamlfmt/cmd/yamlfmt@${version[1]}
