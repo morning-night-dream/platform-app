@@ -61,7 +61,7 @@ gen:
 
 .PHONY: bufmt
 bufmt:
-	@buf format -w
+	@(cd proto && buf format -w)
 
 .PHONY: buflint
 buflint:
