@@ -31,7 +31,7 @@ jobs:
         run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua install -t protoc-gen-connect-go
       - name: Generate connect code
         working-directory: ./proto
-        run: buf generate --template ./proto/buf.gen.yaml
+        run: buf generate --template buf.gen.yaml
       - name: Install oapi-codegen
         run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua install -t oapi-codegen
       - name: Generate openapi code
