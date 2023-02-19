@@ -1,3 +1,2 @@
 exclude:
-  - .docker/appcore/**/*.{yaml,yml}
-  - .docker/appgateway/**/*.{yaml,yml}
+  - vendor/**/*.{yaml,yml}

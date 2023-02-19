@@ -25,6 +25,11 @@ doc:
 lint:
 	@golangci-lint run --fix
 
+.PHONY: mod
+mod:
+	@go mod tidy
+	@go mod vendor
+
 .PHONY: modules
 modules:
 	@go list -u -m all
