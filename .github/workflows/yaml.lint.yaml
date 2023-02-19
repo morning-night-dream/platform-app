@@ -13,6 +13,7 @@ jobs:
       - name: Install yamlfmt
         run: |
           version=$(cat aqua.yaml | grep yamlfmt | tr "@" "\n")
+          echo "${version}"
           go install github.com/google/yamlfmt/cmd/yamlfmt@${version[1]}
       - name: Lint yaml
         run: yamlfmt -lint
