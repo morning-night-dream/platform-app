@@ -8,7 +8,7 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	"github.com/morning-night-dream/platform-app/e2e/helper"
-	authv1 "github.com/morning-night-dream/platform-app/pkg/connect/proto/auth/v1"
+	authv1 "github.com/morning-night-dream/platform-app/pkg/connect/auth/v1"
 )
 
 func TestE2EAuthSignIn(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	"github.com/google/uuid"
-	authv1 "github.com/morning-night-dream/platform-app/pkg/connect/proto/auth/v1"
+	authv1 "github.com/morning-night-dream/platform-app/pkg/connect/auth/v1"
 )
 
 type User struct {

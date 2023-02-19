@@ -25,7 +25,12 @@ jobs:
           aqua_version: v1.33.0
       - name: Install buf
         run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua install -t buf
+      - name: Install protoc-gen-go
+        run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua install -t protoc-gen-go
+      - name: Install protoc-gen-connect-go
+        run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua install -t protoc-gen-connect-go
       - name: Generate connect code
+        working-directory: ./proto
         run: buf generate --template ./proto/buf.gen.yaml
       - name: Install oapi-codegen
         run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua install -t oapi-codegen

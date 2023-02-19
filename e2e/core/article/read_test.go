@@ -7,8 +7,8 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	"github.com/morning-night-dream/platform-app/e2e/helper"
-	articlev1 "github.com/morning-night-dream/platform-app/pkg/connect/proto/article/v1"
-	authv1 "github.com/morning-night-dream/platform-app/pkg/connect/proto/auth/v1"
+	articlev1 "github.com/morning-night-dream/platform-app/pkg/connect/article/v1"
+	authv1 "github.com/morning-night-dream/platform-app/pkg/connect/auth/v1"
 )
 
 func TestE2EArticleRead(t *testing.T) {
