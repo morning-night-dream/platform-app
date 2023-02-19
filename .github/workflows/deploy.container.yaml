@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Generate token
-        id: generate_token
+        id: generate-token
         uses: tibdex/github-app-token@v1
         with:
           app_id: ${{ secrets.BOT_GITHUB_APP_ID }}
@@ -59,7 +59,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          token: ${{ steps.generate_token.outputs.token }}
+          token: ${{ steps.generate-token.outputs.token }}
       - name: Create tag
         run: |
           git tag ${{ needs.container.outputs.tag }}
@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Generate token
-        id: generate_token
+        id: generate-token
         uses: tibdex/github-app-token@v1
         with:
           app_id: ${{ secrets.BOT_GITHUB_APP_ID }}
@@ -78,6 +78,6 @@ jobs:
         run: |
           curl -X POST \
             -H "Accespt: application/vnd.github.v3+json" \
-            -H "Authorization: token ${{ steps.generate_token.outputs.token }}" \
+            -H "Authorization: token ${{ steps.generate-token.outputs.token }}" \
             https://api.github.com/repos/morning-night-dream/platform-infra/dispatches \
             -d '{"event_type": "manifest-update-prod", "client_payload": {"tag": "${{ needs.container.outputs.tag }}"}}'
