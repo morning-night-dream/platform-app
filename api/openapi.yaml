@@ -201,6 +201,8 @@ paths:
           explode: true
           schema:
             type: integer
+            minimum: 1
+            maximum: 20
       responses:
         200:
           description: OK
