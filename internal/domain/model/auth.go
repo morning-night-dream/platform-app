@@ -9,7 +9,7 @@ type Auth struct {
 	ID           string    `json:"id"`
 	UserID       string    `json:"userId"`
 	IDToken      string    `json:"idToken"`
-	PublicKey    string    `json:"publicKey"`
+	PublicKey    []byte    `json:"publicKey"`
 	RefreshToken string    `json:"refreshToken"`
 	SessionToken string    `json:"sessionToken"`
 	ExpiresIn    int       `json:"expiresIn"`

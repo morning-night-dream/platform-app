@@ -79,6 +79,8 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.GetLogCtx(ctx).Info(fmt.Sprintf("public key: %s", body.PublicKey))
+
 	pub, err := base64.StdEncoding.DecodeString(body.PublicKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to decode public key", log.ErrorField(err))
@@ -102,7 +104,7 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		ID:           uid,
 		UserID:       uid,
 		IDToken:      res.IDToken,
-		PublicKey:    string(pub),
+		PublicKey:    pub,
 		RefreshToken: res.RefreshToken,
 		SessionToken: uid,
 		ExpiresIn:    60,

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -47,4 +48,15 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 	}
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("pubkey: %s", auth.PublicKey))
+
+	pub, err := x509.ParsePKIXPublicKey(auth.PublicKey)
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to parse public key", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	log.GetLogCtx(ctx).Info(fmt.Sprintf("pubkey: %+v", pub))
 }
