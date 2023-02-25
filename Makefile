@@ -90,7 +90,7 @@ redev:
 
 .PHONY: down
 down:
-	@docker compose --project-name ${APP_NAME} down
+	@docker compose --project-name ${APP_NAME} down --volumes
 
 .PHONY: psql
 psql:
