@@ -77,7 +77,7 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 	h.Write([]byte(params.Code))
 	hashed := h.Sum(nil)
 
-	if err := rsa.VerifyPSS(publicKey, crypto.SHA256, hashed, []byte(params.Signature), nil); err != nil {
+	if err := rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashed, []byte(params.Signature)); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to verify signature", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusUnauthorized)
