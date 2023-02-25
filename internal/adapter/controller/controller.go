@@ -33,7 +33,7 @@ func New(
 	}
 }
 
-const key = "auth"
+const key = "UID"
 
 func (ctl *Controller) Authorize(ctx context.Context, header http.Header) (model.Auth, error) {
 	cookie, err := ctl.getToken(header)

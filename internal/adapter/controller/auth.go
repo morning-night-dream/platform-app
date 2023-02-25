@@ -94,18 +94,12 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	})
 
 	cookie := http.Cookie{
-		Name:       key,
-		Value:      payload.UserID,
-		Path:       "",
-		Domain:     "",
-		Expires:    time.Now().Add(60 * time.Second),
-		RawExpires: "",
-		MaxAge:     60,
-		Secure:     false,
-		HttpOnly:   true,
-		SameSite:   http.SameSiteStrictMode,
-		Raw:        "",
-		Unparsed:   []string{},
+		Name:     key,
+		Value:    payload.UserID,
+		Expires:  time.Now().Add(60 * time.Second),
+		MaxAge:   60,
+		Secure:   false,
+		HttpOnly: true,
 	}
 
 	http.SetCookie(w, &cookie)
