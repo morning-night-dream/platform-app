@@ -103,6 +103,8 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, cookie)
+
+	_, _ = w.Write([]byte("OK"))
 }
 
 // (POST /v1/auth/signout)
