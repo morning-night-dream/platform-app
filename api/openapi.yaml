@@ -90,7 +90,6 @@ paths:
           description: Unauthorized
   /v1/auth/verify:
     get:
-      deprecated: true
       tags:
         - auth
       summary: 検証
