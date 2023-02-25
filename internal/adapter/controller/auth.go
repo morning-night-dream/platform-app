@@ -93,16 +93,16 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		Expires:      time.Now().Add(60 * time.Second),
 	})
 
-	cookie := http.Cookie{
+	cookie := &http.Cookie{
 		Name:     key,
 		Value:    payload.UserID,
 		Expires:  time.Now().Add(60 * time.Second),
-		MaxAge:   60,
 		Secure:   false,
 		HttpOnly: true,
+		Path:     "/",
 	}
 
-	http.SetCookie(w, &cookie)
+	http.SetCookie(w, cookie)
 }
 
 // (POST /v1/auth/signout)
@@ -171,7 +171,7 @@ func (ctl Controller) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
 
-	uid, err := ctl.GetUserID(r.Header)
+	uid, err := r.Cookie(key)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
@@ -180,7 +180,7 @@ func (ctl Controller) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth, err := ctl.store.Get(ctx, uid)
+	auth, err := ctl.store.Get(ctx, uid.Value)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
