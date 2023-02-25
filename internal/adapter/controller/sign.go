@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
@@ -59,4 +60,15 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 	}
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("pubkey: %+v", pub))
+
+	publicKey, ok := pub.(*rsa.PublicKey)
+	if !ok {
+		log.GetLogCtx(ctx).Warn("failed to parse public key", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	log.GetLogCtx(ctx).Info(fmt.Sprintf("pubkey: %+v", publicKey))
 }
