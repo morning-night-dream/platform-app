@@ -37,7 +37,10 @@ func New(
 	}
 }
 
-const key = "UID"
+const (
+	uidKey = "UID"
+	sidKey = "SID"
+)
 
 func (ctl *Controller) Authorize(ctx context.Context, header http.Header) (model.Auth, error) {
 	cookie, err := ctl.getToken(header)
@@ -75,7 +78,7 @@ func (ctl *Controller) getToken(header http.Header) (http.Cookie, error) {
 				continue
 			}
 			name, val, _ := strings.Cut(part, "=")
-			if name != key {
+			if name != uidKey {
 				return http.Cookie{}, errors.New("error")
 			}
 			return http.Cookie{Name: name, Value: val}, nil
@@ -83,32 +86,4 @@ func (ctl *Controller) getToken(header http.Header) (http.Cookie, error) {
 	}
 
 	return http.Cookie{}, errors.New("error")
-}
-
-func (ctl *Controller) GetUserID(header http.Header) (string, error) {
-	lines := header["Cookie"]
-	if len(lines) == 0 {
-		return "", errors.New("error")
-	}
-
-	for _, line := range lines {
-		line = textproto.TrimString(line)
-
-		var part string
-
-		for len(line) > 0 { // continue since we have rest
-			part, line, _ = strings.Cut(line, ";")
-			part = textproto.TrimString(part)
-			if part == "" {
-				continue
-			}
-			name, val, _ := strings.Cut(part, "=")
-			if name != key {
-				return "", errors.New("error")
-			}
-			return val, nil
-		}
-	}
-
-	return "", errors.New("error")
 }

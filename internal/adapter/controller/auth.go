@@ -105,16 +105,23 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		Expires:      time.Now().Add(60 * time.Second),
 	})
 
-	cookie := &http.Cookie{
-		Name:     key,
+	http.SetCookie(w, &http.Cookie{
+		Name:     uidKey,
 		Value:    payload.UserID,
 		Expires:  time.Now().Add(60 * time.Second),
 		Secure:   false,
 		HttpOnly: true,
 		Path:     "/",
-	}
+	})
 
-	http.SetCookie(w, cookie)
+	http.SetCookie(w, &http.Cookie{
+		Name:     sidKey,
+		Value:    sid,
+		Expires:  time.Now().Add(168 * time.Hour),
+		Secure:   false,
+		HttpOnly: true,
+		Path:     "/",
+	})
 
 	_, _ = w.Write([]byte("OK"))
 }
@@ -125,7 +132,7 @@ func (ctl *Controller) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
 
-	uid, err := ctl.GetUserID(r.Header)
+	uid, err := r.Cookie(uidKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
@@ -134,7 +141,7 @@ func (ctl *Controller) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ctl.store.Delete(ctx, uid); err != nil {
+	if err := ctl.store.Delete(ctx, uid.Value); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusInternalServerError)
@@ -185,7 +192,7 @@ func (ctl Controller) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
 
-	uid, err := r.Cookie(key)
+	uid, err := r.Cookie(uidKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
