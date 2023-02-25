@@ -4,6 +4,7 @@ import (
 	"crypto"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -77,5 +78,20 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 	h.Write([]byte(params.Code))
 	hashed := h.Sum(nil)
 
-	rsa.VerifyPSS(publicKey, crypto.SHA256, hashed, []byte(params.Signature), nil)
+	sig, err := base64.StdEncoding.DecodeString(params.Signature)
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to decode signature", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	if err := rsa.VerifyPSS(publicKey, crypto.SHA256, hashed, sig, nil); err != nil {
+		log.GetLogCtx(ctx).Warn("failed to verify signature", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusUnauthorized)
+
+		return
+	}
 }
