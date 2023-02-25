@@ -6,7 +6,9 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/adapter/controller"
 	"github.com/morning-night-dream/platform-app/internal/driver/client"
 	"github.com/morning-night-dream/platform-app/internal/driver/config"
+	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
 	"github.com/morning-night-dream/platform-app/internal/driver/server"
+	"github.com/morning-night-dream/platform-app/internal/driver/store"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
@@ -16,7 +18,9 @@ func main() {
 		panic(err)
 	}
 
-	ctr := controller.New(c)
+	fb := firebase.NewClient(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
+
+	ctr := controller.New(c, store.New(), fb)
 
 	router := chi.NewRouter()
 

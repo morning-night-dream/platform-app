@@ -7,6 +7,10 @@ import (
 	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 )
 
+const (
+	CookieAuthScopes = "cookieAuth.Scopes"
+)
+
 // Article defines model for Article.
 type Article struct {
 	// Description description
@@ -44,3 +48,33 @@ type V1ListArticlesParams struct {
 	// MaxPageSize ページサイズ
 	MaxPageSize int `form:"maxPageSize" json:"maxPageSize"`
 }
+
+// V1AuthRefreshParams defines parameters for V1AuthRefresh.
+type V1AuthRefreshParams struct {
+	// Code コード
+	Code string `form:"code" json:"code"`
+}
+
+// V1AuthSignInJSONBody defines parameters for V1AuthSignIn.
+type V1AuthSignInJSONBody struct {
+	// Email メールアドレス
+	Email openapi_types.Email `json:"email"`
+
+	// Password パスワード
+	Password string `json:"password"`
+}
+
+// V1AuthSignUpJSONBody defines parameters for V1AuthSignUp.
+type V1AuthSignUpJSONBody struct {
+	// Email メールアドレス
+	Email openapi_types.Email `json:"email"`
+
+	// Password パスワード
+	Password string `json:"password"`
+}
+
+// V1AuthSignInJSONRequestBody defines body for V1AuthSignIn for application/json ContentType.
+type V1AuthSignInJSONRequestBody V1AuthSignInJSONBody
+
+// V1AuthSignUpJSONRequestBody defines body for V1AuthSignUp for application/json ContentType.
+type V1AuthSignUpJSONRequestBody V1AuthSignUpJSONBody

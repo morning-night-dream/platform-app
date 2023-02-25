@@ -15,9 +15,132 @@ externalDocs:
 servers:
   - url: http://localhost:8082/api
 tags:
+  - name: auth
+    description: 認証
   - name: article
+    description: 記事
   - name: health
+    description: ヘルスチェック
 paths:
+  /v1/auth/signup:
+    post:
+      tags:
+        - auth
+      summary: サインアップ
+      description: サインアップ
+      operationId: v1AuthSignUp
+      requestBody:
+        required: true
+        description: サインアップリクエストボディ
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: メールアドレス
+                  format: email
+                  example: morning.night.dream@example.com
+                password:
+                  type: string
+                  description: パスワード
+                  format: password
+                  example: password
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: 成功
+        '400':
+          description: Bad Request
+  /v1/auth/signin:
+    post:
+      tags:
+        - auth
+      summary: サインイン
+      description: サインイン
+      operationId: v1AuthSignIn
+      requestBody:
+        required: true
+        description: サインインリクエストボディ
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: メールアドレス
+                  format: email
+                  example: morning.night.dream@example.com
+                password:
+                  type: string
+                  description: パスワード
+                  format: password
+                  example: password
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+  /v1/auth/verify:
+    get:
+      deprecated: true
+      tags:
+        - auth
+      summary: 検証
+      description: 検証
+      operationId: v1AuthVerify
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: OK
+        '302':
+          description: Redirect
+        '401':
+          description: Unauthorized
+  /v1/auth/refresh:
+    get:
+      tags:
+        - auth
+      summary: リフレッシュ
+      description: リフレッシュ
+      operationId: v1AuthRefresh
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: code
+          in: query
+          description: コード
+          required: true
+          explode: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+  /v1/auth/signout:
+    post:
+      tags:
+        - auth
+      summary: サインアウト
+      description: サインアウト
+      operationId: v1AuthSignOut
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
   /v1/article:
     get:
       tags:
@@ -42,7 +165,7 @@ paths:
             type: integer
       responses:
         200:
-          description: 成功
+          description: OK
           content:
             application/json:
               schema:
@@ -62,6 +185,11 @@ paths:
         500:
           description: Internal Server Error
 components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: auth
   schemas:
     Article:
       type: object

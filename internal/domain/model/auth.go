@@ -1,14 +1,18 @@
 package model
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 type Auth struct {
-	ID           string `json:"id"`
-	UserID       string `json:"userId"`
-	IDToken      string `json:"idToken"`
-	RefreshToken string `json:"refreshToken"`
-	SessionToken string `json:"sessionToken"`
-	ExpiresIn    int    `json:"expiresIn"`
+	ID           string    `json:"id"`
+	UserID       string    `json:"userId"`
+	IDToken      string    `json:"idToken"`
+	RefreshToken string    `json:"refreshToken"`
+	SessionToken string    `json:"sessionToken"`
+	ExpiresIn    int       `json:"expiresIn"`
+	Expires      time.Time `json:"expires"`
 }
 
 type uidCtxKey struct{}
