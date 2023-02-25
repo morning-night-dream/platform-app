@@ -84,4 +84,6 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 
 		return
 	}
+
+	log.GetLogCtx(ctx).Info("signature verified")
 }
