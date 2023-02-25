@@ -17,7 +17,7 @@ import (
 
 // (GET /v1/auth/refresh)
 func (ctl *Controller) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params openapi.V1AuthRefreshParams) {
-
+	// リフレッシュに失敗したらキャッシュトークンは削除する
 }
 
 // (POST /v1/auth/signin)
@@ -178,6 +178,12 @@ func (ctl Controller) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusUnauthorized)
+
+		rs := openapi.UnauthorizedResponse{}
+
+		if err := json.NewEncoder(w).Encode(rs); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 
 		return
 	}

@@ -80,9 +80,14 @@ paths:
                   description: パスワード
                   format: password
                   example: password
+                publicKey:
+                  type: string
+                  description: 公開鍵
+                  format: base64
               required:
                 - email
                 - password
+                - publicKey
       responses:
         '200':
           description: OK
@@ -104,6 +109,12 @@ paths:
           description: Redirect
         '401':
           description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponse'
+        '500':
+          description: Internal Server Error
   /v1/auth/refresh:
     get:
       tags:
@@ -116,7 +127,7 @@ paths:
       parameters:
         - name: code
           in: query
-          description: コード
+          description: 署名付きコード
           required: true
           explode: true
           schema:
@@ -140,6 +151,27 @@ paths:
           description: OK
         '401':
           description: Unauthorized
+  /v1/sign:
+      get:
+        deprecated: true
+        tags:
+          - auth
+        summary: 署名検証
+        description: 署名検証
+        operationId: v1Sign
+        parameters:
+          - name: code
+            in: query
+            description: 署名付きコード
+            required: true
+            explode: true
+            schema:
+              type: string
+        responses:
+          '200':
+            description: OK
+          '401':
+            description: Unauthorized
   /v1/article:
     get:
       tags:
@@ -231,3 +263,12 @@ components:
         nextPageToken:
           type: string
           description: 次回リクエスト時に指定するページトークン
+    UnauthorizedResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: コード
+          format: uuid
+      required:
+        - code

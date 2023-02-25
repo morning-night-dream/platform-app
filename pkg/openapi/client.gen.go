@@ -113,6 +113,9 @@ type ClientInterface interface {
 
 	// V1Health request
 	V1Health(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// V1Sign request
+	V1Sign(ctx context.Context, params *V1SignParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) V1ListArticles(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -213,6 +216,18 @@ func (c *Client) V1AuthVerify(ctx context.Context, reqEditors ...RequestEditorFn
 
 func (c *Client) V1Health(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewV1HealthRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) V1Sign(ctx context.Context, params *V1SignParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewV1SignRequest(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -486,6 +501,49 @@ func NewV1HealthRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewV1SignRequest generates requests for V1Sign
+func NewV1SignRequest(server string, params *V1SignParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/sign")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	queryValues := queryURL.Query()
+
+	if queryFrag, err := runtime.StyleParamWithLocation("form", true, "code", runtime.ParamLocationQuery, params.Code); err != nil {
+		return nil, err
+	} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+		return nil, err
+	} else {
+		for k, v := range parsed {
+			for _, v2 := range v {
+				queryValues.Add(k, v2)
+			}
+		}
+	}
+
+	queryURL.RawQuery = queryValues.Encode()
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -553,6 +611,9 @@ type ClientWithResponsesInterface interface {
 
 	// V1Health request
 	V1HealthWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1HealthResponse, error)
+
+	// V1Sign request
+	V1SignWithResponse(ctx context.Context, params *V1SignParams, reqEditors ...RequestEditorFn) (*V1SignResponse, error)
 }
 
 type V1ListArticlesResponse struct {
@@ -664,6 +725,7 @@ func (r V1AuthSignUpResponse) StatusCode() int {
 type V1AuthVerifyResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON401      *UnauthorizedResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -697,6 +759,27 @@ func (r V1HealthResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r V1HealthResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type V1SignResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r V1SignResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r V1SignResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -780,6 +863,15 @@ func (c *ClientWithResponses) V1HealthWithResponse(ctx context.Context, reqEdito
 		return nil, err
 	}
 	return ParseV1HealthResponse(rsp)
+}
+
+// V1SignWithResponse request returning *V1SignResponse
+func (c *ClientWithResponses) V1SignWithResponse(ctx context.Context, params *V1SignParams, reqEditors ...RequestEditorFn) (*V1SignResponse, error) {
+	rsp, err := c.V1Sign(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseV1SignResponse(rsp)
 }
 
 // ParseV1ListArticlesResponse parses an HTTP response from a V1ListArticlesWithResponse call
@@ -885,6 +977,16 @@ func ParseV1AuthVerifyResponse(rsp *http.Response) (*V1AuthVerifyResponse, error
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
+		var dest UnauthorizedResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON401 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -897,6 +999,22 @@ func ParseV1HealthResponse(rsp *http.Response) (*V1HealthResponse, error) {
 	}
 
 	response := &V1HealthResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseV1SignResponse parses an HTTP response from a V1SignWithResponse call
+func ParseV1SignResponse(rsp *http.Response) (*V1SignResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &V1SignResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

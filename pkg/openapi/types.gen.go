@@ -40,6 +40,12 @@ type ListArticleResponse struct {
 	NextPageToken *string `json:"nextPageToken,omitempty"`
 }
 
+// UnauthorizedResponse defines model for UnauthorizedResponse.
+type UnauthorizedResponse struct {
+	// Code コード
+	Code openapi_types.UUID `json:"code"`
+}
+
 // V1ListArticlesParams defines parameters for V1ListArticles.
 type V1ListArticlesParams struct {
 	// PageToken トークン
@@ -51,7 +57,7 @@ type V1ListArticlesParams struct {
 
 // V1AuthRefreshParams defines parameters for V1AuthRefresh.
 type V1AuthRefreshParams struct {
-	// Code コード
+	// Code 署名付きコード
 	Code string `form:"code" json:"code"`
 }
 
@@ -62,6 +68,9 @@ type V1AuthSignInJSONBody struct {
 
 	// Password パスワード
 	Password string `json:"password"`
+
+	// PublicKey 公開鍵
+	PublicKey string `json:"publicKey"`
 }
 
 // V1AuthSignUpJSONBody defines parameters for V1AuthSignUp.
@@ -71,6 +80,12 @@ type V1AuthSignUpJSONBody struct {
 
 	// Password パスワード
 	Password string `json:"password"`
+}
+
+// V1SignParams defines parameters for V1Sign.
+type V1SignParams struct {
+	// Code 署名付きコード
+	Code string `form:"code" json:"code"`
 }
 
 // V1AuthSignInJSONRequestBody defines body for V1AuthSignIn for application/json ContentType.

@@ -35,6 +35,9 @@ type ServerInterface interface {
 	// ヘルスチェック
 	// (GET /v1/health)
 	V1Health(w http.ResponseWriter, r *http.Request)
+	// 署名検証
+	// (GET /v1/sign)
+	V1Sign(w http.ResponseWriter, r *http.Request, params V1SignParams)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -205,6 +208,41 @@ func (siw *ServerInterfaceWrapper) V1Health(w http.ResponseWriter, r *http.Reque
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// V1Sign operation middleware
+func (siw *ServerInterfaceWrapper) V1Sign(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params V1SignParams
+
+	// ------------- Required query parameter "code" -------------
+
+	if paramValue := r.URL.Query().Get("code"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "code"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "code", r.URL.Query(), &params.Code)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "code", Err: err})
+		return
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1Sign(w, r, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -338,6 +376,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/health", wrapper.V1Health)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/sign", wrapper.V1Sign)
 	})
 
 	return r
