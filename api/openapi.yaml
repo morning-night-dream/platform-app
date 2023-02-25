@@ -167,6 +167,13 @@ paths:
             explode: true
             schema:
               type: string
+          - name: signature
+            in: query
+            description: 署名
+            required: true
+            explode: true
+            schema:
+              type: string
         responses:
           '200':
             description: OK

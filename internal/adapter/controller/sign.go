@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"crypto"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
@@ -71,4 +72,10 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 	}
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("pubkey: %+v", publicKey))
+
+	h := crypto.Hash.New(crypto.SHA256)
+	h.Write([]byte(params.Code))
+	hashed := h.Sum(nil)
+
+	rsa.VerifyPSS(publicKey, crypto.SHA256, hashed, []byte(params.Signature), nil)
 }

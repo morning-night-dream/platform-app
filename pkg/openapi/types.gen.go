@@ -86,6 +86,9 @@ type V1AuthSignUpJSONBody struct {
 type V1SignParams struct {
 	// Code 署名付きコード
 	Code string `form:"code" json:"code"`
+
+	// Signature 署名
+	Signature string `form:"signature" json:"signature"`
 }
 
 // V1AuthSignInJSONRequestBody defines body for V1AuthSignIn for application/json ContentType.
