@@ -9,6 +9,7 @@ import (
 
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
 	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
+	"github.com/morning-night-dream/platform-app/internal/driver/public"
 	"github.com/morning-night-dream/platform-app/internal/driver/store"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
@@ -19,17 +20,20 @@ type Controller struct {
 	client   *Client
 	store    *store.Store
 	firebase *firebase.Client
+	public   *public.Public
 }
 
 func New(
 	client *Client,
 	store *store.Store,
 	firebase *firebase.Client,
+	public *public.Public,
 ) *Controller {
 	return &Controller{
 		client:   client,
 		store:    store,
 		firebase: firebase,
+		public:   public,
 	}
 }
 
