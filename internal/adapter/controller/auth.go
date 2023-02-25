@@ -101,9 +101,9 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		Expires:    time.Now().Add(60 * time.Second),
 		RawExpires: "",
 		MaxAge:     60,
-		Secure:     true,
+		Secure:     false,
 		HttpOnly:   true,
-		SameSite:   0,
+		SameSite:   http.SameSiteStrictMode,
 		Raw:        "",
 		Unparsed:   []string{},
 	}
