@@ -79,31 +79,49 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.GetLogCtx(ctx).Info(fmt.Sprintf("public key: %s", body.PublicKey))
-
-	sid := uuid.New().String()
-
-	if err := ctl.public.Set(ctx, sid, body.PublicKey); err != nil {
-		log.GetLogCtx(ctx).Warn("failed to set public key", log.ErrorField(err))
+	pub, err := base64.StdEncoding.DecodeString(body.PublicKey)
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to decode public key", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusInternalServerError)
 
 		return
 	}
 
-	log.GetLogCtx(ctx).Info(fmt.Sprintf("id: %s", payload.UserID))
+	log.GetLogCtx(ctx).Info(fmt.Sprintf("public key: %s", string(pub)))
+
+	uid := payload.UserID
+
+	sid := uuid.New().String()
+
+	log.GetLogCtx(ctx).Info(fmt.Sprintf("id: %s", uid))
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("exp: %d", exp))
 
-	ctl.store.Set(ctx, payload.UserID, model.Auth{
-		ID:           payload.UserID,
-		UserID:       payload.UserID,
+	if err := ctl.store.Set(ctx, uid, model.Auth{
+		ID:           uid,
+		UserID:       uid,
 		IDToken:      res.IDToken,
+		PublicKey:    string(pub),
 		RefreshToken: res.RefreshToken,
-		SessionToken: payload.UserID,
+		SessionToken: uid,
 		ExpiresIn:    60,
 		Expires:      time.Now().Add(60 * time.Second),
-	})
+	}); err != nil {
+		log.GetLogCtx(ctx).Warn("failed to set auth", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	if err := ctl.user.Set(ctx, sid, uid); err != nil {
+		log.GetLogCtx(ctx).Warn("failed to set public key", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     uidKey,

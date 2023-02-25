@@ -28,7 +28,7 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 		return
 	}
 
-	pubkey, err := ctl.public.Get(ctx, sid.Value)
+	uid, err := ctl.user.Get(ctx, sid.Value)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
@@ -37,5 +37,14 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 		return
 	}
 
-	log.GetLogCtx(ctx).Info(fmt.Sprintf("pubkey: %s", pubkey))
+	auth, err := ctl.store.Get(ctx, uid)
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	log.GetLogCtx(ctx).Info(fmt.Sprintf("pubkey: %s", auth.PublicKey))
 }
