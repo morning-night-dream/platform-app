@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 
@@ -52,7 +51,7 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exp, _ := strconv.Atoi(res.ExpiresIn)
+	// exp, _ := strconv.Atoi(res.ExpiresIn)
 
 	strs := strings.Split(res.IDToken, ".")
 
@@ -88,15 +87,15 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.GetLogCtx(ctx).Info(fmt.Sprintf("public key: %s", string(pub)))
+	// log.GetLogCtx(ctx).Info(fmt.Sprintf("public key: %s", string(pub)))
 
 	uid := payload.UserID
 
 	sid := uuid.New().String()
 
-	log.GetLogCtx(ctx).Info(fmt.Sprintf("id: %s", uid))
+	// log.GetLogCtx(ctx).Info(fmt.Sprintf("id: %s", uid))
 
-	log.GetLogCtx(ctx).Info(fmt.Sprintf("exp: %d", exp))
+	// log.GetLogCtx(ctx).Info(fmt.Sprintf("exp: %d", exp))
 
 	if err := ctl.store.Set(ctx, uid, model.Auth{
 		ID:           uid,

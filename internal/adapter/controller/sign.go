@@ -5,7 +5,6 @@ import (
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/morning-night-dream/platform-app/pkg/log"
@@ -49,7 +48,7 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 		return
 	}
 
-	log.GetLogCtx(ctx).Info(fmt.Sprintf("pubkey: %s", auth.PublicKey))
+	// log.GetLogCtx(ctx).Info(fmt.Sprintf("pubkey: %s", auth.PublicKey))
 
 	// publicKey, err := x509.ParsePKCS1PublicKey(auth.PublicKey)
 	// if err != nil {
@@ -109,4 +108,6 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 	}
 
 	log.GetLogCtx(ctx).Info("signature verified")
+
+	_, _ = w.Write([]byte("OK"))
 }
