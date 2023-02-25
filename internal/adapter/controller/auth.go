@@ -79,6 +79,18 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.GetLogCtx(ctx).Info(fmt.Sprintf("public key: %s", body.PublicKey))
+
+	sid := uuid.New().String()
+
+	if err := ctl.public.Set(ctx, sid, body.PublicKey); err != nil {
+		log.GetLogCtx(ctx).Warn("failed to set public key", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("id: %s", payload.UserID))
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("exp: %d", exp))
