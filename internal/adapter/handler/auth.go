@@ -107,7 +107,7 @@ func (a *Auth) SignIn(
 	au := model.Auth{
 		ID:           sessionToken,
 		UserID:       model.UserID(payload.UserID),
-		IDToken:      sres.IDToken,
+		IDToken:      model.IDToken(sres.IDToken),
 		RefreshToken: model.RefreshToken(sres.RefreshToken),
 		ExpiresIn:    exp,
 	}

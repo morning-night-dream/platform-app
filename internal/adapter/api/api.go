@@ -63,7 +63,7 @@ func (ctl *API) Authorize(r *http.Request) (model.Auth, error) {
 		return model.Auth{}, errors.New("error")
 	}
 
-	if err := ctl.firebase.VerifyIDToken(ctx, auth.IDToken); err != nil {
+	if err := ctl.firebase.VerifyIDToken(ctx, string(auth.IDToken)); err != nil {
 		return model.Auth{}, errors.New("error")
 	}
 

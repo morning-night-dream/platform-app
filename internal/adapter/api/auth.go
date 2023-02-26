@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -41,42 +40,6 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		log.GetLogCtx(ctx).Warn("failed to marshal email", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusBadRequest)
-
-		return
-	}
-
-	res, err := api.firebase.Login(ctx, string(email), body.Password)
-	if err != nil {
-		log.GetLogCtx(ctx).Warn("failed to login", log.ErrorField(err))
-
-		w.WriteHeader(http.StatusForbidden)
-
-		return
-	}
-
-	// exp, _ := strconv.Atoi(res.ExpiresIn)
-
-	strs := strings.Split(res.IDToken, ".")
-
-	tmpPayload, err := base64.RawStdEncoding.DecodeString(strs[1])
-	if err != nil {
-		log.GetLogCtx(ctx).Warn("failed to decode", log.ErrorField(err))
-
-		w.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	type Payload struct {
-		UserID string `json:"user_id"`
-	}
-
-	var payload Payload
-
-	if err := json.Unmarshal(tmpPayload, &payload); err != nil {
-		log.GetLogCtx(ctx).Warn("failed to unmarshal json "+string(tmpPayload), log.ErrorField(err))
-
-		w.WriteHeader(http.StatusInternalServerError)
 
 		return
 	}
@@ -132,37 +95,15 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	// }
 	// --------------------------------------------------
 
-	uid := payload.UserID
-
-	sid := uuid.New().String()
-
-	if err := api.store.Set(ctx, uid, model.Auth{
-		ID:           uid, // 不要かも
-		UserID:       model.UserID(uid),
-		IDToken:      res.IDToken, // 不要かも
-		PublicKey:    key,
-		RefreshToken: model.RefreshToken(res.RefreshToken),
-		ExpiresIn:    60,
-		Expires:      time.Now().Add(60 * time.Second),
-	}); err != nil {
-		log.GetLogCtx(ctx).Warn("failed to set auth", log.ErrorField(err))
-
-		w.WriteHeader(http.StatusInternalServerError)
-
-		return
+	input := port.APIAuthSignInInput{
+		EMail:     model.EMail(email),
+		Password:  model.Password(body.Password),
+		PublicKey: key,
 	}
 
-	if err := api.user.Set(ctx, sid, uid); err != nil {
-		log.GetLogCtx(ctx).Warn("failed to set public key", log.ErrorField(err))
-
-		w.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	uidToken, err := model.GenerateToken(uid, sid)
+	output, err := api.auth.signIn.Execute(ctx, input)
 	if err != nil {
-		log.GetLogCtx(ctx).Warn("failed to generate uid token", log.ErrorField(err))
+		log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusInternalServerError)
 
@@ -171,25 +112,16 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.UIDKey,
-		Value:    uidToken,
+		Value:    string(output.UserToken),
 		Expires:  time.Now().Add(60 * time.Second),
 		Secure:   false,
 		HttpOnly: true,
 		Path:     "/",
 	})
 
-	sidToken, err := model.GenerateToken(sid, "secret")
-	if err != nil {
-		log.GetLogCtx(ctx).Warn("failed to generate sid token", log.ErrorField(err))
-
-		w.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.SIDKey,
-		Value:    sidToken,
+		Value:    string(output.SessionToken),
 		Expires:  time.Now().Add(168 * time.Hour),
 		Secure:   false,
 		HttpOnly: true,

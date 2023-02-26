@@ -17,7 +17,7 @@ type RefreshToken string
 type Auth struct {
 	ID           string         `json:"id"`
 	UserID       UserID         `json:"userId"`
-	IDToken      string         `json:"idToken"`
+	IDToken      IDToken        `json:"idToken"`
 	PublicKey    *rsa.PublicKey `json:"publicKey"`
 	RefreshToken RefreshToken   `json:"refreshToken"`
 	ExpiresIn    int            `json:"expiresIn"`
