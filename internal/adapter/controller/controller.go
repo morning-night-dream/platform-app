@@ -1,17 +1,15 @@
 package controller
 
 import (
-	"context"
 	"errors"
 	"net/http"
-	"net/textproto"
-	"strings"
 
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
 	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
 	"github.com/morning-night-dream/platform-app/internal/driver/public"
 	"github.com/morning-night-dream/platform-app/internal/driver/store"
 	"github.com/morning-night-dream/platform-app/internal/driver/user"
+	"github.com/morning-night-dream/platform-app/pkg/log"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
@@ -41,18 +39,17 @@ func New(
 	}
 }
 
-const (
-	uidKey = "UID"
-	sidKey = "SID"
-)
+func (ctl *Controller) Authorize(r *http.Request) (model.Auth, error) {
+	ctx := r.Context()
 
-func (ctl *Controller) Authorize(ctx context.Context, header http.Header) (model.Auth, error) {
-	cookie, err := ctl.getToken(header)
+	uid, err := r.Cookie(model.UIDKey)
 	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
+
 		return model.Auth{}, errors.New("error")
 	}
 
-	auth, err := ctl.store.Get(ctx, cookie.Value)
+	auth, err := ctl.store.Get(ctx, uid.Value)
 	if err != nil {
 		return model.Auth{}, errors.New("error")
 	}
@@ -64,30 +61,31 @@ func (ctl *Controller) Authorize(ctx context.Context, header http.Header) (model
 	return auth, nil
 }
 
-func (ctl *Controller) getToken(header http.Header) (http.Cookie, error) {
-	lines := header["Cookie"]
-	if len(lines) == 0 {
-		return http.Cookie{}, errors.New("error")
+func (ctl *Controller) Refresh(r *http.Request) (model.Auth, error) {
+	ctx := r.Context()
+
+	uid, err := r.Cookie(model.UIDKey)
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
+
+		return model.Auth{}, errors.New("error")
 	}
 
-	for _, line := range lines {
-		line = textproto.TrimString(line)
-
-		var part string
-
-		for len(line) > 0 { // continue since we have rest
-			part, line, _ = strings.Cut(line, ";")
-			part = textproto.TrimString(part)
-			if part == "" {
-				continue
-			}
-			name, val, _ := strings.Cut(part, "=")
-			if name != uidKey {
-				return http.Cookie{}, errors.New("error")
-			}
-			return http.Cookie{Name: name, Value: val}, nil
-		}
+	auth, err := ctl.store.Get(ctx, uid.Value)
+	if err != nil {
+		return model.Auth{}, errors.New("error")
 	}
 
-	return http.Cookie{}, errors.New("error")
+	refresh, err := ctl.firebase.RefreshToken(ctx, auth.RefreshToken)
+	if err != nil {
+		return model.Auth{}, errors.New("error")
+	}
+
+	auth.RefreshToken = refresh
+
+	if err := ctl.store.Set(ctx, uid.Value, auth); err != nil {
+		return model.Auth{}, errors.New("error")
+	}
+
+	return auth, nil
 }

@@ -153,7 +153,7 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     uidKey,
+		Name:     model.UIDKey,
 		Value:    payload.UserID,
 		Expires:  time.Now().Add(60 * time.Second),
 		Secure:   false,
@@ -162,7 +162,7 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	})
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     sidKey,
+		Name:     model.SIDKey,
 		Value:    sid,
 		Expires:  time.Now().Add(168 * time.Hour),
 		Secure:   false,
@@ -179,7 +179,7 @@ func (ctl *Controller) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
 
-	uid, err := r.Cookie(uidKey)
+	uid, err := r.Cookie(model.UIDKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
@@ -239,7 +239,7 @@ func (ctl Controller) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
 
-	uid, err := r.Cookie(uidKey)
+	uid, err := r.Cookie(model.UIDKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
