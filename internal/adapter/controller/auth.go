@@ -264,7 +264,7 @@ func (ctl Controller) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
 
-	uid, err := r.Cookie(model.UIDKey)
+	uidToken, err := r.Cookie(model.UIDKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
@@ -279,7 +279,40 @@ func (ctl Controller) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth, err := ctl.store.Get(ctx, uid.Value)
+	sidToken, err := r.Cookie(model.SIDKey)
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusUnauthorized)
+
+		rs := openapi.UnauthorizedResponse{}
+
+		if err := json.NewEncoder(w).Encode(rs); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+
+		return
+	}
+
+	sid, err := model.GetID(sidToken.Value, "secret")
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to get sid", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	uid, err := model.GetID(uidToken.Value, sid)
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to get uid", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	auth, err := ctl.store.Get(ctx, uid)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
