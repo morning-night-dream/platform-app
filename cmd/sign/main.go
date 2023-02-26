@@ -72,7 +72,7 @@ func main() {
 	code := "reichankawaii"
 
 	h := crypto.Hash.New(crypto.SHA256)
-	h.Write(([]byte)(code))
+	h.Write([]byte(code))
 	hashed := h.Sum(nil)
 
 	signed, err := rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA256, hashed)
