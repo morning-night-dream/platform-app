@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
-	"github.com/morning-night-dream/platform-app/internal/adapter/controller"
+	"github.com/morning-night-dream/platform-app/internal/adapter/api"
 	"github.com/morning-night-dream/platform-app/internal/driver/client"
 	"github.com/morning-night-dream/platform-app/internal/driver/config"
 	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
@@ -22,7 +22,7 @@ func main() {
 
 	fb := firebase.NewClient(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
 
-	ctr := controller.New(c, store.New(), fb, public.New(), user.New())
+	ap := api.New(c, store.New(), fb, public.New(), user.New())
 
 	router := chi.NewRouter()
 
@@ -35,7 +35,7 @@ func main() {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	handler := openapi.HandlerWithOptions(ctr, openapi.ChiServerOptions{
+	handler := openapi.HandlerWithOptions(ap, openapi.ChiServerOptions{
 		BaseURL:     "/api",
 		BaseRouter:  router,
 		Middlewares: []openapi.MiddlewareFunc{server.Middleware},

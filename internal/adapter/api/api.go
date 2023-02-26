@@ -1,4 +1,4 @@
-package controller
+package api
 
 import (
 	"errors"
@@ -13,9 +13,9 @@ import (
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
-var _ openapi.ServerInterface = (*Controller)(nil)
+var _ openapi.ServerInterface = (*API)(nil)
 
-type Controller struct {
+type API struct {
 	client   *Client
 	store    *store.Store
 	firebase *firebase.Client
@@ -29,8 +29,8 @@ func New(
 	firebase *firebase.Client,
 	public *public.Public,
 	user *user.User,
-) *Controller {
-	return &Controller{
+) *API {
+	return &API{
 		client:   client,
 		store:    store,
 		firebase: firebase,
@@ -39,7 +39,7 @@ func New(
 	}
 }
 
-func (ctl *Controller) Authorize(r *http.Request) (model.Auth, error) {
+func (ctl *API) Authorize(r *http.Request) (model.Auth, error) {
 	ctx := r.Context()
 
 	uid, err := r.Cookie(model.UIDKey)
@@ -61,7 +61,7 @@ func (ctl *Controller) Authorize(r *http.Request) (model.Auth, error) {
 	return auth, nil
 }
 
-func (ctl *Controller) Refresh(r *http.Request) (model.Auth, error) {
+func (ctl *API) Refresh(r *http.Request) (model.Auth, error) {
 	ctx := r.Context()
 
 	uid, err := r.Cookie(model.UIDKey)

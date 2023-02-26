@@ -1,4 +1,4 @@
-package controller
+package api
 
 import (
 	"crypto"
@@ -12,7 +12,7 @@ import (
 )
 
 // (GET /v1/sign).
-func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params openapi.V1SignParams) {
+func (api *API) V1Sign(w http.ResponseWriter, r *http.Request, params openapi.V1SignParams) {
 	ctx := r.Context()
 
 	sidToken, err := r.Cookie(model.SIDKey)
@@ -33,7 +33,7 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 		return
 	}
 
-	uid, err := ctl.user.Get(ctx, sid)
+	uid, err := api.user.Get(ctx, sid)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
@@ -42,7 +42,7 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 		return
 	}
 
-	auth, err := ctl.store.Get(ctx, uid)
+	auth, err := api.store.Get(ctx, uid)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 

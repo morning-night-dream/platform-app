@@ -1,4 +1,4 @@
-package controller
+package api
 
 import (
 	"crypto/rsa"
@@ -17,12 +17,12 @@ import (
 )
 
 // (GET /v1/auth/refresh).
-func (ctl *Controller) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params openapi.V1AuthRefreshParams) {
+func (api *API) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params openapi.V1AuthRefreshParams) {
 	// リフレッシュに失敗したらキャッシュトークンは削除する
 }
 
 // (POST /v1/auth/signin).
-func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
+func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var body openapi.V1AuthSignInJSONBody
@@ -44,7 +44,7 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := ctl.firebase.Login(ctx, string(email), body.Password)
+	res, err := api.firebase.Login(ctx, string(email), body.Password)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to login", log.ErrorField(err))
 
@@ -135,7 +135,7 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 
 	sid := uuid.New().String()
 
-	if err := ctl.store.Set(ctx, uid, model.Auth{
+	if err := api.store.Set(ctx, uid, model.Auth{
 		ID:           uid, // 不要かも
 		UserID:       uid,
 		IDToken:      res.IDToken, // 不要かも
@@ -151,7 +151,7 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ctl.user.Set(ctx, sid, uid); err != nil {
+	if err := api.user.Set(ctx, sid, uid); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to set public key", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusInternalServerError)
@@ -199,7 +199,7 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 // (POST /v1/auth/signout).
-func (ctl *Controller) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
+func (api *API) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
@@ -213,7 +213,7 @@ func (ctl *Controller) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ctl.store.Delete(ctx, uid.Value); err != nil {
+	if err := api.store.Delete(ctx, uid.Value); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusInternalServerError)
@@ -223,7 +223,7 @@ func (ctl *Controller) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 }
 
 // (POST /v1/auth/signup).
-func (ctl *Controller) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
+func (api *API) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var body openapi.V1AuthSignUpJSONBody
@@ -249,7 +249,7 @@ func (ctl *Controller) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := ctl.firebase.CreateUser(ctx, uid, string(email), body.Password); err != nil {
+	if err := api.firebase.CreateUser(ctx, uid, string(email), body.Password); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to create user", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusInternalServerError)
@@ -259,7 +259,7 @@ func (ctl *Controller) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 // (GET /v1/auth/verify).
-func (ctl Controller) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
+func (api API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
@@ -312,7 +312,7 @@ func (ctl Controller) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth, err := ctl.store.Get(ctx, uid)
+	auth, err := api.store.Get(ctx, uid)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
