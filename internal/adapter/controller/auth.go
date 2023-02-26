@@ -2,6 +2,7 @@ package controller
 
 import (
 	"crypto/rsa"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -79,50 +80,56 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// publicKey, err := x509.ParsePKCS1PublicKey(auth.PublicKey)
-	// if err != nil {
-	// 	log.GetLogCtx(ctx).Warn("failed to parse public key", log.ErrorField(err))
-
-	// 	w.WriteHeader(http.StatusInternalServerError)
-
-	// 	return
-	// }
-
-	// pub, err := x509.ParsePKIXPublicKey(auth.PublicKey)
-	// if err != nil {
-	// 	log.GetLogCtx(ctx).Warn("failed to parse public key", log.ErrorField(err))
-
-	// 	w.WriteHeader(http.StatusInternalServerError)
-
-	// 	return
-	// }
-
-	// publicKey, ok := pub.(*rsa.PublicKey)
-	// if !ok {
-	// 	log.GetLogCtx(ctx).Warn("failed to parse public key", log.ErrorField(err))
-
-	// 	w.WriteHeader(http.StatusInternalServerError)
-
-	// 	return
-	// }
-
-	pub, err := base64.StdEncoding.DecodeString(body.PublicKey)
+	// --------------------------------------------------
+	// from frontend
+	pubkey, err := base64.RawStdEncoding.DecodeString(body.PublicKey)
 	if err != nil {
-		log.GetLogCtx(ctx).Warn("failed to decode public key", log.ErrorField(err))
+		log.GetLogCtx(ctx).Warn("failed to decode", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusInternalServerError)
 
 		return
 	}
 
-	var key *rsa.PublicKey
-	if err := json.Unmarshal(pub, &key); err != nil {
-		log.GetLogCtx(ctx).Warn("failed to unmarshal public key", log.ErrorField(err))
+	pub, err := x509.ParsePKIXPublicKey(pubkey)
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to parse public key", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusInternalServerError)
 
 		return
 	}
+
+	key, ok := pub.(*rsa.PublicKey)
+	if !ok {
+		log.GetLogCtx(ctx).Warn("failed to parse public key", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+	// --------------------------------------------------
+
+	// --------------------------------------------------
+	// from go code
+	// pub, err := base64.StdEncoding.DecodeString(body.PublicKey)
+	// if err != nil {
+	// 	log.GetLogCtx(ctx).Warn("failed to decode public key", log.ErrorField(err))
+
+	// 	w.WriteHeader(http.StatusInternalServerError)
+
+	// 	return
+	// }
+
+	// var key *rsa.PublicKey
+	// if err := json.Unmarshal(pub, &key); err != nil {
+	// 	log.GetLogCtx(ctx).Warn("failed to unmarshal public key", log.ErrorField(err))
+
+	// 	w.WriteHeader(http.StatusInternalServerError)
+
+	// 	return
+	// }
+	// --------------------------------------------------
 
 	uid := payload.UserID
 
@@ -152,7 +159,7 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uidToken, err := model.GenerateToken(uid, "secret")
+	uidToken, err := model.GenerateToken(uid, sid)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to generate uid token", log.ErrorField(err))
 
