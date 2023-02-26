@@ -101,7 +101,6 @@ type CookieTransport struct {
 func NewCookieTransport(
 	cookies []*http.Cookie,
 ) *CookieTransport {
-
 	return &CookieTransport{
 		Cookies:   cookies,
 		Transport: http.DefaultTransport,

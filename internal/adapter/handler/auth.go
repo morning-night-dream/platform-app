@@ -109,7 +109,6 @@ func (a *Auth) SignIn(
 		UserID:       payload.UserID,
 		IDToken:      sres.IDToken,
 		RefreshToken: sres.RefreshToken,
-		SessionToken: sessionToken,
 		ExpiresIn:    exp,
 	}
 

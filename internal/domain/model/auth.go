@@ -2,18 +2,18 @@ package model
 
 import (
 	"context"
+	"crypto/rsa"
 	"time"
 )
 
 type Auth struct {
-	ID           string    `json:"id"`
-	UserID       string    `json:"userId"`
-	IDToken      string    `json:"idToken"`
-	PublicKey    []byte    `json:"publicKey"`
-	RefreshToken string    `json:"refreshToken"`
-	SessionToken string    `json:"sessionToken"`
-	ExpiresIn    int       `json:"expiresIn"`
-	Expires      time.Time `json:"expires"`
+	ID           string         `json:"id"`
+	UserID       string         `json:"userId"`
+	IDToken      string         `json:"idToken"`
+	PublicKey    *rsa.PublicKey `json:"publicKey"`
+	RefreshToken string         `json:"refreshToken"`
+	ExpiresIn    int            `json:"expiresIn"`
+	Expires      time.Time      `json:"expires"`
 }
 
 type uidCtxKey struct{}

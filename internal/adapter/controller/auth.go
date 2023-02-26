@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -14,12 +15,12 @@ import (
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
-// (GET /v1/auth/refresh)
+// (GET /v1/auth/refresh).
 func (ctl *Controller) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params openapi.V1AuthRefreshParams) {
 	// リフレッシュに失敗したらキャッシュトークンは削除する
 }
 
-// (POST /v1/auth/signin)
+// (POST /v1/auth/signin).
 func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -78,6 +79,33 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// publicKey, err := x509.ParsePKCS1PublicKey(auth.PublicKey)
+	// if err != nil {
+	// 	log.GetLogCtx(ctx).Warn("failed to parse public key", log.ErrorField(err))
+
+	// 	w.WriteHeader(http.StatusInternalServerError)
+
+	// 	return
+	// }
+
+	// pub, err := x509.ParsePKIXPublicKey(auth.PublicKey)
+	// if err != nil {
+	// 	log.GetLogCtx(ctx).Warn("failed to parse public key", log.ErrorField(err))
+
+	// 	w.WriteHeader(http.StatusInternalServerError)
+
+	// 	return
+	// }
+
+	// publicKey, ok := pub.(*rsa.PublicKey)
+	// if !ok {
+	// 	log.GetLogCtx(ctx).Warn("failed to parse public key", log.ErrorField(err))
+
+	// 	w.WriteHeader(http.StatusInternalServerError)
+
+	// 	return
+	// }
+
 	pub, err := base64.StdEncoding.DecodeString(body.PublicKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to decode public key", log.ErrorField(err))
@@ -87,23 +115,25 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// log.GetLogCtx(ctx).Info(fmt.Sprintf("public key: %s", string(pub)))
+	var key *rsa.PublicKey
+	if err := json.Unmarshal(pub, &key); err != nil {
+		log.GetLogCtx(ctx).Warn("failed to unmarshal public key", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
 
 	uid := payload.UserID
 
 	sid := uuid.New().String()
 
-	// log.GetLogCtx(ctx).Info(fmt.Sprintf("id: %s", uid))
-
-	// log.GetLogCtx(ctx).Info(fmt.Sprintf("exp: %d", exp))
-
 	if err := ctl.store.Set(ctx, uid, model.Auth{
-		ID:           uid,
+		ID:           uid, // 不要かも
 		UserID:       uid,
-		IDToken:      res.IDToken,
-		PublicKey:    pub,
+		IDToken:      res.IDToken, // 不要かも
+		PublicKey:    key,
 		RefreshToken: res.RefreshToken,
-		SessionToken: uid,
 		ExpiresIn:    60,
 		Expires:      time.Now().Add(60 * time.Second),
 	}); err != nil {
@@ -143,7 +173,7 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("OK"))
 }
 
-// (POST /v1/auth/signout)
+// (POST /v1/auth/signout).
 func (ctl *Controller) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -167,7 +197,7 @@ func (ctl *Controller) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// (POST /v1/auth/signup)
+// (POST /v1/auth/signup).
 func (ctl *Controller) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -203,7 +233,7 @@ func (ctl *Controller) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// (GET /v1/auth/verify)
+// (GET /v1/auth/verify).
 func (ctl Controller) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
