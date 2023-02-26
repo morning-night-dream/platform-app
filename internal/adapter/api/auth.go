@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
+	"github.com/morning-night-dream/platform-app/internal/usecase/port"
 	"github.com/morning-night-dream/platform-app/pkg/log"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
@@ -137,10 +138,10 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 
 	if err := api.store.Set(ctx, uid, model.Auth{
 		ID:           uid, // 不要かも
-		UserID:       uid,
+		UserID:       model.UserID(uid),
 		IDToken:      res.IDToken, // 不要かも
 		PublicKey:    key,
-		RefreshToken: res.RefreshToken,
+		RefreshToken: model.RefreshToken(res.RefreshToken),
 		ExpiresIn:    60,
 		Expires:      time.Now().Add(60 * time.Second),
 	}); err != nil {
@@ -249,8 +250,13 @@ func (api *API) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := api.firebase.CreateUser(ctx, uid, string(email), body.Password); err != nil {
-		log.GetLogCtx(ctx).Warn("failed to create user", log.ErrorField(err))
+	input := port.APIAuthSignUpInput{
+		EMail:    model.EMail(string(email)),
+		Password: model.Password(body.Password),
+	}
+
+	if _, err := api.auth.signUp.Execute(ctx, input); err != nil {
+		log.GetLogCtx(ctx).Warn("failed to sign up", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusInternalServerError)
 

@@ -106,9 +106,9 @@ func (a *Auth) SignIn(
 
 	au := model.Auth{
 		ID:           sessionToken,
-		UserID:       payload.UserID,
+		UserID:       model.UserID(payload.UserID),
 		IDToken:      sres.IDToken,
-		RefreshToken: sres.RefreshToken,
+		RefreshToken: model.RefreshToken(sres.RefreshToken),
 		ExpiresIn:    exp,
 	}
 
@@ -199,7 +199,7 @@ func (a *Auth) ChangePassword(
 		return nil, ErrUnauthorized
 	}
 
-	if err := a.handle.firebase.ChangePassword(ctx, auth.UserID, req.Msg.NewPassword); err != nil {
+	if err := a.handle.firebase.ChangePassword(ctx, string(auth.UserID), req.Msg.NewPassword); err != nil {
 		// log.Printf("fail to change password caused by %s", err)
 		return nil, ErrUnauthorized
 	}
@@ -236,7 +236,7 @@ func (a *Auth) Delete(
 		return nil, ErrUnauthorized
 	}
 
-	if err := a.handle.firebase.DeleteUser(ctx, auth.UserID); err != nil {
+	if err := a.handle.firebase.DeleteUser(ctx, string(auth.UserID)); err != nil {
 		return nil, err
 	}
 

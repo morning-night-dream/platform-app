@@ -140,7 +140,7 @@ func (a *Article) Read(
 		return nil, ErrUnauthorized
 	}
 
-	if err := a.article.SaveRead(ctx, req.Msg.Id, auth.UserID); err != nil {
+	if err := a.article.SaveRead(ctx, req.Msg.Id, string(auth.UserID)); err != nil {
 		return nil, errors.Wrap(err, "")
 	}
 

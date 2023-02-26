@@ -6,12 +6,20 @@ import (
 	"time"
 )
 
+type EMail string
+
+type Password string
+
+type IDToken string
+
+type RefreshToken string
+
 type Auth struct {
 	ID           string         `json:"id"`
-	UserID       string         `json:"userId"`
+	UserID       UserID         `json:"userId"`
 	IDToken      string         `json:"idToken"`
 	PublicKey    *rsa.PublicKey `json:"publicKey"`
-	RefreshToken string         `json:"refreshToken"`
+	RefreshToken RefreshToken   `json:"refreshToken"`
 	ExpiresIn    int            `json:"expiresIn"`
 	Expires      time.Time      `json:"expires"`
 }

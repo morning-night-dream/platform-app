@@ -9,13 +9,20 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/driver/public"
 	"github.com/morning-night-dream/platform-app/internal/driver/store"
 	"github.com/morning-night-dream/platform-app/internal/driver/user"
+	"github.com/morning-night-dream/platform-app/internal/usecase/port"
 	"github.com/morning-night-dream/platform-app/pkg/log"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
 var _ openapi.ServerInterface = (*API)(nil)
 
+type Auth struct {
+	signIn port.APIAuthSignIn
+	signUp port.APIAuthSignUp
+}
+
 type API struct {
+	auth     *Auth
 	client   *Client
 	store    *store.Store
 	firebase *firebase.Client
@@ -24,6 +31,7 @@ type API struct {
 }
 
 func New(
+	auth *Auth,
 	client *Client,
 	store *store.Store,
 	firebase *firebase.Client,
@@ -31,6 +39,7 @@ func New(
 	user *user.User,
 ) *API {
 	return &API{
+		auth:     auth,
 		client:   client,
 		store:    store,
 		firebase: firebase,
@@ -76,12 +85,12 @@ func (ctl *API) Refresh(r *http.Request) (model.Auth, error) {
 		return model.Auth{}, errors.New("error")
 	}
 
-	refresh, err := ctl.firebase.RefreshToken(ctx, auth.RefreshToken)
+	refresh, err := ctl.firebase.RefreshToken(ctx, string(auth.RefreshToken))
 	if err != nil {
 		return model.Auth{}, errors.New("error")
 	}
 
-	auth.RefreshToken = refresh
+	auth.RefreshToken = model.RefreshToken(refresh)
 
 	if err := ctl.store.Set(ctx, uid.Value, auth); err != nil {
 		return model.Auth{}, errors.New("error")

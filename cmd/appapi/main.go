@@ -22,7 +22,9 @@ func main() {
 
 	fb := firebase.NewClient(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
 
-	ap := api.New(c, store.New(), fb, public.New(), user.New())
+	auth := &api.Auth{}
+
+	ap := api.New(auth, c, store.New(), fb, public.New(), user.New())
 
 	router := chi.NewRouter()
 
