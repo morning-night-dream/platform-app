@@ -152,18 +152,36 @@ func (ctl *Controller) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	uidToken, err := model.GenerateToken(uid, "secret")
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to generate uid token", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.UIDKey,
-		Value:    payload.UserID,
+		Value:    uidToken,
 		Expires:  time.Now().Add(60 * time.Second),
 		Secure:   false,
 		HttpOnly: true,
 		Path:     "/",
 	})
 
+	sidToken, err := model.GenerateToken(sid, "secret")
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to generate sid token", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.SIDKey,
-		Value:    sid,
+		Value:    sidToken,
 		Expires:  time.Now().Add(168 * time.Hour),
 		Secure:   false,
 		HttpOnly: true,

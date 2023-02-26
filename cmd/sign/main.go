@@ -7,6 +7,7 @@ import (
 	"crypto/rsa"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -113,6 +114,7 @@ func (ct *CookieTransport) transport() http.RoundTripper {
 
 func (ct *CookieTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	for _, cookie := range ct.Cookies {
+		fmt.Printf("cookie: %+v\n", cookie)
 		req.AddCookie(cookie)
 	}
 

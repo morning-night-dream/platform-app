@@ -4,7 +4,6 @@ import (
 	"crypto"
 	"crypto/rsa"
 	"encoding/base64"
-	"encoding/json"
 	"net/http"
 	"time"
 
@@ -18,22 +17,25 @@ import (
 func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params openapi.V1SignParams) {
 	ctx := r.Context()
 
-	sid, err := r.Cookie(model.SIDKey)
+	sidToken, err := r.Cookie(model.SIDKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusUnauthorized)
 
-		rs := openapi.UnauthorizedResponse{}
+		return
+	}
 
-		if err := json.NewEncoder(w).Encode(rs); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+	sid, err := model.GetID(sidToken.Value, "secret")
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to get sid", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusUnauthorized)
 
 		return
 	}
 
-	uid, err := ctl.user.Get(ctx, sid.Value)
+	uid, err := ctl.user.Get(ctx, sid)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
