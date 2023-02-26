@@ -5,9 +5,7 @@ import (
 	"crypto/rsa"
 	"encoding/base64"
 	"net/http"
-	"time"
 
-	"github.com/google/uuid"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
 	"github.com/morning-night-dream/platform-app/pkg/log"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
@@ -75,15 +73,6 @@ func (ctl *Controller) V1Sign(w http.ResponseWriter, r *http.Request, params ope
 	}
 
 	log.GetLogCtx(ctx).Info("signature verified")
-
-	http.SetCookie(w, &http.Cookie{
-		Name:     model.SIDKey,
-		Value:    uuid.NewString(),
-		Expires:  time.Now().Add(168 * time.Hour),
-		Secure:   false,
-		HttpOnly: true,
-		Path:     "/",
-	})
 
 	_, _ = w.Write([]byte("OK"))
 }
