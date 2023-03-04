@@ -79,13 +79,18 @@ ymlint:
 ymlfmt:
 	@yamlfmt
 
-.PHONY: dup
-dup:
+.PHONY: dev
+dev:
 	@docker compose --project-name ${APP_NAME} --file ./.docker/docker-compose.yaml up -d
 
-.PHONY: ddown
-ddown:
-	@docker compose --project-name ${APP_NAME} down
+.PHONY: redev
+redev:
+	@touch cmd/appcore/main.go
+	@touch cmd/appapi/main.go
+
+.PHONY: down
+down:
+	@docker compose --project-name ${APP_NAME} down --volumes
 
 .PHONY: psql
 psql:

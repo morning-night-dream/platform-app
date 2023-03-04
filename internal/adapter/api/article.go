@@ -1,4 +1,4 @@
-package controller
+package api
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
-func (c Controller) V1ListArticles(w http.ResponseWriter, r *http.Request, params openapi.V1ListArticlesParams) {
+func (api API) V1ListArticles(w http.ResponseWriter, r *http.Request, params openapi.V1ListArticlesParams) {
 	pageToken := ""
 	if params.PageToken != nil {
 		pageToken = *params.PageToken
@@ -21,7 +21,8 @@ func (c Controller) V1ListArticles(w http.ResponseWriter, r *http.Request, param
 		PageToken:   pageToken,
 		MaxPageSize: uint32(params.MaxPageSize),
 	}
-	res, err := c.client.Article.List(r.Context(), connect.NewRequest(req))
+
+	res, err := api.client.Article.List(r.Context(), connect.NewRequest(req))
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		w.Write([]byte(err.Error()))

@@ -15,7 +15,7 @@ services:
     restart: always
   redis:
     container_name: ${APP_NAME}-redis
-    image: redis:7.0.7-alpine
+    image: redis:7.0.9-alpine
     ports:
       - 63791:6379
     restart: always
@@ -26,6 +26,7 @@ services:
       dockerfile: firebase/Dockerfile
     ports:
       - 9091:9099
+      - 4001:4000
     volumes:
       - ./firebase:/firebase
     restart: always
@@ -62,6 +63,11 @@ services:
       - 8082:8080
     environment:
       APP_CORE_URL: http://core:8080
+      ENV: ${ENV}
+      FIREBASE_SECRET: '{"type": "service_account","project_id": "emulator"}'
+      FIREBASE_API_ENDPOINT: http://firebase:9099/identitytoolkit.googleapis.com
+      FIREBASE_API_KEY: emulator
+      FIREBASE_AUTH_EMULATOR_HOST: firebase:9099
     volumes:
       - ../:/app
     restart: always
