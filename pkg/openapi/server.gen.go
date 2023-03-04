@@ -17,6 +17,9 @@ type ServerInterface interface {
 	// List articles
 	// (GET /v1/article)
 	V1ListArticles(w http.ResponseWriter, r *http.Request, params V1ListArticlesParams)
+	// リサイン(退会)
+	// (DELETE /v1/auth)
+	V1AuthResign(w http.ResponseWriter, r *http.Request)
 	// リフレッシュ
 	// (GET /v1/auth/refresh)
 	V1AuthRefresh(w http.ResponseWriter, r *http.Request, params V1AuthRefreshParams)
@@ -83,6 +86,23 @@ func (siw *ServerInterfaceWrapper) V1ListArticles(w http.ResponseWriter, r *http
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.V1ListArticles(w, r, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// V1AuthResign operation middleware
+func (siw *ServerInterfaceWrapper) V1AuthResign(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, CookieAuthScopes, []string{""})
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1AuthResign(w, r)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -373,6 +393,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/article", wrapper.V1ListArticles)
+	})
+	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/auth", wrapper.V1AuthResign)
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/auth/refresh", wrapper.V1AuthRefresh)

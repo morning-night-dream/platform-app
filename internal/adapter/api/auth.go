@@ -276,3 +276,7 @@ func (api API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("expires: %s", auth.Expires))
 }
+
+func (*API) V1AuthResign(w http.ResponseWriter, r *http.Request) {
+	// TODO: not implemented
+}

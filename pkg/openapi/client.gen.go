@@ -92,6 +92,11 @@ type ClientInterface interface {
 	// V1ListArticles request
 	V1ListArticles(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// V1AuthResign request with any body
+	V1AuthResignWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	V1AuthResign(ctx context.Context, body V1AuthResignJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// V1AuthRefresh request
 	V1AuthRefresh(ctx context.Context, params *V1AuthRefreshParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -120,6 +125,30 @@ type ClientInterface interface {
 
 func (c *Client) V1ListArticles(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewV1ListArticlesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) V1AuthResignWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewV1AuthResignRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) V1AuthResign(ctx context.Context, body V1AuthResignJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewV1AuthResignRequest(c.Server, body)
 	if err != nil {
 		return nil, err
 	}
@@ -293,6 +322,46 @@ func NewV1ListArticlesRequest(server string, params *V1ListArticlesParams) (*htt
 	if err != nil {
 		return nil, err
 	}
+
+	return req, nil
+}
+
+// NewV1AuthResignRequest calls the generic V1AuthResign builder with application/json body
+func NewV1AuthResignRequest(server string, body V1AuthResignJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewV1AuthResignRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewV1AuthResignRequestWithBody generates requests for V1AuthResign with any type of body
+func NewV1AuthResignRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/auth")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
 
 	return req, nil
 }
@@ -602,6 +671,11 @@ type ClientWithResponsesInterface interface {
 	// V1ListArticles request
 	V1ListArticlesWithResponse(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*V1ListArticlesResponse, error)
 
+	// V1AuthResign request with any body
+	V1AuthResignWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*V1AuthResignResponse, error)
+
+	V1AuthResignWithResponse(ctx context.Context, body V1AuthResignJSONRequestBody, reqEditors ...RequestEditorFn) (*V1AuthResignResponse, error)
+
 	// V1AuthRefresh request
 	V1AuthRefreshWithResponse(ctx context.Context, params *V1AuthRefreshParams, reqEditors ...RequestEditorFn) (*V1AuthRefreshResponse, error)
 
@@ -644,6 +718,27 @@ func (r V1ListArticlesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r V1ListArticlesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type V1AuthResignResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r V1AuthResignResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r V1AuthResignResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -807,6 +902,23 @@ func (c *ClientWithResponses) V1ListArticlesWithResponse(ctx context.Context, pa
 	return ParseV1ListArticlesResponse(rsp)
 }
 
+// V1AuthResignWithBodyWithResponse request with arbitrary body returning *V1AuthResignResponse
+func (c *ClientWithResponses) V1AuthResignWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*V1AuthResignResponse, error) {
+	rsp, err := c.V1AuthResignWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseV1AuthResignResponse(rsp)
+}
+
+func (c *ClientWithResponses) V1AuthResignWithResponse(ctx context.Context, body V1AuthResignJSONRequestBody, reqEditors ...RequestEditorFn) (*V1AuthResignResponse, error) {
+	rsp, err := c.V1AuthResign(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseV1AuthResignResponse(rsp)
+}
+
 // V1AuthRefreshWithResponse request returning *V1AuthRefreshResponse
 func (c *ClientWithResponses) V1AuthRefreshWithResponse(ctx context.Context, params *V1AuthRefreshParams, reqEditors ...RequestEditorFn) (*V1AuthRefreshResponse, error) {
 	rsp, err := c.V1AuthRefresh(ctx, params, reqEditors...)
@@ -907,6 +1019,22 @@ func ParseV1ListArticlesResponse(rsp *http.Response) (*V1ListArticlesResponse, e
 		}
 		response.JSON200 = &dest
 
+	}
+
+	return response, nil
+}
+
+// ParseV1AuthResignResponse parses an HTTP response from a V1AuthResignWithResponse call
+func ParseV1AuthResignResponse(rsp *http.Response) (*V1AuthResignResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &V1AuthResignResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
 	}
 
 	return response, nil

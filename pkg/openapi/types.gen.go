@@ -55,6 +55,12 @@ type V1ListArticlesParams struct {
 	MaxPageSize int `form:"maxPageSize" json:"maxPageSize"`
 }
 
+// V1AuthResignJSONBody defines parameters for V1AuthResign.
+type V1AuthResignJSONBody struct {
+	// Password パスワード
+	Password string `json:"password"`
+}
+
 // V1AuthRefreshParams defines parameters for V1AuthRefresh.
 type V1AuthRefreshParams struct {
 	// Code 署名付きコード
@@ -90,6 +96,9 @@ type V1SignParams struct {
 	// Signature 署名
 	Signature string `form:"signature" json:"signature"`
 }
+
+// V1AuthResignJSONRequestBody defines body for V1AuthResign for application/json ContentType.
+type V1AuthResignJSONRequestBody V1AuthResignJSONBody
 
 // V1AuthSignInJSONRequestBody defines body for V1AuthSignIn for application/json ContentType.
 type V1AuthSignInJSONRequestBody V1AuthSignInJSONBody
