@@ -57,7 +57,7 @@ func NewUser(
 	res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
 		Email:     types.Email(email),
 		Password:  password,
-		PublicKey: public(t, priv),
+		PublicKey: Public(t, priv),
 	})
 	if err != nil {
 		t.Fatalf("failed to auth sign in: %s", err)
@@ -77,12 +77,15 @@ func NewUser(
 	}
 }
 
-func public(t *testing.T, private *rsa.PrivateKey) string {
+func Public(t *testing.T, private *rsa.PrivateKey) string {
 	t.Helper()
 
 	b := new(bytes.Buffer)
 
-	bt, _ := x509.MarshalPKIXPublicKey(private.PublicKey)
+	bt, err := x509.MarshalPKIXPublicKey(&private.PublicKey)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	pem.Encode(b, &pem.Block{
 		Bytes: bt,

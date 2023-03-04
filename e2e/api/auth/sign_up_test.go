@@ -3,6 +3,7 @@ package auth_test
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/deepmap/oapi-codegen/pkg/types"
@@ -22,14 +23,21 @@ func TestE2EAuthSighUp(t *testing.T) {
 		client := helper.NewOpenAPIClient(t, url)
 
 		id := uuid.New().String()
+
 		email := fmt.Sprintf("%s@example.com", id)
+
 		password := id
 
-		if _, err := client.Client.V1AuthSignUp(context.Background(), openapi.V1AuthSignUpJSONRequestBody{
+		res, err := client.Client.V1AuthSignUp(context.Background(), openapi.V1AuthSignUpJSONRequestBody{
 			Email:    types.Email(email),
 			Password: password,
-		}); err != nil {
+		})
+		if err != nil {
 			t.Fatalf("failed to auth sign up: %s", err)
+		}
+
+		if res.StatusCode != http.StatusOK {
+			t.Fatalf("failed to auth sign up: %d", res.StatusCode)
 		}
 
 		// Userのライフサイクルも未定のため削除は未実施
