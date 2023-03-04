@@ -3,7 +3,7 @@ module github.com/morning-night-dream/platform-app
 go 1.19
 
 require (
-	entgo.io/ent v0.11.8
+	entgo.io/ent v0.11.9
 	firebase.google.com/go v3.13.0+incompatible
 	firebase.google.com/go/v4 v4.10.0
 	github.com/bufbuild/connect-go v1.5.2
@@ -26,7 +26,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.9.1-0.20230119145809-92243f7c55cb // indirect
+	ariga.io/atlas v0.9.1 // indirect
 	cloud.google.com/go v0.107.0 // indirect
 	cloud.google.com/go/compute v1.18.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
@@ -52,7 +52,7 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	golang.org/x/mod v0.7.0 // indirect
+	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/oauth2 v0.5.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect

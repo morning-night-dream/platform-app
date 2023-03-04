@@ -1,4 +1,4 @@
-# ariga.io/atlas v0.9.1-0.20230119145809-92243f7c55cb
+# ariga.io/atlas v0.9.1
 ## explicit; go 1.19
 ariga.io/atlas/schemahcl
 ariga.io/atlas/sql/internal/specutil
@@ -46,7 +46,7 @@ cloud.google.com/go/storage
 cloud.google.com/go/storage/internal
 cloud.google.com/go/storage/internal/apiv2
 cloud.google.com/go/storage/internal/apiv2/stubs
-# entgo.io/ent v0.11.8
+# entgo.io/ent v0.11.9
 ## explicit; go 1.19
 entgo.io/ent
 entgo.io/ent/dialect
@@ -241,7 +241,7 @@ go.uber.org/zap/internal/bufferpool
 go.uber.org/zap/internal/color
 go.uber.org/zap/internal/exit
 go.uber.org/zap/zapcore
-# golang.org/x/mod v0.7.0
+# golang.org/x/mod v0.8.0
 ## explicit; go 1.17
 golang.org/x/mod/semver
 # golang.org/x/net v0.7.0
