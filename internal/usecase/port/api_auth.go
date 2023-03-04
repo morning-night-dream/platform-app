@@ -30,6 +30,8 @@ type APIAuthSignInInput struct {
 
 type APIAuthSignInOutput struct {
 	usecase.Output
+	model.UserID
+	model.SessionID
 	model.UserToken
 	model.SessionToken
 }

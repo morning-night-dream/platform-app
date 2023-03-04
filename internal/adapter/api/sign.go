@@ -64,7 +64,9 @@ func (api *API) V1Sign(w http.ResponseWriter, r *http.Request, params openapi.V1
 		return
 	}
 
-	if err := rsa.VerifyPKCS1v15(auth.PublicKey, crypto.SHA256, hashed, sig); err != nil {
+	if err := rsa.VerifyPSS(auth.PublicKey, crypto.SHA256, hashed, []byte(sig), &rsa.PSSOptions{
+		Hash: crypto.SHA256,
+	}); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to verify signature", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusUnauthorized)

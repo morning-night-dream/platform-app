@@ -112,6 +112,19 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	api.user.Set(ctx, string(output.SessionID), string(output.UserID))
+	api.store.Set(ctx, string(output.UserID), model.Auth{
+		ID:     string(output.SessionID),
+		UserID: output.UserID,
+		// TODO: 上でfirebaseにログインし、得られたトークンを入れる？
+		// IDToken: ?,
+		// TODO: 上でfirebaseにログインし、得られたトークンを入れる？
+		// RefreshToken: ?,
+		PublicKey: key,
+		Expires:   time.Now().Add(60 * time.Second),
+		ExpiresIn: int(60 * time.Second),
+	})
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.UIDKey,
 		Value:    string(output.UserToken),

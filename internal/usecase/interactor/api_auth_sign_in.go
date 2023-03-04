@@ -67,6 +67,8 @@ func (aas *APIAuthSignIn) Execute(
 	}
 
 	return port.APIAuthSignInOutput{
+		UserID:       auth.UserID,
+		SessionID:    model.SessionID(sid),
 		UserToken:    model.UserToken(uidToken),
 		SessionToken: model.SessionToken(sidToken),
 	}, nil
