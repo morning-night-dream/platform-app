@@ -46,7 +46,7 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 
 	// --------------------------------------------------
 	// from frontend
-	pubkey, err := base64.RawStdEncoding.DecodeString(body.PublicKey)
+	pubkey, err := base64.StdEncoding.DecodeString(body.PublicKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to decode", log.ErrorField(err))
 
@@ -54,6 +54,8 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
+	log.GetLogCtx(ctx).Info(fmt.Sprintf("pubkey: %s", pubkey))
 
 	pub, err := x509.ParsePKIXPublicKey(pubkey)
 	if err != nil {

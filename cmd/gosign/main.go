@@ -55,6 +55,8 @@ func main() {
 
 	pubstr := base64.StdEncoding.EncodeToString(bytes)
 
+	log.Printf("pubstr: %+v", pubstr)
+
 	// signin
 	res, err := client.V1AuthSignIn(ctx, openapi.V1AuthSignInJSONRequestBody{
 		Email:     email,

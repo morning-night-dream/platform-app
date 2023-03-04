@@ -2,7 +2,12 @@ package auth_test
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
+	"log"
 	"testing"
 
 	"github.com/deepmap/oapi-codegen/pkg/types"
@@ -32,28 +37,34 @@ func TestE2EAuthSighUp(t *testing.T) {
 			t.Fatalf("failed to auth sign up: %s", err)
 		}
 
-		// defer func() {
-		// 	res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
-		// 		Email:     types.Email(email),
-		// 		Password:  password,
-		// 		PublicKey: "",
-		// 	})
-		// 	if err != nil {
-		// 		t.Fatalf("failed to auth sign in: %s", err)
-		// 	}
+		defer func() {
+			// secret
+			priv, err := rsa.GenerateKey(rand.Reader, 2048)
+			if err != nil {
+				panic(err)
+			}
 
-		// 	client.Client.Client = &http.Client{
-		// 		Transport: helper.NewCookiesTransport(t, res.Cookies()),
-		// 	}
+			pub := priv.Public()
 
-		// 	req := &authv1.DeleteRequest{
-		// 		Email:    email,
-		// 		Password: password,
-		// 	}
+			log.Printf("pub key: %+v", pub)
 
-		// 	if _, err := dclient.Auth.Delete(context.Background(), connect.NewRequest(req)); err != nil {
-		// 		t.Fatalf("failed to delete user in: %s", err)
-		// 	}
-		// }()
+			bytes, err := json.Marshal(pub)
+			if err != nil {
+				panic(err)
+			}
+
+			pubstr := base64.StdEncoding.EncodeToString(bytes)
+
+			res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
+				Email:     types.Email(email),
+				Password:  password,
+				PublicKey: pubstr,
+			})
+			if err != nil {
+				t.Fatalf("failed to auth sign in: %s", err)
+			}
+
+			log.Printf("res: %+v", res)
+		}()
 	})
 }
