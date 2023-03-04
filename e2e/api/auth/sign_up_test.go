@@ -2,12 +2,7 @@ package auth_test
 
 import (
 	"context"
-	"crypto/rand"
-	"crypto/rsa"
-	"encoding/base64"
-	"encoding/json"
 	"fmt"
-	"log"
 	"testing"
 
 	"github.com/deepmap/oapi-codegen/pkg/types"
@@ -37,34 +32,6 @@ func TestE2EAuthSighUp(t *testing.T) {
 			t.Fatalf("failed to auth sign up: %s", err)
 		}
 
-		defer func() {
-			// secret
-			priv, err := rsa.GenerateKey(rand.Reader, 2048)
-			if err != nil {
-				panic(err)
-			}
-
-			pub := priv.Public()
-
-			log.Printf("pub key: %+v", pub)
-
-			bytes, err := json.Marshal(pub)
-			if err != nil {
-				panic(err)
-			}
-
-			pubstr := base64.StdEncoding.EncodeToString(bytes)
-
-			res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
-				Email:     types.Email(email),
-				Password:  password,
-				PublicKey: pubstr,
-			})
-			if err != nil {
-				t.Fatalf("failed to auth sign in: %s", err)
-			}
-
-			log.Printf("res: %+v", res)
-		}()
+		// Userのライフサイクルも未定のため削除は未実施
 	})
 }

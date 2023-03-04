@@ -1,9 +1,17 @@
 package helper
 
 import (
+	"bytes"
 	"context"
+	"crypto"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/base64"
+	"encoding/pem"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/deepmap/oapi-codegen/pkg/types"
@@ -12,10 +20,12 @@ import (
 )
 
 type User struct {
+	T        *testing.T
 	EMail    string
 	Password string
 	Cookies  []*http.Cookie
 	Client   *OpenAPIClient
+	Key      *rsa.PrivateKey
 }
 
 func NewUser(
@@ -27,7 +37,9 @@ func NewUser(
 	client := NewOpenAPIClient(t, url)
 
 	id := uuid.New().String()
+
 	email := fmt.Sprintf("%s@example.com", id)
+
 	password := id
 
 	if _, err := client.Client.V1AuthSignUp(context.Background(), openapi.V1AuthSignUpJSONRequestBody{
@@ -37,10 +49,15 @@ func NewUser(
 		t.Fatalf("failed to auth sign up: %s", err)
 	}
 
+	priv, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
 		Email:     types.Email(email),
 		Password:  password,
-		PublicKey: "",
+		PublicKey: public(t, priv),
 	})
 	if err != nil {
 		t.Fatalf("failed to auth sign in: %s", err)
@@ -51,9 +68,54 @@ func NewUser(
 	}
 
 	return User{
+		T:        t,
 		EMail:    email,
 		Password: password,
 		Cookies:  res.Cookies(),
 		Client:   client,
+		Key:      priv,
 	}
+}
+
+func public(t *testing.T, private *rsa.PrivateKey) string {
+	t.Helper()
+
+	b := new(bytes.Buffer)
+
+	bt, _ := x509.MarshalPKIXPublicKey(private.PublicKey)
+
+	pem.Encode(b, &pem.Block{
+		Bytes: bt,
+	})
+
+	remove := func(arr []string, i int) []string {
+		return append(arr[:i], arr[i+1:]...)
+	}
+
+	pems := strings.Split(b.String(), "\n")
+
+	pems = remove(pems, len(pems)-1)
+
+	pems = remove(pems, len(pems)-1)
+
+	pems = remove(pems, 0)
+
+	return strings.Join(pems, "")
+}
+
+func (user *User) Sign(code string) string {
+	user.T.Helper()
+
+	h := crypto.Hash.New(crypto.SHA256)
+
+	h.Write([]byte(code))
+
+	digest := h.Sum(nil)
+
+	signed, err := rsa.SignPSS(rand.Reader, user.Key, crypto.SHA256, digest, nil)
+	if err != nil {
+		user.T.Fatal(err)
+	}
+
+	return base64.StdEncoding.EncodeToString(signed)
 }
