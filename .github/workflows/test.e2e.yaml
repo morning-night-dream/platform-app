@@ -69,6 +69,12 @@ jobs:
         env:
           PORT: 8082
           APP_CORE_URL: http://localhost:8081
+          API_KEY: e2e
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+          FIREBASE_SECRET: '{"type": "service_account","project_id": "emulator"}'
+          FIREBASE_API_ENDPOINT: http://localhost:9099/identitytoolkit.googleapis.com
+          FIREBASE_API_KEY: emulator
+          FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
         run: |
           go run cmd/appapi/main.go &
           echo API_PID=$! >> $GITHUB_ENV
