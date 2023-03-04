@@ -9,6 +9,8 @@ import (
 	"sync"
 	"time"
 
+	"entgo.io/ent"
+	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/morning-night-dream/platform-app/pkg/ent/article"
 	"github.com/morning-night-dream/platform-app/pkg/ent/articletag"
@@ -16,9 +18,6 @@ import (
 	"github.com/morning-night-dream/platform-app/pkg/ent/predicate"
 	"github.com/morning-night-dream/platform-app/pkg/ent/readarticle"
 	"github.com/morning-night-dream/platform-app/pkg/ent/user"
-
-	"entgo.io/ent"
-	"entgo.io/ent/dialect/sql"
 )
 
 const (
