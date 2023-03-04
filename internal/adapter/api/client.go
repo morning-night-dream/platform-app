@@ -1,4 +1,4 @@
-package controller
+package api
 
 import (
 	"github.com/morning-night-dream/platform-app/pkg/connect/article/v1/articlev1connect"

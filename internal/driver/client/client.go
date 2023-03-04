@@ -3,13 +3,13 @@ package client
 import (
 	"net/http"
 
-	"github.com/morning-night-dream/platform-app/internal/adapter/controller"
+	"github.com/morning-night-dream/platform-app/internal/adapter/api"
 	"github.com/morning-night-dream/platform-app/pkg/connect/article/v1/articlev1connect"
 	"github.com/morning-night-dream/platform-app/pkg/connect/auth/v1/authv1connect"
 	"github.com/morning-night-dream/platform-app/pkg/connect/health/v1/healthv1connect"
 )
 
-var _ controller.ClientFactory = (*Client)(nil)
+var _ api.ClientFactory = (*Client)(nil)
 
 type Client struct{}
 
@@ -17,7 +17,7 @@ func New() *Client {
 	return &Client{}
 }
 
-func (c *Client) Of(url string) (*controller.Client, error) {
+func (c *Client) Of(url string) (*api.Client, error) {
 	client := http.DefaultClient
 
 	ac := articlev1connect.NewArticleServiceClient(
@@ -35,7 +35,7 @@ func (c *Client) Of(url string) (*controller.Client, error) {
 		url,
 	)
 
-	return &controller.Client{
+	return &api.Client{
 		Article: ac,
 		Health:  hc,
 		Auth:    auc,

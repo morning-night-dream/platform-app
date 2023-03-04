@@ -1,14 +1,27 @@
 package model
 
-import "context"
+import (
+	"context"
+	"crypto/rsa"
+	"time"
+)
+
+type EMail string
+
+type Password string
+
+type IDToken string
+
+type RefreshToken string
 
 type Auth struct {
-	ID           string `json:"id"`
-	UserID       string `json:"userId"`
-	IDToken      string `json:"idToken"`
-	RefreshToken string `json:"refreshToken"`
-	SessionToken string `json:"sessionToken"`
-	ExpiresIn    int    `json:"expiresIn"`
+	ID           string         `json:"id"`
+	UserID       UserID         `json:"userId"`
+	IDToken      IDToken        `json:"idToken"`
+	PublicKey    *rsa.PublicKey `json:"publicKey"`
+	RefreshToken RefreshToken   `json:"refreshToken"`
+	ExpiresIn    int            `json:"expiresIn"`
+	Expires      time.Time      `json:"expires"`
 }
 
 type uidCtxKey struct{}

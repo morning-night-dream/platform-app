@@ -3,10 +3,16 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
-	"github.com/morning-night-dream/platform-app/internal/adapter/controller"
+	"github.com/morning-night-dream/platform-app/internal/adapter/api"
+	"github.com/morning-night-dream/platform-app/internal/adapter/gateway"
 	"github.com/morning-night-dream/platform-app/internal/driver/client"
 	"github.com/morning-night-dream/platform-app/internal/driver/config"
+	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
+	"github.com/morning-night-dream/platform-app/internal/driver/public"
 	"github.com/morning-night-dream/platform-app/internal/driver/server"
+	"github.com/morning-night-dream/platform-app/internal/driver/store"
+	"github.com/morning-night-dream/platform-app/internal/driver/user"
+	"github.com/morning-night-dream/platform-app/internal/usecase/interactor"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
@@ -16,20 +22,31 @@ func main() {
 		panic(err)
 	}
 
-	ctr := controller.New(c)
+	fb := firebase.NewClient(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
+
+	sessionRepo := gateway.NewAPISession()
+
+	authRepo := gateway.NewAPIAuth(fb)
+
+	auth := api.NewAuth(
+		interactor.NewAPIAuthSignIn(authRepo, sessionRepo),
+		interactor.NewAPIAuthSignUp(authRepo, sessionRepo),
+	)
+
+	ap := api.New(auth, c, store.New(), fb, public.New(), user.New())
 
 	router := chi.NewRouter()
 
 	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"*"},
+		AllowedOrigins:   []string{"http://localhost:5173"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
+		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	handler := openapi.HandlerWithOptions(ctr, openapi.ChiServerOptions{
+	handler := openapi.HandlerWithOptions(ap, openapi.ChiServerOptions{
 		BaseURL:     "/api",
 		BaseRouter:  router,
 		Middlewares: []openapi.MiddlewareFunc{server.Middleware},

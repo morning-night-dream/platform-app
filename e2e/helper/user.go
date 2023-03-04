@@ -1,21 +1,31 @@
 package helper
 
 import (
+	"bytes"
 	"context"
+	"crypto"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/base64"
+	"encoding/pem"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 
-	"github.com/bufbuild/connect-go"
+	"github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/google/uuid"
-	authv1 "github.com/morning-night-dream/platform-app/pkg/connect/auth/v1"
+	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
 type User struct {
+	T        *testing.T
 	EMail    string
 	Password string
-	Cookie   string
-	Client   *ConnectClient
+	Cookies  []*http.Cookie
+	Client   *OpenAPIClient
+	Key      *rsa.PrivateKey
 }
 
 func NewUser(
@@ -24,73 +34,91 @@ func NewUser(
 ) User {
 	t.Helper()
 
-	ctx := context.Background()
+	client := NewOpenAPIClient(t, url)
 
-	client := NewConnectClient(t, http.DefaultClient, url)
+	id := uuid.New().String()
 
-	email := fmt.Sprintf("%s@example.com", uuid.NewString())
+	email := fmt.Sprintf("%s@example.com", id)
 
-	password := uuid.NewString()
+	password := id
 
-	sureq := &authv1.SignUpRequest{
-		Email:    email,
+	if _, err := client.Client.V1AuthSignUp(context.Background(), openapi.V1AuthSignUpJSONRequestBody{
+		Email:    types.Email(email),
 		Password: password,
+	}); err != nil {
+		t.Fatalf("failed to auth sign up: %s", err)
 	}
 
-	if _, err := client.Auth.SignUp(ctx, connect.NewRequest(sureq)); err != nil {
-		t.Fatalf("failed to create user: %v", err)
-	}
-
-	sireq := &authv1.SignInRequest{
-		Email:    email,
-		Password: password,
-	}
-
-	res, err := client.Auth.SignIn(ctx, connect.NewRequest(sireq))
+	priv, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
-		t.Fatalf("failed to create user: %v", err)
+		t.Fatal(err)
 	}
 
-	cookie := res.Header().Get("Set-Cookie")
+	res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
+		Email:     types.Email(email),
+		Password:  password,
+		PublicKey: Public(t, priv),
+	})
+	if err != nil {
+		t.Fatalf("failed to auth sign in: %s", err)
+	}
+
+	client.Client.Client = &http.Client{
+		Transport: NewCookiesTransport(t, res.Cookies()),
+	}
 
 	return User{
+		T:        t,
 		EMail:    email,
 		Password: password,
-		Cookie:   cookie,
-		Client:   NewConnectClientWithCookie(t, cookie, url),
+		Cookies:  res.Cookies(),
+		Client:   client,
+		Key:      priv,
 	}
 }
 
-func (u User) ChangePassword(t *testing.T, password string) User {
+func Public(t *testing.T, private *rsa.PrivateKey) string {
 	t.Helper()
 
-	req := &authv1.ChangePasswordRequest{
-		Email:       u.EMail,
-		OldPassword: u.Password,
-		NewPassword: password,
+	b := new(bytes.Buffer)
+
+	bt, err := x509.MarshalPKIXPublicKey(&private.PublicKey)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	if _, err := u.Client.Auth.ChangePassword(context.Background(), connect.NewRequest(req)); err != nil {
-		t.Fatalf("failed to change password: %v", err)
+	pem.Encode(b, &pem.Block{
+		Bytes: bt,
+	})
+
+	remove := func(arr []string, i int) []string {
+		return append(arr[:i], arr[i+1:]...)
 	}
 
-	return User{
-		EMail:    u.EMail,
-		Password: password,
-		Cookie:   u.Cookie,
-		Client:   u.Client,
-	}
+	pems := strings.Split(b.String(), "\n")
+
+	pems = remove(pems, len(pems)-1)
+
+	pems = remove(pems, len(pems)-1)
+
+	pems = remove(pems, 0)
+
+	return strings.Join(pems, "")
 }
 
-func (u User) Delete(t *testing.T) {
-	t.Helper()
+func (user *User) Sign(code string) string {
+	user.T.Helper()
 
-	req := &authv1.DeleteRequest{
-		Email:    u.EMail,
-		Password: u.Password,
+	h := crypto.Hash.New(crypto.SHA256)
+
+	h.Write([]byte(code))
+
+	digest := h.Sum(nil)
+
+	signed, err := rsa.SignPSS(rand.Reader, user.Key, crypto.SHA256, digest, nil)
+	if err != nil {
+		user.T.Fatal(err)
 	}
 
-	if _, err := u.Client.Auth.Delete(context.Background(), connect.NewRequest(req)); err != nil {
-		t.Fatalf("failed to delete user: %v", err)
-	}
+	return base64.StdEncoding.EncodeToString(signed)
 }

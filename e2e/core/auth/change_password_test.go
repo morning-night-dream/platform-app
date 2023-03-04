@@ -20,7 +20,7 @@ func TestE2EAuthChangePassword(t *testing.T) {
 
 		newPassword := uuid.NewString()
 
-		user := helper.NewUser(t, url)
+		user := helper.NewCoreUser(t, url)
 
 		defer func() {
 			user.Password = newPassword
@@ -54,7 +54,7 @@ func TestE2EAuthChangePassword(t *testing.T) {
 
 		newPassword := uuid.NewString()
 
-		user := helper.NewUser(t, url)
+		user := helper.NewCoreUser(t, url)
 
 		defer user.Delete(t)
 
@@ -75,7 +75,7 @@ func TestE2EAuthChangePassword(t *testing.T) {
 
 		newPassword := uuid.NewString()
 
-		user := helper.NewUser(t, url)
+		user := helper.NewCoreUser(t, url)
 
 		defer user.Delete(t)
 
@@ -96,7 +96,7 @@ func TestE2EAuthChangePassword(t *testing.T) {
 
 		newPassword := uuid.NewString()
 
-		user := helper.NewUser(t, url)
+		user := helper.NewCoreUser(t, url)
 
 		tmpClient := user.Client
 

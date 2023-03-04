@@ -19,7 +19,7 @@ func TestE2EAuthSignIn(t *testing.T) {
 	t.Run("サインインできる", func(t *testing.T) {
 		t.Parallel()
 
-		user := helper.NewUser(t, url)
+		user := helper.NewCoreUser(t, url)
 
 		defer func() {
 			user.Delete(t)
