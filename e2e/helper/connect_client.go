@@ -102,39 +102,3 @@ func (at *APIKeyTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 
 	return resp, err
 }
-
-type CookieTransport struct {
-	t         *testing.T
-	Cookie    string
-	Transport http.RoundTripper
-}
-
-func NewCookieTransport(
-	t *testing.T,
-	cookie string,
-) *CookieTransport {
-	return &CookieTransport{
-		t:         t,
-		Cookie:    cookie,
-		Transport: http.DefaultTransport,
-	}
-}
-
-func (ct *CookieTransport) transport() http.RoundTripper {
-	ct.t.Helper()
-
-	return ct.Transport
-}
-
-func (ct *CookieTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	ct.t.Helper()
-
-	req.Header.Add("Cookie", ct.Cookie)
-
-	resp, err := ct.transport().RoundTrip(req)
-	if err != nil {
-		return nil, err
-	}
-
-	return resp, err
-}

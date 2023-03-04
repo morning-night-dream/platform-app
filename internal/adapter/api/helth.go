@@ -1,4 +1,4 @@
-package controller
+package api
 
 import (
 	"net/http"
@@ -7,9 +7,9 @@ import (
 	healthv1 "github.com/morning-night-dream/platform-app/pkg/connect/health/v1"
 )
 
-func (c *Controller) V1Health(w http.ResponseWriter, r *http.Request) {
+func (api *API) V1Health(w http.ResponseWriter, r *http.Request) {
 	req := &healthv1.CheckRequest{}
-	res, err := c.client.Health.Check(r.Context(), connect.NewRequest(req))
+	res, err := api.client.Health.Check(r.Context(), connect.NewRequest(req))
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		w.Write([]byte(err.Error()))

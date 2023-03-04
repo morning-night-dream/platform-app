@@ -37,7 +37,7 @@ func (h *Handle) Authorize(ctx context.Context, header http.Header) (model.Auth,
 		return model.Auth{}, ErrUnauthorized
 	}
 
-	if err := h.firebase.VerifyIDToken(ctx, auth.IDToken); err != nil {
+	if err := h.firebase.VerifyIDToken(ctx, string(auth.IDToken)); err != nil {
 		return model.Auth{}, ErrUnauthorized
 	}
 

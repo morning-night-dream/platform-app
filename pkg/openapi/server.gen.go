@@ -4,6 +4,7 @@
 package openapi
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -16,9 +17,30 @@ type ServerInterface interface {
 	// List articles
 	// (GET /v1/article)
 	V1ListArticles(w http.ResponseWriter, r *http.Request, params V1ListArticlesParams)
+	// リサイン(退会)
+	// (DELETE /v1/auth)
+	V1AuthResign(w http.ResponseWriter, r *http.Request)
+	// リフレッシュ
+	// (GET /v1/auth/refresh)
+	V1AuthRefresh(w http.ResponseWriter, r *http.Request, params V1AuthRefreshParams)
+	// サインイン
+	// (POST /v1/auth/signin)
+	V1AuthSignIn(w http.ResponseWriter, r *http.Request)
+	// サインアウト
+	// (POST /v1/auth/signout)
+	V1AuthSignOut(w http.ResponseWriter, r *http.Request)
+	// サインアップ
+	// (POST /v1/auth/signup)
+	V1AuthSignUp(w http.ResponseWriter, r *http.Request)
+	// 検証
+	// (GET /v1/auth/verify)
+	V1AuthVerify(w http.ResponseWriter, r *http.Request)
 	// ヘルスチェック
 	// (GET /v1/health)
 	V1Health(w http.ResponseWriter, r *http.Request)
+	// 署名検証
+	// (GET /v1/sign)
+	V1Sign(w http.ResponseWriter, r *http.Request, params V1SignParams)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -73,12 +95,180 @@ func (siw *ServerInterfaceWrapper) V1ListArticles(w http.ResponseWriter, r *http
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// V1AuthResign operation middleware
+func (siw *ServerInterfaceWrapper) V1AuthResign(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, CookieAuthScopes, []string{""})
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1AuthResign(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// V1AuthRefresh operation middleware
+func (siw *ServerInterfaceWrapper) V1AuthRefresh(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	ctx = context.WithValue(ctx, CookieAuthScopes, []string{""})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params V1AuthRefreshParams
+
+	// ------------- Required query parameter "code" -------------
+
+	if paramValue := r.URL.Query().Get("code"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "code"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "code", r.URL.Query(), &params.Code)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "code", Err: err})
+		return
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1AuthRefresh(w, r, params)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// V1AuthSignIn operation middleware
+func (siw *ServerInterfaceWrapper) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1AuthSignIn(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// V1AuthSignOut operation middleware
+func (siw *ServerInterfaceWrapper) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, CookieAuthScopes, []string{""})
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1AuthSignOut(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// V1AuthSignUp operation middleware
+func (siw *ServerInterfaceWrapper) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1AuthSignUp(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// V1AuthVerify operation middleware
+func (siw *ServerInterfaceWrapper) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, CookieAuthScopes, []string{""})
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1AuthVerify(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // V1Health operation middleware
 func (siw *ServerInterfaceWrapper) V1Health(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.V1Health(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// V1Sign operation middleware
+func (siw *ServerInterfaceWrapper) V1Sign(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params V1SignParams
+
+	// ------------- Required query parameter "code" -------------
+
+	if paramValue := r.URL.Query().Get("code"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "code"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "code", r.URL.Query(), &params.Code)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "code", Err: err})
+		return
+	}
+
+	// ------------- Required query parameter "signature" -------------
+
+	if paramValue := r.URL.Query().Get("signature"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "signature"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "signature", r.URL.Query(), &params.Signature)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "signature", Err: err})
+		return
+	}
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1Sign(w, r, params)
 	})
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -205,7 +395,28 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/v1/article", wrapper.V1ListArticles)
 	})
 	r.Group(func(r chi.Router) {
+		r.Delete(options.BaseURL+"/v1/auth", wrapper.V1AuthResign)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/auth/refresh", wrapper.V1AuthRefresh)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth/signin", wrapper.V1AuthSignIn)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth/signout", wrapper.V1AuthSignOut)
+	})
+	r.Group(func(r chi.Router) {
+		r.Post(options.BaseURL+"/v1/auth/signup", wrapper.V1AuthSignUp)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/auth/verify", wrapper.V1AuthVerify)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/health", wrapper.V1Health)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/sign", wrapper.V1Sign)
 	})
 
 	return r

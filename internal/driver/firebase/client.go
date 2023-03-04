@@ -194,7 +194,7 @@ func (f *Client) RefreshToken(ctx context.Context, refresh string) (string, erro
 		return "", err
 	}
 
-	return response.IDToken, nil
+	return response.RefreshToken, nil
 }
 
 func (f *Client) ChangePassword(ctx context.Context, uid, password string) error {
