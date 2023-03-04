@@ -21,6 +21,16 @@ type Auth struct {
 	signUp port.APIAuthSignUp
 }
 
+func NewAuth(
+	signIn port.APIAuthSignIn,
+	signUp port.APIAuthSignUp,
+) *Auth {
+	return &Auth{
+		signIn: signIn,
+		signUp: signUp,
+	}
+}
+
 type API struct {
 	auth     *Auth
 	client   *Client

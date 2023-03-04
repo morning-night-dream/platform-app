@@ -151,6 +151,35 @@ paths:
           description: OK
         '401':
           description: Unauthorized
+  /v1/auth:
+    delete:
+      tags:
+        - auth
+      summary: リサイン(退会)
+      description: リサイン(退会)
+      operationId: v1AuthResign
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        description: リサインリクエストボディ
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: パスワード
+                  format: password
+                  example: password
+              required:
+                - password
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
   /v1/sign:
       get:
         deprecated: true

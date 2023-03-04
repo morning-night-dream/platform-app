@@ -11,17 +11,17 @@ import (
 	authv1 "github.com/morning-night-dream/platform-app/pkg/connect/auth/v1"
 )
 
-type User struct {
+type CoreUser struct {
 	EMail    string
 	Password string
 	Cookie   string
 	Client   *ConnectClient
 }
 
-func NewUser(
+func NewCoreUser(
 	t *testing.T,
 	url string,
-) User {
+) CoreUser {
 	t.Helper()
 
 	ctx := context.Background()
@@ -53,7 +53,7 @@ func NewUser(
 
 	cookie := res.Header().Get("Set-Cookie")
 
-	return User{
+	return CoreUser{
 		EMail:    email,
 		Password: password,
 		Cookie:   cookie,
@@ -61,7 +61,7 @@ func NewUser(
 	}
 }
 
-func (u User) ChangePassword(t *testing.T, password string) User {
+func (u CoreUser) ChangePassword(t *testing.T, password string) CoreUser {
 	t.Helper()
 
 	req := &authv1.ChangePasswordRequest{
@@ -74,7 +74,7 @@ func (u User) ChangePassword(t *testing.T, password string) User {
 		t.Fatalf("failed to change password: %v", err)
 	}
 
-	return User{
+	return CoreUser{
 		EMail:    u.EMail,
 		Password: password,
 		Cookie:   u.Cookie,
@@ -82,7 +82,7 @@ func (u User) ChangePassword(t *testing.T, password string) User {
 	}
 }
 
-func (u User) Delete(t *testing.T) {
+func (u CoreUser) Delete(t *testing.T) {
 	t.Helper()
 
 	req := &authv1.DeleteRequest{

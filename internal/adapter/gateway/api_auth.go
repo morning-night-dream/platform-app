@@ -17,6 +17,14 @@ type APIAuth struct {
 	firebase *firebase.Client
 }
 
+func NewAPIAuth(
+	firebase *firebase.Client,
+) *APIAuth {
+	return &APIAuth{
+		firebase: firebase,
+	}
+}
+
 func (aa *APIAuth) SignUp(ctx context.Context, uid model.UserID, email model.EMail, password model.Password) error {
 	if err := aa.firebase.CreateUser(ctx, string(uid), string(email), string(password)); err != nil {
 		return err

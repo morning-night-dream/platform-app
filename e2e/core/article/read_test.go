@@ -30,7 +30,7 @@ func TestE2EArticleRead(t *testing.T) {
 
 		adb.BulkInsert(ids)
 
-		user := helper.NewUser(t, url)
+		user := helper.NewCoreUser(t, url)
 
 		defer func() {
 			user.Delete(t)

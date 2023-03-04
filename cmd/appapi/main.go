@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/morning-night-dream/platform-app/internal/adapter/api"
+	"github.com/morning-night-dream/platform-app/internal/adapter/gateway"
 	"github.com/morning-night-dream/platform-app/internal/driver/client"
 	"github.com/morning-night-dream/platform-app/internal/driver/config"
 	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
@@ -11,6 +12,7 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/driver/server"
 	"github.com/morning-night-dream/platform-app/internal/driver/store"
 	"github.com/morning-night-dream/platform-app/internal/driver/user"
+	"github.com/morning-night-dream/platform-app/internal/usecase/interactor"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
@@ -22,7 +24,14 @@ func main() {
 
 	fb := firebase.NewClient(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
 
-	auth := &api.Auth{}
+	sessionRepo := gateway.NewAPISession()
+
+	authRepo := gateway.NewAPIAuth(fb)
+
+	auth := api.NewAuth(
+		interactor.NewAPIAuthSignIn(authRepo, sessionRepo),
+		interactor.NewAPIAuthSignUp(authRepo, sessionRepo),
+	)
 
 	ap := api.New(auth, c, store.New(), fb, public.New(), user.New())
 
