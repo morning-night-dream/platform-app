@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package version.v1;
+
+option go_package = "github.com/morning-night-dream/platform-app/pkg/connect/version/v1;versionv1";
+
+// バージョンサービス
+service VersionService {
+  // 確認
+  rpc Confirm(ConfirmRequest) returns (ConfirmResponse) {}
+}
+
+// 確認リクエスト
+message ConfirmRequest {}
+
+// 確認レスポンス
+message ConfirmResponse {
+  string version = 1;
+}

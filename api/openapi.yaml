@@ -21,6 +21,8 @@ tags:
     description: 記事
   - name: health
     description: ヘルスチェック
+  - name: version
+    description: バージョン
 paths:
   /v1/auth/signup:
     post:
@@ -248,6 +250,30 @@ paths:
       summary: ヘルスチェック
       description: ヘルスチェック
       operationId: v1Health
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+  /v1/version/api:
+    get:
+      tags:
+        - version
+      summary: APIバージョン
+      description: APIバージョン
+      operationId: v1APIVersion
+      responses:
+        200:
+          description: OK
+        500:
+          description: Internal Server Error
+  /v1/version/core:
+    get:
+      tags:
+        - version
+      summary: Coreバージョン
+      description: Coreバージョン
+      operationId: v1CoreVersion
       responses:
         200:
           description: OK

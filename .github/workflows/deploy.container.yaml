@@ -22,19 +22,22 @@ jobs:
           TAG=`date +%Y-%m-%d-%H-%M-%S`
           echo "TAG=${TAG}" >> $GITHUB_ENV
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
-      - name: Set up go
+      - name: Install gettext
+        run: sudo apt-get install gettext
+      - name: Setup go
         uses: actions/setup-go@v3
         with:
           go-version-file: go.mod
           cache: true
           cache-dependency-path: go.sum
-      - name: Set up ko
+      - name: Install ko
         run: go install github.com/google/ko@latest
       - name: Docker login
         run: ko login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }} index.docker.io
       - name: Build and push app api container
         working-directory: ./cmd/appapi
         run: |
+          envsubst '$$TAG' < .ko.yaml > .ko.yaml
           IMAGE_NAME=platform-app-api
           KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
           SOURCE_DATE_EPOCH=$(date +%s) \
@@ -42,6 +45,7 @@ jobs:
       - name: Build and push app core container
         working-directory: ./cmd/appcore
         run: |
+          envsubst '$$TAG' < .ko.yaml > .ko.yaml
           IMAGE_NAME=platform-app-core
           KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
           SOURCE_DATE_EPOCH=$(date +%s) \

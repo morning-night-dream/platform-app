@@ -10,6 +10,8 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/driver/server"
 )
 
+var version string
+
 func main() {
 	db := database.NewClient(config.Core.DSN)
 
@@ -27,7 +29,9 @@ func main() {
 
 	auh := handler.NewAuth(handle)
 
-	ch := server.NewConnectHandler(hh, ah, auh)
+	vh := handler.NewVersion(version)
+
+	ch := server.NewConnectHandler(hh, ah, auh, vh)
 
 	srv := server.NewHTTPServer(ch)
 

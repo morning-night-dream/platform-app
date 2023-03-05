@@ -16,6 +16,8 @@ import (
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
+var version string
+
 func main() {
 	c, err := client.New().Of(config.Gateway.AppCoreURL)
 	if err != nil {
@@ -33,7 +35,7 @@ func main() {
 		interactor.NewAPIAuthSignUp(authRepo, sessionRepo),
 	)
 
-	ap := api.New(auth, c, store.New(), fb, public.New(), user.New())
+	ap := api.New(version, auth, c, store.New(), fb, public.New(), user.New())
 
 	router := chi.NewRouter()
 

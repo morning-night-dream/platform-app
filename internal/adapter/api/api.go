@@ -32,6 +32,7 @@ func NewAuth(
 }
 
 type API struct {
+	version  string
 	auth     *Auth
 	client   *Client
 	store    *store.Store
@@ -41,6 +42,7 @@ type API struct {
 }
 
 func New(
+	version string,
 	auth *Auth,
 	client *Client,
 	store *store.Store,
@@ -49,6 +51,7 @@ func New(
 	user *user.User,
 ) *API {
 	return &API{
+		version:  version,
 		auth:     auth,
 		client:   client,
 		store:    store,
