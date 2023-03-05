@@ -15,5 +15,5 @@ message ConfirmRequest {}
 
 // 確認レスポンス
 message ConfirmResponse {
-    string version = 1;
+  string version = 1;
 }
