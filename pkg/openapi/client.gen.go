@@ -121,6 +121,12 @@ type ClientInterface interface {
 
 	// V1Sign request
 	V1Sign(ctx context.Context, params *V1SignParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// V1APIVersion request
+	V1APIVersion(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// V1CoreVersion request
+	V1CoreVersion(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) V1ListArticles(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -257,6 +263,30 @@ func (c *Client) V1Health(ctx context.Context, reqEditors ...RequestEditorFn) (*
 
 func (c *Client) V1Sign(ctx context.Context, params *V1SignParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewV1SignRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) V1APIVersion(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewV1APIVersionRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) V1CoreVersion(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewV1CoreVersionRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -625,6 +655,60 @@ func NewV1SignRequest(server string, params *V1SignParams) (*http.Request, error
 	return req, nil
 }
 
+// NewV1APIVersionRequest generates requests for V1APIVersion
+func NewV1APIVersionRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/version/api")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewV1CoreVersionRequest generates requests for V1CoreVersion
+func NewV1CoreVersionRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/version/core")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -700,6 +784,12 @@ type ClientWithResponsesInterface interface {
 
 	// V1Sign request
 	V1SignWithResponse(ctx context.Context, params *V1SignParams, reqEditors ...RequestEditorFn) (*V1SignResponse, error)
+
+	// V1APIVersion request
+	V1APIVersionWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1APIVersionResponse, error)
+
+	// V1CoreVersion request
+	V1CoreVersionWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1CoreVersionResponse, error)
 }
 
 type V1ListArticlesResponse struct {
@@ -893,6 +983,48 @@ func (r V1SignResponse) StatusCode() int {
 	return 0
 }
 
+type V1APIVersionResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r V1APIVersionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r V1APIVersionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type V1CoreVersionResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+}
+
+// Status returns HTTPResponse.Status
+func (r V1CoreVersionResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r V1CoreVersionResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // V1ListArticlesWithResponse request returning *V1ListArticlesResponse
 func (c *ClientWithResponses) V1ListArticlesWithResponse(ctx context.Context, params *V1ListArticlesParams, reqEditors ...RequestEditorFn) (*V1ListArticlesResponse, error) {
 	rsp, err := c.V1ListArticles(ctx, params, reqEditors...)
@@ -996,6 +1128,24 @@ func (c *ClientWithResponses) V1SignWithResponse(ctx context.Context, params *V1
 		return nil, err
 	}
 	return ParseV1SignResponse(rsp)
+}
+
+// V1APIVersionWithResponse request returning *V1APIVersionResponse
+func (c *ClientWithResponses) V1APIVersionWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1APIVersionResponse, error) {
+	rsp, err := c.V1APIVersion(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseV1APIVersionResponse(rsp)
+}
+
+// V1CoreVersionWithResponse request returning *V1CoreVersionResponse
+func (c *ClientWithResponses) V1CoreVersionWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*V1CoreVersionResponse, error) {
+	rsp, err := c.V1CoreVersion(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseV1CoreVersionResponse(rsp)
 }
 
 // ParseV1ListArticlesResponse parses an HTTP response from a V1ListArticlesWithResponse call
@@ -1155,6 +1305,38 @@ func ParseV1SignResponse(rsp *http.Response) (*V1SignResponse, error) {
 	}
 
 	response := &V1SignResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseV1APIVersionResponse parses an HTTP response from a V1APIVersionWithResponse call
+func ParseV1APIVersionResponse(rsp *http.Response) (*V1APIVersionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &V1APIVersionResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}
+
+// ParseV1CoreVersionResponse parses an HTTP response from a V1CoreVersionWithResponse call
+func ParseV1CoreVersionResponse(rsp *http.Response) (*V1CoreVersionResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &V1CoreVersionResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
 	}

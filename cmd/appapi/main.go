@@ -33,7 +33,7 @@ func main() {
 		interactor.NewAPIAuthSignUp(authRepo, sessionRepo),
 	)
 
-	ap := api.New(auth, c, store.New(), fb, public.New(), user.New())
+	ap := api.New("api", auth, c, store.New(), fb, public.New(), user.New())
 
 	router := chi.NewRouter()
 

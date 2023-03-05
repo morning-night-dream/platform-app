@@ -13,7 +13,7 @@ func NewHealth() *Health {
 	return &Health{}
 }
 
-func (h Health) Check(
+func (h *Health) Check(
 	ctx context.Context,
 	req *connect.Request[healthv1.CheckRequest],
 ) (*connect.Response[healthv1.CheckResponse], error) {

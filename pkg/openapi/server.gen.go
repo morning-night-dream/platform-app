@@ -41,6 +41,12 @@ type ServerInterface interface {
 	// 署名検証
 	// (GET /v1/sign)
 	V1Sign(w http.ResponseWriter, r *http.Request, params V1SignParams)
+	// APIバージョン
+	// (GET /v1/version/api)
+	V1APIVersion(w http.ResponseWriter, r *http.Request)
+	// Coreバージョン
+	// (GET /v1/version/core)
+	V1CoreVersion(w http.ResponseWriter, r *http.Request)
 }
 
 // ServerInterfaceWrapper converts contexts to parameters.
@@ -278,6 +284,36 @@ func (siw *ServerInterfaceWrapper) V1Sign(w http.ResponseWriter, r *http.Request
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// V1APIVersion operation middleware
+func (siw *ServerInterfaceWrapper) V1APIVersion(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1APIVersion(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// V1CoreVersion operation middleware
+func (siw *ServerInterfaceWrapper) V1CoreVersion(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.V1CoreVersion(w, r)
+	})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 type UnescapedCookieParamError struct {
 	ParamName string
 	Err       error
@@ -417,6 +453,12 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 	})
 	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/v1/sign", wrapper.V1Sign)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/version/api", wrapper.V1APIVersion)
+	})
+	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/v1/version/core", wrapper.V1CoreVersion)
 	})
 
 	return r

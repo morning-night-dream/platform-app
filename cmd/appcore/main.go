@@ -27,7 +27,9 @@ func main() {
 
 	auh := handler.NewAuth(handle)
 
-	ch := server.NewConnectHandler(hh, ah, auh)
+	vh := handler.NewVersion("core")
+
+	ch := server.NewConnectHandler(hh, ah, auh, vh)
 
 	srv := server.NewHTTPServer(ch)
 
