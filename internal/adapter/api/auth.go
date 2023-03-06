@@ -223,17 +223,18 @@ func (api *API) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 // (GET /v1/auth/verify).
-func (api API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
+func (api *API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
 
-	uidToken, err := r.Cookie(model.UIDKey)
+	sidToken, err := r.Cookie(model.SIDKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusUnauthorized)
 
+		// sessin が存在しないのでcodeは生成しない
 		rs := openapi.UnauthorizedResponse{}
 
 		if err := json.NewEncoder(w).Encode(rs); err != nil {
@@ -243,13 +244,29 @@ func (api API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sidToken, err := r.Cookie(model.SIDKey)
+	uidToken, err := r.Cookie(model.UIDKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
+		// TODO 共通化
+		input := port.APIAuthGenerateCodeInput{
+			SessionToken: model.SessionToken(sidToken.Value),
+		}
+
+		output, err := api.auth.code.Execute(ctx, input)
+		if err != nil {
+			log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
+
+			w.WriteHeader(http.StatusInternalServerError)
+
+			return
+		}
+
 		w.WriteHeader(http.StatusUnauthorized)
 
-		rs := openapi.UnauthorizedResponse{}
+		rs := openapi.UnauthorizedResponse{
+			Code: uuid.MustParse(string(output.CodeID)),
+		}
 
 		if err := json.NewEncoder(w).Encode(rs); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -266,7 +283,29 @@ func (api API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 	if _, err := api.auth.verify.Execute(ctx, input); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
 
-		w.WriteHeader(http.StatusInternalServerError)
+		// TODO 共通化
+		input := port.APIAuthGenerateCodeInput{
+			SessionToken: model.SessionToken(sidToken.Value),
+		}
+
+		output, err := api.auth.code.Execute(ctx, input)
+		if err != nil {
+			log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
+
+			w.WriteHeader(http.StatusInternalServerError)
+
+			return
+		}
+
+		w.WriteHeader(http.StatusUnauthorized)
+
+		rs := openapi.UnauthorizedResponse{
+			Code: uuid.MustParse(string(output.CodeID)),
+		}
+
+		if err := json.NewEncoder(w).Encode(rs); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 
 		return
 	}
