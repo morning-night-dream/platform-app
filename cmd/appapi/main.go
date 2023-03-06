@@ -26,15 +26,16 @@ func main() {
 
 	fb := firebase.NewClient(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
 
+	authRepo := gateway.NewAPIAuth(fb)
+
 	sessionRepo := gateway.NewAPISession()
 
 	codeRepo := gateway.NewAPICode()
 
-	authRepo := gateway.NewAPIAuth(fb)
-
 	auth := api.NewAuth(
 		interactor.NewAPIAuthSignIn(authRepo, sessionRepo),
 		interactor.NewAPIAuthSignUp(authRepo, sessionRepo),
+		interactor.NewAPIAuthVerify(authRepo),
 		interactor.NewAPIAuthRefresh(authRepo, sessionRepo, codeRepo),
 	)
 

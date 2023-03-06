@@ -33,6 +33,10 @@ type Auth struct {
 	Expires      time.Time      `json:"expires"`
 }
 
+func (auth Auth) Verify() error {
+	return nil
+}
+
 type uidCtxKey struct{}
 
 func SetUIDCtx(ctx context.Context, uid string) context.Context {

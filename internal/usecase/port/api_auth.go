@@ -58,6 +58,8 @@ type APIAuthRefresh interface {
 
 type APIAuthVerifyInput struct {
 	usecase.Input
+	model.IDToken
+	model.SessionToken
 }
 
 type APIAuthVerifyOutput struct {

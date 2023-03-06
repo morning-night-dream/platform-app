@@ -19,17 +19,20 @@ var _ openapi.ServerInterface = (*API)(nil)
 type Auth struct {
 	signIn  port.APIAuthSignIn
 	signUp  port.APIAuthSignUp
+	verify  port.APIAuthVerify
 	refresh port.APIAuthRefresh
 }
 
 func NewAuth(
 	signIn port.APIAuthSignIn,
 	signUp port.APIAuthSignUp,
+	verify port.APIAuthVerify,
 	refresh port.APIAuthRefresh,
 ) *Auth {
 	return &Auth{
 		signIn:  signIn,
 		signUp:  signUp,
+		verify:  verify,
 		refresh: refresh,
 	}
 }

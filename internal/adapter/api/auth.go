@@ -258,34 +258,18 @@ func (api API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sid, err := model.GetID(sidToken.Value, "secret")
-	if err != nil {
-		log.GetLogCtx(ctx).Warn("failed to get sid", log.ErrorField(err))
+	input := port.APIAuthVerifyInput{
+		IDToken:      model.IDToken(uidToken.Value),
+		SessionToken: model.SessionToken(sidToken.Value),
+	}
+
+	if _, err := api.auth.verify.Execute(ctx, input); err != nil {
+		log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusInternalServerError)
 
 		return
 	}
-
-	uid, err := model.GetID(uidToken.Value, sid)
-	if err != nil {
-		log.GetLogCtx(ctx).Warn("failed to get uid", log.ErrorField(err))
-
-		w.WriteHeader(http.StatusInternalServerError)
-
-		return
-	}
-
-	auth, err := api.store.Get(ctx, uid)
-	if err != nil {
-		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
-
-		w.WriteHeader(http.StatusUnauthorized)
-
-		return
-	}
-
-	log.GetLogCtx(ctx).Info(fmt.Sprintf("expires: %s", auth.Expires))
 }
 
 func (*API) V1AuthResign(w http.ResponseWriter, r *http.Request) {
