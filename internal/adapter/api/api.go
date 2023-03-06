@@ -21,6 +21,7 @@ type Auth struct {
 	signUp  port.APIAuthSignUp
 	verify  port.APIAuthVerify
 	refresh port.APIAuthRefresh
+	code    port.APIAuthGenerateCode
 }
 
 func NewAuth(
@@ -28,12 +29,14 @@ func NewAuth(
 	signUp port.APIAuthSignUp,
 	verify port.APIAuthVerify,
 	refresh port.APIAuthRefresh,
+	code port.APIAuthGenerateCode,
 ) *Auth {
 	return &Auth{
 		signIn:  signIn,
 		signUp:  signUp,
 		verify:  verify,
 		refresh: refresh,
+		code:    code,
 	}
 }
 

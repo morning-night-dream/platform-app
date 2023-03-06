@@ -37,6 +37,7 @@ func main() {
 		interactor.NewAPIAuthSignUp(authRepo, sessionRepo),
 		interactor.NewAPIAuthVerify(authRepo),
 		interactor.NewAPIAuthRefresh(authRepo, sessionRepo, codeRepo),
+		interactor.NewAPIAuthGenerateCode(codeRepo),
 	)
 
 	ap := api.New(version, auth, c, store.New(), fb, public.New(), user.New())

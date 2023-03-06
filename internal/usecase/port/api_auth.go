@@ -81,3 +81,15 @@ type APIAuthSignOutOutput struct {
 type APIAuthSignOut interface {
 	usecase.Usecase[APIAuthSignOutInput, APIAuthSignOutOutput]
 }
+
+type APIAuthGenerateCodeInput struct {
+	model.SessionToken
+}
+
+type APIAuthGenerateCodeOutput struct {
+	model.CodeID
+}
+
+type APIAuthGenerateCode interface {
+	usecase.Usecase[APIAuthGenerateCodeInput, APIAuthGenerateCodeOutput]
+}
