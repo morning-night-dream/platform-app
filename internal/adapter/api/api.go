@@ -17,17 +17,20 @@ import (
 var _ openapi.ServerInterface = (*API)(nil)
 
 type Auth struct {
-	signIn port.APIAuthSignIn
-	signUp port.APIAuthSignUp
+	signIn  port.APIAuthSignIn
+	signUp  port.APIAuthSignUp
+	refresh port.APIAuthRefresh
 }
 
 func NewAuth(
 	signIn port.APIAuthSignIn,
 	signUp port.APIAuthSignUp,
+	refresh port.APIAuthRefresh,
 ) *Auth {
 	return &Auth{
-		signIn: signIn,
-		signUp: signUp,
+		signIn:  signIn,
+		signUp:  signUp,
+		refresh: refresh,
 	}
 }
 

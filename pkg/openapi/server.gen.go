@@ -144,6 +144,21 @@ func (siw *ServerInterfaceWrapper) V1AuthRefresh(w http.ResponseWriter, r *http.
 		return
 	}
 
+	// ------------- Required query parameter "signature" -------------
+
+	if paramValue := r.URL.Query().Get("signature"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "signature"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "signature", r.URL.Query(), &params.Signature)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "signature", Err: err})
+		return
+	}
+
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.V1AuthRefresh(w, r, params)
 	})

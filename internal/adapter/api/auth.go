@@ -19,6 +19,32 @@ import (
 // (GET /v1/auth/refresh).
 func (api *API) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params openapi.V1AuthRefreshParams) {
 	// リフレッシュに失敗したらキャッシュトークンは削除する
+	ctx := r.Context()
+
+	input := port.APIAuthRefreshInput{
+		CodeID:       "",
+		SessionToken: "",
+	}
+
+	output, err := api.auth.refresh.Execute(ctx, input)
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     model.UIDKey,
+		Value:    string(output.UserToken),
+		Expires:  time.Now().Add(60 * time.Second),
+		Secure:   false,
+		HttpOnly: true,
+		Path:     "/",
+	})
+
+	_, _ = w.Write([]byte("OK"))
 }
 
 // (POST /v1/auth/signin).

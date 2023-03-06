@@ -40,6 +40,22 @@ type APIAuthSignIn interface {
 	usecase.Usecase[APIAuthSignInInput, APIAuthSignInOutput]
 }
 
+type APIAuthRefreshInput struct {
+	usecase.Input
+	model.CodeID
+	model.Signature
+	model.SessionToken
+}
+
+type APIAuthRefreshOutput struct {
+	usecase.Output
+	model.UserToken
+}
+
+type APIAuthRefresh interface {
+	usecase.Usecase[APIAuthRefreshInput, APIAuthRefreshOutput]
+}
+
 type APIAuthVerifyInput struct {
 	usecase.Input
 }

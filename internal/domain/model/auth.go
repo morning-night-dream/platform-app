@@ -14,6 +14,15 @@ type IDToken string
 
 type RefreshToken string
 
+type CodeID string
+
+type Code struct {
+	CodeID    CodeID
+	SessionID SessionID
+}
+
+type Signature string
+
 type Auth struct {
 	ID           string         `json:"id"`
 	UserID       UserID         `json:"userId"`

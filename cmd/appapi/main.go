@@ -28,11 +28,14 @@ func main() {
 
 	sessionRepo := gateway.NewAPISession()
 
+	codeRepo := gateway.NewAPICode()
+
 	authRepo := gateway.NewAPIAuth(fb)
 
 	auth := api.NewAuth(
 		interactor.NewAPIAuthSignIn(authRepo, sessionRepo),
 		interactor.NewAPIAuthSignUp(authRepo, sessionRepo),
+		interactor.NewAPIAuthRefresh(authRepo, sessionRepo, codeRepo),
 	)
 
 	ap := api.New(version, auth, c, store.New(), fb, public.New(), user.New())

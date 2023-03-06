@@ -65,6 +65,9 @@ type V1AuthResignJSONBody struct {
 type V1AuthRefreshParams struct {
 	// Code 署名付きコード
 	Code string `form:"code" json:"code"`
+
+	// Signature 署名
+	Signature string `form:"signature" json:"signature"`
 }
 
 // V1AuthSignInJSONBody defines parameters for V1AuthSignIn.
