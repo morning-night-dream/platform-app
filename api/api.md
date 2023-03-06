@@ -150,6 +150,7 @@ cookieAuth
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
 |code|query|string|true|署名付きコード|
+|signature|query|string|true|署名|
 
 <h3 id="v1authrefresh-responses">Responses</h3>
 
@@ -319,6 +320,52 @@ This operation does not require authentication
 ヘルスチェック
 
 <h3 id="v1health-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal Server Error|None|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+<h1 id="morning-night-dream-appgateway-version">version</h1>
+
+バージョン
+
+## v1APIVersion
+
+<a id="opIdv1APIVersion"></a>
+
+`GET /v1/version/api`
+
+*APIバージョン*
+
+APIバージョン
+
+<h3 id="v1apiversion-responses">Responses</h3>
+
+|Status|Meaning|Description|Schema|
+|---|---|---|---|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal Server Error|None|
+
+<aside class="success">
+This operation does not require authentication
+</aside>
+
+## v1CoreVersion
+
+<a id="opIdv1CoreVersion"></a>
+
+`GET /v1/version/core`
+
+*Coreバージョン*
+
+Coreバージョン
+
+<h3 id="v1coreversion-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|

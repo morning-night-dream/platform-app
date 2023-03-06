@@ -40,6 +40,12 @@
   
     - [HealthService](#health-v1-HealthService)
   
+- [proto/version/v1/version.proto](#proto_version_v1_version-proto)
+    - [ConfirmRequest](#version-v1-ConfirmRequest)
+    - [ConfirmResponse](#version-v1-ConfirmResponse)
+  
+    - [VersionService](#version-v1-VersionService)
+  
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -457,6 +463,57 @@
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | Check | [CheckRequest](#health-v1-CheckRequest) | [CheckResponse](#health-v1-CheckResponse) | チェック |
+
+ 
+
+
+
+<a name="proto_version_v1_version-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## proto/version/v1/version.proto
+
+
+
+<a name="version-v1-ConfirmRequest"></a>
+
+### ConfirmRequest
+確認リクエスト
+
+
+
+
+
+
+<a name="version-v1-ConfirmResponse"></a>
+
+### ConfirmResponse
+確認レスポンス
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| version | [string](#string) |  |  |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+<a name="version-v1-VersionService"></a>
+
+### VersionService
+バージョンサービス
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| Confirm | [ConfirmRequest](#version-v1-ConfirmRequest) | [ConfirmResponse](#version-v1-ConfirmResponse) | 確認 |
 
  
 
