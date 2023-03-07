@@ -1,0 +1,45 @@
+name: auto go mod
+run-name: ${{ github.ref_name }} by @${{ github.actor }} ${{ github.workflow }}
+on:
+  pull_request:
+    types:
+      - opened
+jobs:
+  mod:
+    runs-on: ubuntu-latest
+    if: "startsWith( github.head_ref , 'renovate')"
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.BOT_GITHUB_APP_ID }}
+          private_key: ${{ secrets.BOT_GITHUB_APP_PRIVATE_KEY }}
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${steps.generate-token.outputs.token}
+      - name: Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: go.mod
+      - name:  Go mod tidy
+        run: go mod tidy
+      - name: Go mod vendor
+        run: go mod vendor
+      - name: Git commit and push
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --porcelain;
+            msg=$(git log -1 --pretty=format:"%s")
+            name=$(git log -1 --pretty=format:"%an")
+            email=$(git log -1 --pretty=format:"%ae")
+            git config --global credential.helper 'github-apps -privatekey ${{ secrets.MY_GITHUB_APP_PRIVATE_KEY }} -appid ${{ secrets.MY_GITHUB_APP_ID }} -login ${{ github.repository_owner }}'
+            git config user.name ${name}
+            git config user.email ${email}
+            git add .
+            git commit -m "${msg}"
+            git push
+          else
+            echo "no changes";
+          fi
