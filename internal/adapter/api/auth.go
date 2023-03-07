@@ -21,9 +21,26 @@ func (api *API) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params ope
 	// リフレッシュに失敗したらキャッシュトークンは削除する
 	ctx := r.Context()
 
+	sidToken, err := r.Cookie(model.SIDKey)
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusUnauthorized)
+
+		// sessin が存在しないのでcodeは生成しない
+		rs := openapi.UnauthorizedResponse{}
+
+		if err := json.NewEncoder(w).Encode(rs); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+
+		return
+	}
+
 	input := port.APIAuthRefreshInput{
-		CodeID:       "",
-		SessionToken: "",
+		CodeID:       model.CodeID(params.Code),
+		Signature:    model.Signature(params.Signature),
+		SessionToken: model.SessionToken(sidToken.Value),
 	}
 
 	output, err := api.auth.refresh.Execute(ctx, input)
