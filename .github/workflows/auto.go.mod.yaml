@@ -30,7 +30,7 @@ jobs:
       - name: Git commit and push
         run: |
           if [ -n "$(git status --porcelain)" ]; then
-            git status --porcelain;
+            git status --porcelain
             msg=$(git log -1 --pretty=format:"%s")
             name=$(git log -1 --pretty=format:"%an")
             email=$(git log -1 --pretty=format:"%ae")
@@ -39,7 +39,7 @@ jobs:
             git config user.email ${email}
             git add .
             git commit -m "${msg}"
-            git push
+            git push origin ${{ github.head_ref }}
           else
             echo "no changes";
           fi
