@@ -174,28 +174,40 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write([]byte("OK"))
 }
 
-// (POST /v1/auth/signout).
+// (GET /v1/auth/signout).
 func (api *API) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
+	sidToken, _ := r.Cookie(model.SIDKey)
 
-	uid, err := r.Cookie(model.UIDKey)
-	if err != nil {
-		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
+	uidToken, _ := r.Cookie(model.UIDKey)
 
-		w.WriteHeader(http.StatusUnauthorized)
-
-		return
+	input := port.APIAuthSignOutInput{
+		IDToken:      model.IDToken(uidToken.Value),
+		SessionToken: model.SessionToken(sidToken.Value),
 	}
 
-	if err := api.store.Delete(ctx, uid.Value); err != nil {
-		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
+	_, _ = api.auth.signOut.Execute(ctx, input)
 
-		w.WriteHeader(http.StatusInternalServerError)
+	http.SetCookie(w, &http.Cookie{
+		Name:     model.UIDKey,
+		Value:    "",
+		MaxAge:   -1,
+		Secure:   false,
+		HttpOnly: true,
+		Path:     "/",
+	})
 
-		return
-	}
+	http.SetCookie(w, &http.Cookie{
+		Name:     model.SIDKey,
+		Value:    "",
+		MaxAge:   -1,
+		Secure:   false,
+		HttpOnly: true,
+		Path:     "/",
+	})
+
+	_, _ = w.Write([]byte("OK"))
 }
 
 // (POST /v1/auth/signup).

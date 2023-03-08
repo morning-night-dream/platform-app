@@ -147,7 +147,7 @@ paths:
         '401':
           description: Unauthorized
   /v1/auth/signout:
-    post:
+    get:
       tags:
         - auth
       summary: サインアウト

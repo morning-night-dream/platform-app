@@ -27,7 +27,7 @@ type ServerInterface interface {
 	// (POST /v1/auth/signin)
 	V1AuthSignIn(w http.ResponseWriter, r *http.Request)
 	// サインアウト
-	// (POST /v1/auth/signout)
+	// (GET /v1/auth/signout)
 	V1AuthSignOut(w http.ResponseWriter, r *http.Request)
 	// サインアップ
 	// (POST /v1/auth/signup)
@@ -455,7 +455,7 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Post(options.BaseURL+"/v1/auth/signin", wrapper.V1AuthSignIn)
 	})
 	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/v1/auth/signout", wrapper.V1AuthSignOut)
+		r.Get(options.BaseURL+"/v1/auth/signout", wrapper.V1AuthSignOut)
 	})
 	r.Group(func(r chi.Router) {
 		r.Post(options.BaseURL+"/v1/auth/signup", wrapper.V1AuthSignUp)
