@@ -114,7 +114,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UnauthorizedResponse'
+                $ref: '#/components/schemas/V1UnauthorizedResponse'
         '500':
           description: Internal Server Error
   /v1/auth/refresh:
@@ -147,7 +147,7 @@ paths:
         '401':
           description: Unauthorized
   /v1/auth/signout:
-    post:
+    get:
       tags:
         - auth
       summary: サインアウト
@@ -158,8 +158,6 @@ paths:
       responses:
         '200':
           description: OK
-        '401':
-          description: Unauthorized
   /v1/auth:
     delete:
       tags:
@@ -247,7 +245,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListArticleResponse'
+                $ref: '#/components/schemas/V1ListArticleResponse'
         500:
           description: サーバーエラー
   /v1/health:
@@ -324,7 +322,7 @@ components:
           items:
             type: string
             example: tag
-    ListArticleResponse:
+    V1ListArticleResponse:
       type: object
       properties:
         articles:
@@ -334,7 +332,7 @@ components:
         nextPageToken:
           type: string
           description: 次回リクエスト時に指定するページトークン
-    UnauthorizedResponse:
+    V1UnauthorizedResponse:
       type: object
       properties:
         code:

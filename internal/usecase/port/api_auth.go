@@ -72,6 +72,8 @@ type APIAuthVerify interface {
 
 type APIAuthSignOutInput struct {
 	usecase.Input
+	model.IDToken
+	model.SessionToken
 }
 
 type APIAuthSignOutOutput struct {

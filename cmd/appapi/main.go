@@ -34,6 +34,7 @@ func main() {
 
 	auth := api.NewAuth(
 		interactor.NewAPIAuthSignIn(authRepo, sessionRepo),
+		interactor.NewAPIAuthSignOut(authRepo, sessionRepo),
 		interactor.NewAPIAuthSignUp(authRepo, sessionRepo),
 		interactor.NewAPIAuthVerify(authRepo),
 		interactor.NewAPIAuthRefresh(authRepo, sessionRepo, codeRepo),

@@ -80,3 +80,97 @@ func (ct *CookiesTransport) RoundTrip(req *http.Request) (*http.Response, error)
 
 	return resp, err
 }
+
+type OnlyUIDCookieTransport struct {
+	T         *testing.T
+	Cookie    *http.Cookie
+	Transport http.RoundTripper
+}
+
+func NewOnlyUIDCookieTransport(
+	t *testing.T,
+	cookies []*http.Cookie,
+) *OnlyUIDCookieTransport {
+	t.Helper()
+
+	var cookie *http.Cookie
+
+	for _, c := range cookies {
+		if c.Name == "UID" {
+			cookie = c
+			break
+		}
+	}
+
+	return &OnlyUIDCookieTransport{
+		T:         t,
+		Cookie:    cookie,
+		Transport: http.DefaultTransport,
+	}
+}
+
+func (ct *OnlyUIDCookieTransport) transport() http.RoundTripper {
+	ct.T.Helper()
+
+	return ct.Transport
+}
+
+func (ct *OnlyUIDCookieTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	ct.T.Helper()
+
+	req.AddCookie(ct.Cookie)
+
+	resp, err := ct.transport().RoundTrip(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, err
+}
+
+type OnlySIDCookieTransport struct {
+	T         *testing.T
+	Cookie    *http.Cookie
+	Transport http.RoundTripper
+}
+
+func NewOnlySIDCookieTransport(
+	t *testing.T,
+	cookies []*http.Cookie,
+) *OnlySIDCookieTransport {
+	t.Helper()
+
+	var cookie *http.Cookie
+
+	for _, c := range cookies {
+		if c.Name == "SID" {
+			cookie = c
+			break
+		}
+	}
+
+	return &OnlySIDCookieTransport{
+		T:         t,
+		Cookie:    cookie,
+		Transport: http.DefaultTransport,
+	}
+}
+
+func (ct *OnlySIDCookieTransport) transport() http.RoundTripper {
+	ct.T.Helper()
+
+	return ct.Transport
+}
+
+func (ct *OnlySIDCookieTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	ct.T.Helper()
+
+	req.AddCookie(ct.Cookie)
+
+	resp, err := ct.transport().RoundTrip(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, err
+}

@@ -32,16 +32,16 @@ type Article struct {
 	Url *string `json:"url,omitempty"`
 }
 
-// ListArticleResponse defines model for ListArticleResponse.
-type ListArticleResponse struct {
+// V1ListArticleResponse defines model for V1ListArticleResponse.
+type V1ListArticleResponse struct {
 	Articles *[]Article `json:"articles,omitempty"`
 
 	// NextPageToken 次回リクエスト時に指定するページトークン
 	NextPageToken *string `json:"nextPageToken,omitempty"`
 }
 
-// UnauthorizedResponse defines model for UnauthorizedResponse.
-type UnauthorizedResponse struct {
+// V1UnauthorizedResponse defines model for V1UnauthorizedResponse.
+type V1UnauthorizedResponse struct {
 	// Code コード
 	Code openapi_types.UUID `json:"code"`
 }
