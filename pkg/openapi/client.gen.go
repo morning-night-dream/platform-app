@@ -807,7 +807,7 @@ type ClientWithResponsesInterface interface {
 type V1ListArticlesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListArticleResponse
+	JSON200      *V1ListArticleResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -934,7 +934,7 @@ func (r V1AuthSignUpResponse) StatusCode() int {
 type V1AuthVerifyResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON401      *UnauthorizedResponse
+	JSON401      *V1UnauthorizedResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -1175,7 +1175,7 @@ func ParseV1ListArticlesResponse(rsp *http.Response) (*V1ListArticlesResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListArticleResponse
+		var dest V1ListArticleResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -1281,7 +1281,7 @@ func ParseV1AuthVerifyResponse(rsp *http.Response) (*V1AuthVerifyResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest UnauthorizedResponse
+		var dest V1UnauthorizedResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

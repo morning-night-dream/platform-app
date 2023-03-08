@@ -41,7 +41,7 @@ func TestAPIE2EArticleList(t *testing.T) {
 
 		body, _ := io.ReadAll(res.Body)
 
-		var article openapi.ListArticleResponse
+		var article openapi.V1ListArticleResponse
 		if err := json.Unmarshal(body, &article); err != nil {
 			t.Fatalf("failed marshal response: %s caused by %s", body, err)
 			return

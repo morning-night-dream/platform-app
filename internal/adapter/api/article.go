@@ -47,7 +47,7 @@ func (api API) V1ListArticles(w http.ResponseWriter, r *http.Request, params ope
 		}
 	}
 
-	rs := openapi.ListArticleResponse{
+	rs := openapi.V1ListArticleResponse{
 		Articles:      &articles,
 		NextPageToken: &res.Msg.NextPageToken,
 	}
