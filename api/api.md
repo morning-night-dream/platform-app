@@ -127,7 +127,7 @@ This operation does not require authentication
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|None|
 |302|[Found](https://tools.ietf.org/html/rfc7231#section-6.4.3)|Redirect|None|
-|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Unauthorized|[UnauthorizedResponse](#schemaunauthorizedresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Unauthorized|[V1UnauthorizedResponse](#schemav1unauthorizedresponse)|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal Server Error|None|
 
 <aside class="warning">
@@ -168,7 +168,7 @@ cookieAuth
 
 <a id="opIdv1AuthSignOut"></a>
 
-`POST /v1/auth/signout`
+`GET /v1/auth/signout`
 
 *サインアウト*
 
@@ -179,7 +179,6 @@ cookieAuth
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|None|
-|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Unauthorized|None|
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
@@ -298,7 +297,7 @@ List articles
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[ListArticleResponse](#schemalistarticleresponse)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[V1ListArticleResponse](#schemav1listarticleresponse)|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|サーバーエラー|None|
 
 <aside class="success">
@@ -410,12 +409,12 @@ This operation does not require authentication
 |thumbnail|string(uri)|false|none|サムネイルのURL|
 |tags|[string]|false|none|タグ|
 
-<h2 id="tocS_ListArticleResponse">ListArticleResponse</h2>
+<h2 id="tocS_V1ListArticleResponse">V1ListArticleResponse</h2>
 <!-- backwards compatibility -->
-<a id="schemalistarticleresponse"></a>
-<a id="schema_ListArticleResponse"></a>
-<a id="tocSlistarticleresponse"></a>
-<a id="tocslistarticleresponse"></a>
+<a id="schemav1listarticleresponse"></a>
+<a id="schema_V1ListArticleResponse"></a>
+<a id="tocSv1listarticleresponse"></a>
+<a id="tocsv1listarticleresponse"></a>
 
 ```json
 {
@@ -443,12 +442,12 @@ This operation does not require authentication
 |articles|[[Article](#schemaarticle)]|false|none|none|
 |nextPageToken|string|false|none|次回リクエスト時に指定するページトークン|
 
-<h2 id="tocS_UnauthorizedResponse">UnauthorizedResponse</h2>
+<h2 id="tocS_V1UnauthorizedResponse">V1UnauthorizedResponse</h2>
 <!-- backwards compatibility -->
-<a id="schemaunauthorizedresponse"></a>
-<a id="schema_UnauthorizedResponse"></a>
-<a id="tocSunauthorizedresponse"></a>
-<a id="tocsunauthorizedresponse"></a>
+<a id="schemav1unauthorizedresponse"></a>
+<a id="schema_V1UnauthorizedResponse"></a>
+<a id="tocSv1unauthorizedresponse"></a>
+<a id="tocsv1unauthorizedresponse"></a>
 
 ```json
 {
