@@ -70,7 +70,14 @@ func TestE2EAuthSighOut(t *testing.T) {
 			t.Fatalf("failed to auth sign out: %d", res.StatusCode)
 		}
 
-		// cookie の value と age を確認する
+		for _, cookie := range res.Cookies() {
+			if cookie.Value != "" {
+				t.Errorf("cookie[%s] value is not empty", cookie.Name)
+			}
+			if cookie.MaxAge != -1 {
+				t.Errorf("cookie[%s] max age is not -1", cookie.Name)
+			}
+		}
 
 		// Redis の中身が削除されていることを確認する
 	})
