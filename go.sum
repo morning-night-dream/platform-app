@@ -118,8 +118,6 @@ github.com/mattn/go-sqlite3 v1.14.16/go.mod h1:2eHXhiwb8IkHr+BDWZGa96P6+rkvnG63S
 github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 h1:DpOJ2HYzCv8LZP15IdmG+YdwD2luVPHITV96TkirNBM=
 github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7/go.mod h1:ZXFpozHsX6DPmq2I0TCekCxypsnAUbP2oI0UX1GXzOo=
 github.com/newrelic/go-agent/v3 v3.0.0/go.mod h1:H28zDNUC0U/b7kLoY4EFOhuth10Xu/9dchozUiOseQQ=
-github.com/newrelic/go-agent/v3 v3.20.3 h1:hUBAMq/Y2Y9as5/yxQbf0zNde/X7w58cWZkm2flZIaw=
-github.com/newrelic/go-agent/v3 v3.20.3/go.mod h1:rT6ZUxJc5rQbWLyCtjqQCOcfb01lKRFbc1yMQkcboWM=
 github.com/newrelic/go-agent/v3 v3.20.4 h1:fkxr0oUEYrPeXyfJC0D0BwDs1FYMe4NgUSqnzqPESI0=
 github.com/newrelic/go-agent/v3 v3.20.4/go.mod h1:rT6ZUxJc5rQbWLyCtjqQCOcfb01lKRFbc1yMQkcboWM=
 github.com/newrelic/go-agent/v3/integrations/nrzap v1.0.1 h1:TYEBVIQn/YHz5phND38DTdLvSDCyUEA5N62rNEA/43I=
