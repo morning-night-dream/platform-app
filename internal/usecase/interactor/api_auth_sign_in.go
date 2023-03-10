@@ -2,8 +2,10 @@ package interactor
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/morning-night-dream/platform-app/internal/domain/cache"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
 	"github.com/morning-night-dream/platform-app/internal/domain/repository"
 	"github.com/morning-night-dream/platform-app/internal/usecase/port"
@@ -11,17 +13,20 @@ import (
 )
 
 type APIAuthSignIn struct {
-	authRepository    repository.APIAuth
-	sessionRepository repository.APISession
+	authCache      cache.Cache[model.Auth]
+	authRepository repository.APIAuth
+	sessionCache   cache.Cache[model.Session]
 }
 
 func NewAPIAuthSignIn(
 	authRepository repository.APIAuth,
-	sessionRepository repository.APISession,
+	authCache cache.Cache[model.Auth],
+	sessionCache cache.Cache[model.Session],
 ) port.APIAuthSignIn {
 	return &APIAuthSignIn{
-		authRepository:    authRepository,
-		sessionRepository: sessionRepository,
+		authRepository: authRepository,
+		authCache:      authCache,
+		sessionCache:   sessionCache,
 	}
 }
 
@@ -43,13 +48,12 @@ func (aas *APIAuthSignIn) Execute(
 	}
 
 	// トランザクション必要か
-
-	if err := aas.sessionRepository.Save(ctx, session); err != nil {
+	if err := aas.sessionCache.Set(ctx, sid, session, 60*time.Second); err != nil {
 		return port.APIAuthSignInOutput{}, err
 	}
 
-	if err := aas.authRepository.Save(ctx, auth); err != nil {
-		if err := aas.sessionRepository.Delete(ctx, model.SessionID(sid)); err != nil {
+	if err := aas.authCache.Set(ctx, string(auth.UserID), auth, 60*time.Second); err != nil {
+		if err := aas.sessionCache.Del(ctx, sid); err != nil {
 			log.GetLogCtx(ctx).Warn("failed to delete session", log.ErrorField(err))
 		}
 

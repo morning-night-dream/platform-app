@@ -3,21 +3,21 @@ package interactor
 import (
 	"context"
 
+	"github.com/morning-night-dream/platform-app/internal/domain/cache"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
-	"github.com/morning-night-dream/platform-app/internal/domain/repository"
 	"github.com/morning-night-dream/platform-app/internal/usecase/port"
 	"github.com/morning-night-dream/platform-app/pkg/log"
 )
 
 type APIAuthVerify struct {
-	authRepository repository.APIAuth
+	authCache cache.Cache[model.Auth]
 }
 
 func NewAPIAuthVerify(
-	authRepository repository.APIAuth,
+	authCache cache.Cache[model.Auth],
 ) port.APIAuthVerify {
 	return &APIAuthVerify{
-		authRepository: authRepository,
+		authCache: authCache,
 	}
 }
 
@@ -40,7 +40,7 @@ func (aav *APIAuthVerify) Execute(
 		return port.APIAuthVerifyOutput{}, err
 	}
 
-	auth, err := aav.authRepository.Find(ctx, model.UserID(uid))
+	auth, err := aav.authCache.Get(ctx, uid)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to find auth", log.ErrorField(err))
 

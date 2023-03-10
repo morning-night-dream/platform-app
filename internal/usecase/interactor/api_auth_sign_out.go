@@ -3,24 +3,24 @@ package interactor
 import (
 	"context"
 
+	"github.com/morning-night-dream/platform-app/internal/domain/cache"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
-	"github.com/morning-night-dream/platform-app/internal/domain/repository"
 	"github.com/morning-night-dream/platform-app/internal/usecase/port"
 	"github.com/morning-night-dream/platform-app/pkg/log"
 )
 
 type APIAuthSignOut struct {
-	authRepository    repository.APIAuth
-	sessionRepository repository.APISession
+	authCache    cache.Cache[model.Auth]
+	sessionCache cache.Cache[model.Session]
 }
 
 func NewAPIAuthSignOut(
-	authRepository repository.APIAuth,
-	sessionRepository repository.APISession,
+	authCache cache.Cache[model.Auth],
+	sessionCache cache.Cache[model.Session],
 ) port.APIAuthSignOut {
 	return &APIAuthSignOut{
-		authRepository:    authRepository,
-		sessionRepository: sessionRepository,
+		authCache:    authCache,
+		sessionCache: sessionCache,
 	}
 }
 
@@ -44,11 +44,11 @@ func (aas *APIAuthSignOut) Execute(
 
 	// トランザクション必要か
 
-	if err := aas.sessionRepository.Delete(ctx, model.SessionID(sid)); err != nil {
+	if err := aas.sessionCache.Del(ctx, sid); err != nil {
 		return port.APIAuthSignOutOutput{}, err
 	}
 
-	if err := aas.authRepository.Delete(ctx, model.UserID(uid)); err != nil {
+	if err := aas.authCache.Del(ctx, uid); err != nil {
 		return port.APIAuthSignOutOutput{}, err
 	}
 

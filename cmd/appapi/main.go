@@ -5,10 +5,12 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/morning-night-dream/platform-app/internal/adapter/api"
 	"github.com/morning-night-dream/platform-app/internal/adapter/gateway"
+	"github.com/morning-night-dream/platform-app/internal/domain/model"
 	"github.com/morning-night-dream/platform-app/internal/driver/client"
 	"github.com/morning-night-dream/platform-app/internal/driver/config"
 	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
 	"github.com/morning-night-dream/platform-app/internal/driver/public"
+	"github.com/morning-night-dream/platform-app/internal/driver/redis"
 	"github.com/morning-night-dream/platform-app/internal/driver/server"
 	"github.com/morning-night-dream/platform-app/internal/driver/store"
 	"github.com/morning-night-dream/platform-app/internal/driver/user"
@@ -26,18 +28,33 @@ func main() {
 
 	fb := firebase.NewClient(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
 
-	authRepo := gateway.NewAPIAuth(fb)
+	rds := redis.NewRedis(config.Core.RedisURL)
 
-	sessionRepo := gateway.NewAPISession()
+	cache, err := redis.NewCache()
+	if err != nil {
+		panic(err)
+	}
+
+	authCache, err := redis.New[model.Auth]().Of(cache, rds)
+	if err != nil {
+		panic(err)
+	}
+
+	sessionCache, err := redis.New[model.Session]().Of(cache, rds)
+	if err != nil {
+		panic(err)
+	}
+
+	authRepo := gateway.NewAPIAuth(fb)
 
 	codeRepo := gateway.NewAPICode()
 
 	auth := api.NewAuth(
-		interactor.NewAPIAuthSignIn(authRepo, sessionRepo),
-		interactor.NewAPIAuthSignOut(authRepo, sessionRepo),
-		interactor.NewAPIAuthSignUp(authRepo, sessionRepo),
-		interactor.NewAPIAuthVerify(authRepo),
-		interactor.NewAPIAuthRefresh(authRepo, sessionRepo, codeRepo),
+		interactor.NewAPIAuthSignIn(authRepo, authCache, sessionCache),
+		interactor.NewAPIAuthSignOut(authCache, sessionCache),
+		interactor.NewAPIAuthSignUp(authRepo),
+		interactor.NewAPIAuthVerify(authCache),
+		interactor.NewAPIAuthRefresh(sessionCache, codeRepo),
 		interactor.NewAPIAuthGenerateCode(codeRepo),
 	)
 

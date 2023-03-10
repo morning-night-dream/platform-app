@@ -64,6 +64,7 @@ services:
     environment:
       APP_CORE_URL: http://core:8080
       ENV: ${ENV}
+      REDIS_URL: redis:6379
       FIREBASE_SECRET: '{"type": "service_account","project_id": "emulator"}'
       FIREBASE_API_ENDPOINT: http://firebase:9099/identitytoolkit.googleapis.com
       FIREBASE_API_KEY: emulator

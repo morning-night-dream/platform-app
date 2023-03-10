@@ -10,17 +10,14 @@ import (
 )
 
 type APIAuthSignUp struct {
-	authRepository    repository.APIAuth
-	sessionRepository repository.APISession
+	authRepository repository.APIAuth
 }
 
 func NewAPIAuthSignUp(
 	authRepository repository.APIAuth,
-	sessionRepository repository.APISession,
 ) port.APIAuthSignUp {
 	return &APIAuthSignUp{
-		authRepository:    authRepository,
-		sessionRepository: sessionRepository,
+		authRepository: authRepository,
 	}
 }
 

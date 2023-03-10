@@ -6,6 +6,7 @@ import (
 	"crypto/rsa"
 	"encoding/base64"
 
+	"github.com/morning-night-dream/platform-app/internal/domain/cache"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
 	"github.com/morning-night-dream/platform-app/internal/domain/repository"
 	"github.com/morning-night-dream/platform-app/internal/usecase/port"
@@ -13,20 +14,17 @@ import (
 )
 
 type APIAuthRefresh struct {
-	authRepository    repository.APIAuth
-	sessionRepository repository.APISession
-	codeRepository    repository.APICode
+	sessionCache   cache.Cache[model.Session]
+	codeRepository repository.APICode
 }
 
 func NewAPIAuthRefresh(
-	authRepository repository.APIAuth,
-	sessionRepository repository.APISession,
+	sessionCache cache.Cache[model.Session],
 	codeRepository repository.APICode,
 ) port.APIAuthRefresh {
 	return &APIAuthRefresh{
-		authRepository:    authRepository,
-		sessionRepository: sessionRepository,
-		codeRepository:    codeRepository,
+		sessionCache:   sessionCache,
+		codeRepository: codeRepository,
 	}
 }
 
@@ -41,8 +39,10 @@ func (aar *APIAuthRefresh) Execute(
 	}
 
 	// session id から public key を取得
-	session, err := aar.sessionRepository.Find(ctx, code.SessionID)
+	session, err := aar.sessionCache.Get(ctx, string(code.SessionID))
 	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to get session", log.ErrorField(err))
+
 		return port.APIAuthRefreshOutput{}, err
 	}
 
