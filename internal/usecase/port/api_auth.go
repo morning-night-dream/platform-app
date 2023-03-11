@@ -26,6 +26,7 @@ type APIAuthSignInInput struct {
 	model.EMail
 	model.Password
 	PublicKey *rsa.PublicKey
+	model.ExpiresIn
 }
 
 type APIAuthSignInOutput struct {

@@ -53,10 +53,22 @@ func (api *API) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params ope
 		return
 	}
 
+	expires := model.DefaultExpires * time.Second
+	if params.ExpiresIn != nil {
+		if *params.ExpiresIn < 0 || *params.ExpiresIn > model.DefaultExpires {
+			log.GetLogCtx(ctx).Warn("invalid expires_in", log.ErrorField(err))
+
+			w.WriteHeader(http.StatusBadRequest)
+
+			return
+		}
+		expires = time.Duration(*params.ExpiresIn) * time.Second
+	}
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.UIDKey,
 		Value:    string(output.UserToken),
-		Expires:  time.Now().Add(60 * time.Second),
+		Expires:  time.Now().Add(expires),
 		Secure:   false,
 		HttpOnly: true,
 		Path:     "/",
@@ -139,10 +151,23 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	// }
 	// --------------------------------------------------
 
+	expires := model.DefaultExpires * time.Second
+	if body.ExpiresIn != nil {
+		if *body.ExpiresIn < 0 || *body.ExpiresIn > model.DefaultExpires {
+			log.GetLogCtx(ctx).Warn("invalid expires_in", log.ErrorField(err))
+
+			w.WriteHeader(http.StatusBadRequest)
+
+			return
+		}
+		expires = time.Duration(*body.ExpiresIn) * time.Second
+	}
+
 	input := port.APIAuthSignInInput{
 		EMail:     model.EMail(email),
 		Password:  model.Password(body.Password),
 		PublicKey: key,
+		ExpiresIn: model.ExpiresIn(expires),
 	}
 
 	output, err := api.auth.signIn.Execute(ctx, input)
@@ -157,7 +182,7 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.UIDKey,
 		Value:    string(output.UserToken),
-		Expires:  time.Now().Add(60 * time.Second),
+		Expires:  time.Now().Add(expires),
 		Secure:   false,
 		HttpOnly: true,
 		Path:     "/",
@@ -166,7 +191,7 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.SIDKey,
 		Value:    string(output.SessionToken),
-		Expires:  time.Now().Add(168 * time.Hour),
+		Expires:  time.Now().Add(model.Age),
 		Secure:   false,
 		HttpOnly: true,
 		Path:     "/",
@@ -278,7 +303,6 @@ func (api *API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
-		// TODO 共通化
 		api.unauthorize(w, r, ctx, model.SessionToken(sidToken.Value))
 
 		return
@@ -294,6 +318,8 @@ func (api *API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 
 		api.unauthorize(w, r, ctx, model.SessionToken(sidToken.Value))
 	}
+
+	_, _ = w.Write([]byte("OK"))
 }
 
 // DELETE /v1/auth.

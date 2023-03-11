@@ -159,6 +159,14 @@ func (siw *ServerInterfaceWrapper) V1AuthRefresh(w http.ResponseWriter, r *http.
 		return
 	}
 
+	// ------------- Optional query parameter "expiresIn" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "expiresIn", r.URL.Query(), &params.ExpiresIn)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "expiresIn", Err: err})
+		return
+	}
+
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.V1AuthRefresh(w, r, params)
 	})

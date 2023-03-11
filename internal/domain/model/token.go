@@ -2,16 +2,20 @@ package model
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
 const (
-	UIDKey  = "UID"
-	SIDKey  = "SID"
-	IDKey   = "id"
-	SignKey = "secret"
+	UIDKey         = "UID"
+	SIDKey         = "SID"
+	IDKey          = "id"
+	SignKey        = "secret"
+	DefaultExpires = 86400 // 1 day
 )
+
+type ExpiresIn time.Duration
 
 func GenerateToken(id string, sign string) (string, error) {
 	claims := jwt.MapClaims{

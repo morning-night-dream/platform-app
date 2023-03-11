@@ -48,11 +48,11 @@ func (aas *APIAuthSignIn) Execute(
 	}
 
 	// トランザクション必要か
-	if err := aas.sessionCache.Set(ctx, sid, session, 60*time.Second); err != nil {
+	if err := aas.sessionCache.Set(ctx, sid, session, model.Age); err != nil {
 		return port.APIAuthSignInOutput{}, err
 	}
 
-	if err := aas.authCache.Set(ctx, string(auth.UserID), auth, 60*time.Second); err != nil {
+	if err := aas.authCache.Set(ctx, string(auth.UserID), auth, time.Duration(input.ExpiresIn)); err != nil {
 		if err := aas.sessionCache.Del(ctx, sid); err != nil {
 			log.GetLogCtx(ctx).Warn("failed to delete session", log.ErrorField(err))
 		}

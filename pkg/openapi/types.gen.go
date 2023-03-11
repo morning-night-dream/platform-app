@@ -68,12 +68,16 @@ type V1AuthRefreshParams struct {
 
 	// Signature 署名
 	Signature string `form:"signature" json:"signature"`
+	ExpiresIn *int   `form:"expiresIn,omitempty" json:"expiresIn,omitempty"`
 }
 
 // V1AuthSignInJSONBody defines parameters for V1AuthSignIn.
 type V1AuthSignInJSONBody struct {
 	// Email メールアドレス
 	Email openapi_types.Email `json:"email"`
+
+	// ExpiresIn トークン有効期限(秒)
+	ExpiresIn *int `json:"expiresIn,omitempty"`
 
 	// Password パスワード
 	Password string `json:"password"`

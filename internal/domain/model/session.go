@@ -1,6 +1,11 @@
 package model
 
-import "crypto/rsa"
+import (
+	"crypto/rsa"
+	"time"
+)
+
+const Age = 2592000 * time.Second // 30 days
 
 type SessionID string
 

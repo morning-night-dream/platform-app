@@ -86,6 +86,12 @@ paths:
                   type: string
                   description: 公開鍵
                   format: base64
+                expiresIn:
+                  type: integer
+                  description: トークン有効期限(秒)
+                  default: 86400
+                  minimum: 1
+                  maximum: 86400
               required:
                 - email
                 - password
@@ -107,8 +113,6 @@ paths:
       responses:
         '200':
           description: OK
-        '302':
-          description: Redirect
         '401':
           description: Unauthorized
           content:
@@ -141,6 +145,16 @@ paths:
           explode: true
           schema:
             type: string
+        - name: expiresIn
+          in: query
+          required: false
+          explode: true
+          schema:
+            type: integer
+            description: トークン有効期限(秒)
+            default: 86400
+            minimum: 1
+            maximum: 86400
       responses:
         '200':
           description: OK
