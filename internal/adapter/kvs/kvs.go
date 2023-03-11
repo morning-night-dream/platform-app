@@ -81,6 +81,8 @@ func (kvs *KVS[T]) Del(ctx context.Context, key string) error {
 	return nil
 }
 
+// gob を試した形跡。うまく動かせなかった。。。
+
 // func (kvs *KVS[T]) encode(value T) ([]byte, error) {
 // 	buf := bytes.NewBuffer(nil)
 
