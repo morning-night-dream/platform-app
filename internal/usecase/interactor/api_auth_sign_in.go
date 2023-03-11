@@ -2,7 +2,6 @@ package interactor
 
 import (
 	"context"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/morning-night-dream/platform-app/internal/domain/cache"
@@ -52,7 +51,7 @@ func (aas *APIAuthSignIn) Execute(
 		return port.APIAuthSignInOutput{}, err
 	}
 
-	if err := aas.authCache.Set(ctx, string(auth.UserID), auth, time.Duration(input.ExpiresIn)); err != nil {
+	if err := aas.authCache.Set(ctx, string(auth.UserID), auth, model.Age); err != nil {
 		if err := aas.sessionCache.Del(ctx, sid); err != nil {
 			log.GetLogCtx(ctx).Warn("failed to delete session", log.ErrorField(err))
 		}

@@ -119,6 +119,17 @@ func TestE2EAuthRefresh(t *testing.T) {
 			t.Fatalf("failed to refresh in: %d", res.StatusCode)
 		}
 
-		// TODO cookie[UID]が設定されていることを確認する
+		client.Client.Client = &http.Client{
+			Transport: helper.NewCookiesTransport(t, res.Cookies()),
+		}
+
+		res, err = client.Client.V1AuthVerify(ctx)
+		if err != nil {
+			t.Fatalf("failed to verify in: %s", err)
+		}
+
+		if res.StatusCode != http.StatusOK {
+			t.Fatalf("failed to verify in: %d", res.StatusCode)
+		}
 	})
 }
