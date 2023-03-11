@@ -65,6 +65,13 @@ func TestE2EAuthRefresh(t *testing.T) {
 			Transport: helper.NewOnlySIDCookieTransport(t, res.Cookies()),
 		}
 
+		var sid *http.Cookie
+		for _, c := range res.Cookies() {
+			if c.Name == "SID" {
+				sid = c
+			}
+		}
+
 		res, err = client.Client.V1AuthVerify(ctx)
 		if err != nil {
 			t.Fatalf("failed to verify in: %s", err)
@@ -119,8 +126,12 @@ func TestE2EAuthRefresh(t *testing.T) {
 			t.Fatalf("failed to refresh in: %d", res.StatusCode)
 		}
 
+		cookies := res.Cookies()
+
+		cookies = append(cookies, sid)
+
 		client.Client.Client = &http.Client{
-			Transport: helper.NewCookiesTransport(t, res.Cookies()),
+			Transport: helper.NewCookiesTransport(t, cookies),
 		}
 
 		res, err = client.Client.V1AuthVerify(ctx)
