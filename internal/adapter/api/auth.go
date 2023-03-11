@@ -28,13 +28,6 @@ func (api *API) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params ope
 
 		w.WriteHeader(http.StatusUnauthorized)
 
-		// session が存在しないのでcodeは生成しない
-		rs := openapi.V1UnauthorizedResponse{}
-
-		if err := json.NewEncoder(w).Encode(rs); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
-
 		return
 	}
 
