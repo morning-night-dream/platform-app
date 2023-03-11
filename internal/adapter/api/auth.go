@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
@@ -278,28 +279,7 @@ func (api *API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
 		// TODO 共通化
-		input := port.APIAuthGenerateCodeInput{
-			SessionToken: model.SessionToken(sidToken.Value),
-		}
-
-		output, err := api.auth.code.Execute(ctx, input)
-		if err != nil {
-			log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
-
-			w.WriteHeader(http.StatusInternalServerError)
-
-			return
-		}
-
-		w.WriteHeader(http.StatusUnauthorized)
-
-		rs := openapi.V1UnauthorizedResponse{
-			Code: uuid.MustParse(string(output.CodeID)),
-		}
-
-		if err := json.NewEncoder(w).Encode(rs); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
+		api.unauthorize(w, r, ctx, model.SessionToken(sidToken.Value))
 
 		return
 	}
@@ -312,35 +292,36 @@ func (api *API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 	if _, err := api.auth.verify.Execute(ctx, input); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
 
-		// TODO 共通化
-		input := port.APIAuthGenerateCodeInput{
-			SessionToken: model.SessionToken(sidToken.Value),
-		}
-
-		output, err := api.auth.code.Execute(ctx, input)
-		if err != nil {
-			log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
-
-			w.WriteHeader(http.StatusInternalServerError)
-
-			return
-		}
-
-		w.WriteHeader(http.StatusUnauthorized)
-
-		rs := openapi.V1UnauthorizedResponse{
-			Code: uuid.MustParse(string(output.CodeID)),
-		}
-
-		if err := json.NewEncoder(w).Encode(rs); err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
-
-		return
+		api.unauthorize(w, r, ctx, model.SessionToken(sidToken.Value))
 	}
 }
 
 // DELETE /v1/auth.
 func (api *API) V1AuthResign(w http.ResponseWriter, r *http.Request) {
 	// TODO: not implemented
+}
+
+func (api *API) unauthorize(w http.ResponseWriter, r *http.Request, ctx context.Context, stk model.SessionToken) {
+	input := port.APIAuthGenerateCodeInput{
+		SessionToken: stk,
+	}
+
+	output, err := api.auth.code.Execute(ctx, input)
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
+
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
+	}
+
+	w.WriteHeader(http.StatusUnauthorized)
+
+	rs := openapi.V1UnauthorizedResponse{
+		Code: uuid.MustParse(string(output.CodeID)),
+	}
+
+	if err := json.NewEncoder(w).Encode(rs); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
