@@ -30,17 +30,12 @@ func main() {
 
 	rds := redis.NewRedis(config.Core.RedisURL)
 
-	cache, err := redis.NewCache()
+	authCache, err := redis.New[model.Auth]().Of(rds)
 	if err != nil {
 		panic(err)
 	}
 
-	authCache, err := redis.New[model.Auth]().Of(cache, rds)
-	if err != nil {
-		panic(err)
-	}
-
-	sessionCache, err := redis.New[model.Session]().Of(cache, rds)
+	sessionCache, err := redis.New[model.Session]().Of(rds)
 	if err != nil {
 		panic(err)
 	}
