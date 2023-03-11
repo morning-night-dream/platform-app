@@ -77,7 +77,8 @@ This operation does not require authentication
 {
   "email": "morning.night.dream@example.com",
   "password": "password",
-  "publicKey": "string"
+  "publicKey": "string",
+  "expiresIn": 86400
 }
 ```
 
@@ -89,6 +90,7 @@ This operation does not require authentication
 |» email|body|string(email)|true|メールアドレス|
 |» password|body|string(password)|true|パスワード|
 |» publicKey|body|string(base64)|true|公開鍵|
+|» expiresIn|body|integer|false|トークン有効期限(秒)|
 
 <h3 id="v1authsignin-responses">Responses</h3>
 
@@ -126,7 +128,6 @@ This operation does not require authentication
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|None|
-|302|[Found](https://tools.ietf.org/html/rfc7231#section-6.4.3)|Redirect|None|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Unauthorized|[V1UnauthorizedResponse](#schemav1unauthorizedresponse)|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal Server Error|None|
 
@@ -151,6 +152,7 @@ cookieAuth
 |---|---|---|---|---|
 |code|query|string|true|署名付きコード|
 |signature|query|string|true|署名|
+|expiresIn|query|integer|false|none|
 
 <h3 id="v1authrefresh-responses">Responses</h3>
 
