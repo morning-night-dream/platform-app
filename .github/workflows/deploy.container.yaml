@@ -35,7 +35,7 @@ jobs:
       - name: Docker login
         run: ko login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }} index.docker.io
       - name: Build and push app api container
-        working-directory: ./cmd/appapi
+        working-directory: ./app/api
         run: |
           envsubst '$$TAG' < .ko.yaml > .ko.yaml
           IMAGE_NAME=platform-app-api
@@ -43,7 +43,7 @@ jobs:
           SOURCE_DATE_EPOCH=$(date +%s) \
           ko build --sbom=none --bare --tags=${TAG},latest ./ --platform=linux/amd64
       - name: Build and push app core container
-        working-directory: ./cmd/appcore
+        working-directory: ./app/core
         run: |
           envsubst '$$TAG' < .ko.yaml > .ko.yaml
           IMAGE_NAME=platform-app-core
