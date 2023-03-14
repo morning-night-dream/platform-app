@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
-	"github.com/morning-night-dream/platform-app/internal/adapter/api"
 	"github.com/morning-night-dream/platform-app/internal/adapter/gateway"
+	"github.com/morning-night-dream/platform-app/internal/adapter/handler"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
 	"github.com/morning-night-dream/platform-app/internal/driver/client"
 	"github.com/morning-night-dream/platform-app/internal/driver/config"
@@ -44,7 +44,7 @@ func main() {
 
 	codeRepo := gateway.NewAPICode()
 
-	auth := api.NewAuth(
+	auth := handler.NewAuth(
 		interactor.NewAPIAuthSignIn(authRepo, authCache, sessionCache),
 		interactor.NewAPIAuthSignOut(authCache, sessionCache),
 		interactor.NewAPIAuthSignUp(authRepo),
@@ -53,7 +53,7 @@ func main() {
 		interactor.NewAPIAuthGenerateCode(codeRepo),
 	)
 
-	ap := api.New(version, auth, c, store.New(), fb, public.New(), user.New())
+	hdl := handler.New(version, auth, c, store.New(), fb, public.New(), user.New())
 
 	router := chi.NewRouter()
 
@@ -66,7 +66,7 @@ func main() {
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
-	handler := openapi.HandlerWithOptions(ap, openapi.ChiServerOptions{
+	handler := openapi.HandlerWithOptions(hdl, openapi.ChiServerOptions{
 		BaseURL:     "/api",
 		BaseRouter:  router,
 		Middlewares: []openapi.MiddlewareFunc{server.Middleware},

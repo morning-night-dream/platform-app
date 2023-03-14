@@ -92,6 +92,10 @@ redev:
 down:
 	@docker compose --project-name ${APP_NAME} down --volumes
 
+.PHONY: balus
+balus: ## Destroy everything about docker. (containers, images, volumes, networks.)
+	@docker compose --project-name ${APP_NAME} down --rmi all --volumes
+
 .PHONY: psql
 psql:
 	@docker exec -it ${APP_NAME}-postgres psql -U postgres

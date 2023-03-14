@@ -6,6 +6,6 @@ RUN apk update && apk upgrade && \
     apk add build-base && \
     go install github.com/cosmtrek/air@latest
 
-WORKDIR /app/cmd/appapi
+WORKDIR /app/app/api
 
 CMD ["air"]
