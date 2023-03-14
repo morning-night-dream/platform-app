@@ -1,8 +1,8 @@
 package main
 
 import (
+	"github.com/morning-night-dream/platform-app/internal/adapter/controller"
 	"github.com/morning-night-dream/platform-app/internal/adapter/gateway"
-	"github.com/morning-night-dream/platform-app/internal/adapter/handler"
 	"github.com/morning-night-dream/platform-app/internal/driver/config"
 	"github.com/morning-night-dream/platform-app/internal/driver/database"
 	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
@@ -21,15 +21,15 @@ func main() {
 
 	fb := firebase.NewClient(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
 
-	handle := handler.NewHandle(fb, cache)
+	handle := controller.NewHandle(fb, cache)
 
-	ah := handler.NewArticle(da, handle)
+	ah := controller.NewArticle(da, handle)
 
-	hh := handler.NewHealth()
+	hh := controller.NewHealth()
 
-	auh := handler.NewAuth(handle)
+	auh := controller.NewAuth(handle)
 
-	vh := handler.NewVersion(version)
+	vh := controller.NewVersion(version)
 
 	ch := server.NewConnectHandler(hh, ah, auh, vh)
 

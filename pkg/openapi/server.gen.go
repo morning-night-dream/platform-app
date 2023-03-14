@@ -105,7 +105,9 @@ func (siw *ServerInterfaceWrapper) V1ListArticles(w http.ResponseWriter, r *http
 func (siw *ServerInterfaceWrapper) V1AuthResign(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{""})
+	ctx = context.WithValue(ctx, IdTokenScopes, []string{""})
+
+	ctx = context.WithValue(ctx, SessionTokenScopes, []string{""})
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.V1AuthResign(w, r)
@@ -124,7 +126,7 @@ func (siw *ServerInterfaceWrapper) V1AuthRefresh(w http.ResponseWriter, r *http.
 
 	var err error
 
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{""})
+	ctx = context.WithValue(ctx, SessionTokenScopes, []string{""})
 
 	// Parameter object where we will unmarshal all parameters from the context
 	var params V1AuthRefreshParams
@@ -197,7 +199,9 @@ func (siw *ServerInterfaceWrapper) V1AuthSignIn(w http.ResponseWriter, r *http.R
 func (siw *ServerInterfaceWrapper) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{""})
+	ctx = context.WithValue(ctx, IdTokenScopes, []string{""})
+
+	ctx = context.WithValue(ctx, SessionTokenScopes, []string{""})
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.V1AuthSignOut(w, r)
@@ -214,6 +218,8 @@ func (siw *ServerInterfaceWrapper) V1AuthSignOut(w http.ResponseWriter, r *http.
 func (siw *ServerInterfaceWrapper) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	ctx = context.WithValue(ctx, ApiKeyScopes, []string{""})
+
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.V1AuthSignUp(w, r)
 	})
@@ -229,7 +235,9 @@ func (siw *ServerInterfaceWrapper) V1AuthSignUp(w http.ResponseWriter, r *http.R
 func (siw *ServerInterfaceWrapper) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	ctx = context.WithValue(ctx, CookieAuthScopes, []string{""})
+	ctx = context.WithValue(ctx, IdTokenScopes, []string{""})
+
+	ctx = context.WithValue(ctx, SessionTokenScopes, []string{""})
 
 	var handler http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.V1AuthVerify(w, r)

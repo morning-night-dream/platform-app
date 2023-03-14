@@ -8,7 +8,9 @@ import (
 )
 
 const (
-	CookieAuthScopes = "cookieAuth.Scopes"
+	ApiKeyScopes       = "apiKey.Scopes"
+	IdTokenScopes      = "idToken.Scopes"
+	SessionTokenScopes = "sessionToken.Scopes"
 )
 
 // Article defines model for Article.

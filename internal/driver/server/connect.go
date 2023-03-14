@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/bufbuild/connect-go"
-	"github.com/morning-night-dream/platform-app/internal/adapter/handler"
+	"github.com/morning-night-dream/platform-app/internal/adapter/controller"
 	"github.com/morning-night-dream/platform-app/pkg/connect/article/v1/articlev1connect"
 	"github.com/morning-night-dream/platform-app/pkg/connect/auth/v1/authv1connect"
 	"github.com/morning-night-dream/platform-app/pkg/connect/health/v1/healthv1connect"
@@ -14,10 +14,10 @@ import (
 )
 
 func NewConnectHandler(
-	health *handler.Health,
-	article *handler.Article,
-	auth *handler.Auth,
-	version *handler.Version,
+	health *controller.Health,
+	article *controller.Article,
+	auth *controller.Auth,
+	version *controller.Version,
 ) http.Handler {
 	interceptor := connect.WithInterceptors(NewInterceptor())
 

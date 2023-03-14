@@ -31,6 +31,8 @@ paths:
       summary: サインアップ
       description: サインアップ
       operationId: v1AuthSignUp
+      security:
+        - apiKey: []
       requestBody:
         required: true
         description: サインアップリクエストボディ
@@ -109,7 +111,8 @@ paths:
       description: 検証
       operationId: v1AuthVerify
       security:
-        - cookieAuth: []
+        - idToken: []
+        - sessionToken: []
       responses:
         '200':
           description: OK
@@ -129,7 +132,7 @@ paths:
       description: リフレッシュ
       operationId: v1AuthRefresh
       security:
-        - cookieAuth: []
+        - sessionToken: []
       parameters:
         - name: code
           in: query
@@ -168,7 +171,8 @@ paths:
       description: サインアウト
       operationId: v1AuthSignOut
       security:
-        - cookieAuth: []
+        - idToken: []
+        - sessionToken: []
       responses:
         '200':
           description: OK
@@ -180,7 +184,8 @@ paths:
       description: リサイン(退会)
       operationId: v1AuthResign
       security:
-        - cookieAuth: []
+        - idToken: []
+        - sessionToken: []
       requestBody:
         required: true
         description: リサインリクエストボディ
@@ -300,10 +305,22 @@ paths:
           description: Internal Server Error
 components:
   securitySchemes:
-    cookieAuth:
+    apiKey:
       type: apiKey
+      name: api-key
+      in: header
+    idToken:
+      type: apiKey
+      name: id_token
       in: cookie
-      name: auth
+    accessToken:
+      type: apiKey
+      name: access_token
+      in: cookie
+    sessionToken:
+      type: apiKey
+      name: session_token
+      in: cookie
   schemas:
     Article:
       type: object
