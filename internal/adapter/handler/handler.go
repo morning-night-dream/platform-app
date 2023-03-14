@@ -76,7 +76,7 @@ func New(
 func (hdl *Handler) Authorize(r *http.Request) (model.Auth, error) {
 	ctx := r.Context()
 
-	uid, err := r.Cookie(model.UIDKey)
+	uid, err := r.Cookie(model.IDTokenKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
@@ -98,7 +98,7 @@ func (hdl *Handler) Authorize(r *http.Request) (model.Auth, error) {
 func (hdl *Handler) Refresh(r *http.Request) (model.Auth, error) {
 	ctx := r.Context()
 
-	uid, err := r.Cookie(model.UIDKey)
+	uid, err := r.Cookie(model.IDTokenKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 

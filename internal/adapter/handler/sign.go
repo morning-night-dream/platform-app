@@ -15,7 +15,7 @@ import (
 func (hdl *Handler) V1Sign(w http.ResponseWriter, r *http.Request, params openapi.V1SignParams) {
 	ctx := r.Context()
 
-	sidToken, err := r.Cookie(model.SIDKey)
+	sidToken, err := r.Cookie(model.SessionTokenKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 

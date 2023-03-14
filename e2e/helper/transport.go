@@ -3,6 +3,8 @@ package helper
 import (
 	"net/http"
 	"testing"
+
+	"github.com/morning-night-dream/platform-app/internal/domain/model"
 )
 
 type CookieTransport struct {
@@ -96,7 +98,7 @@ func NewOnlyUIDCookieTransport(
 	var cookie *http.Cookie
 
 	for _, c := range cookies {
-		if c.Name == "UID" {
+		if c.Name == model.IDTokenKey {
 			cookie = c
 			break
 		}
@@ -143,7 +145,7 @@ func NewOnlySIDCookieTransport(
 	var cookie *http.Cookie
 
 	for _, c := range cookies {
-		if c.Name == "SID" {
+		if c.Name == model.SessionTokenKey {
 			cookie = c
 			break
 		}

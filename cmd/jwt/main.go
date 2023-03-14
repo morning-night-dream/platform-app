@@ -8,15 +8,15 @@ import (
 )
 
 const (
-	UIDKey  = "uid"
-	SignKey = "secret"
+	IDTokenKey = "uid"
+	SignKey    = "secret"
 )
 
 func main() {
 	uid := uuid.NewString()
 
 	claims := jwt.MapClaims{
-		UIDKey: uid,
+		IDTokenKey: uid,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -50,5 +50,5 @@ func main() {
 		panic("invalid token")
 	}
 
-	fmt.Printf("uid: %s", parsedClaims[UIDKey])
+	fmt.Printf("uid: %s", parsedClaims[IDTokenKey])
 }

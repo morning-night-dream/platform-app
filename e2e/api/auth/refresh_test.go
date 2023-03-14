@@ -15,6 +15,7 @@ import (
 	"github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/google/uuid"
 	"github.com/morning-night-dream/platform-app/e2e/helper"
+	"github.com/morning-night-dream/platform-app/internal/domain/model"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
@@ -67,7 +68,7 @@ func TestE2EAuthRefresh(t *testing.T) {
 
 		var sid *http.Cookie
 		for _, c := range res.Cookies() {
-			if c.Name == "SID" {
+			if c.Name == model.SessionTokenKey {
 				sid = c
 			}
 		}

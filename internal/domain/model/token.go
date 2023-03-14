@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	UIDKey         = "UID"
-	SIDKey         = "SID"
-	IDKey          = "id"
-	SignKey        = "secret"
-	DefaultExpires = 86400 // 1 day
+	IDTokenKey      = "id_token"
+	SessionTokenKey = "session_token"
+	IDKey           = "id"
+	SignKey         = "secret"
+	DefaultExpires  = 86400 // 1 day
 )
 
 type ExpiresIn time.Duration

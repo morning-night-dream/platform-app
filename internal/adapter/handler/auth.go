@@ -22,7 +22,7 @@ func (hdl *Handler) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params
 	// リフレッシュに失敗したらキャッシュトークンは削除する
 	ctx := r.Context()
 
-	sidToken, err := r.Cookie(model.SIDKey)
+	sidToken, err := r.Cookie(model.SessionTokenKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
@@ -59,7 +59,7 @@ func (hdl *Handler) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     model.UIDKey,
+		Name:     model.IDTokenKey,
 		Value:    string(output.UserToken),
 		Expires:  time.Now().Add(expires),
 		Secure:   false,
@@ -173,7 +173,7 @@ func (hdl *Handler) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     model.UIDKey,
+		Name:     model.IDTokenKey,
 		Value:    string(output.UserToken),
 		Expires:  time.Now().Add(expires),
 		Secure:   false,
@@ -182,7 +182,7 @@ func (hdl *Handler) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	})
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     model.SIDKey,
+		Name:     model.SessionTokenKey,
 		Value:    string(output.SessionToken),
 		Expires:  time.Now().Add(model.Age),
 		Secure:   false,
@@ -197,9 +197,9 @@ func (hdl *Handler) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 func (hdl *Handler) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	sidToken, _ := r.Cookie(model.SIDKey)
+	sidToken, _ := r.Cookie(model.SessionTokenKey)
 
-	uidToken, _ := r.Cookie(model.UIDKey)
+	uidToken, _ := r.Cookie(model.IDTokenKey)
 
 	input := port.APIAuthSignOutInput{
 		IDToken:      model.IDToken(uidToken.Value),
@@ -209,7 +209,7 @@ func (hdl *Handler) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 	_, _ = hdl.auth.signOut.Execute(ctx, input)
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     model.UIDKey,
+		Name:     model.IDTokenKey,
 		Value:    "",
 		MaxAge:   -1,
 		Secure:   false,
@@ -218,7 +218,7 @@ func (hdl *Handler) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 	})
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     model.SIDKey,
+		Name:     model.SessionTokenKey,
 		Value:    "",
 		MaxAge:   -1,
 		Secure:   false,
@@ -276,7 +276,7 @@ func (hdl *Handler) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
 
-	sidToken, err := r.Cookie(model.SIDKey)
+	sidToken, err := r.Cookie(model.SessionTokenKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
@@ -285,7 +285,7 @@ func (hdl *Handler) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uidToken, err := r.Cookie(model.UIDKey)
+	uidToken, err := r.Cookie(model.IDTokenKey)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
