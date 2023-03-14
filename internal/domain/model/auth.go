@@ -10,9 +10,9 @@ type EMail string
 
 type Password string
 
-type IDToken string
+type IDToken string // FirebaseのIDTokenではなく独自のトークン
 
-type RefreshToken string
+type RefreshToken string // FirebaseTokenとかの命名の方がよいかも
 
 type CodeID string
 
