@@ -63,13 +63,13 @@ func TestE2EAuthRefresh(t *testing.T) {
 		}
 
 		client.Client.Client = &http.Client{
-			Transport: helper.NewOnlySIDCookieTransport(t, res.Cookies()),
+			Transport: helper.NewOnlySessionTokenCookieTransport(t, res.Cookies()),
 		}
 
-		var sid *http.Cookie
+		var sessionToken *http.Cookie
 		for _, c := range res.Cookies() {
 			if c.Name == model.SessionTokenKey {
-				sid = c
+				sessionToken = c
 			}
 		}
 
@@ -129,7 +129,7 @@ func TestE2EAuthRefresh(t *testing.T) {
 
 		cookies := res.Cookies()
 
-		cookies = append(cookies, sid)
+		cookies = append(cookies, sessionToken)
 
 		client.Client.Client = &http.Client{
 			Transport: helper.NewCookiesTransport(t, cookies),

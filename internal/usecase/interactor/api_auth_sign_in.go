@@ -64,7 +64,7 @@ func (aas *APIAuthSignIn) Execute(
 		return port.APIAuthSignInOutput{}, err
 	}
 
-	uidToken, err := model.GenerateToken(string(auth.UserID), sid)
+	idToken, err := model.GenerateToken(string(auth.UserID), sid)
 	if err != nil {
 		return port.APIAuthSignInOutput{}, err
 	}
@@ -72,7 +72,7 @@ func (aas *APIAuthSignIn) Execute(
 	return port.APIAuthSignInOutput{
 		UserID:       auth.UserID,
 		SessionID:    model.SessionID(sid),
-		UserToken:    model.UserToken(uidToken),
+		IDToken:      model.IDToken(idToken),
 		SessionToken: model.SessionToken(sidToken),
 	}, nil
 }

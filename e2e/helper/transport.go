@@ -83,16 +83,16 @@ func (ct *CookiesTransport) RoundTrip(req *http.Request) (*http.Response, error)
 	return resp, err
 }
 
-type OnlyUIDCookieTransport struct {
+type OnlyIDTokenCookieTransport struct {
 	T         *testing.T
 	Cookie    *http.Cookie
 	Transport http.RoundTripper
 }
 
-func NewOnlyUIDCookieTransport(
+func NewOnlyIDTokenCookieTransport(
 	t *testing.T,
 	cookies []*http.Cookie,
-) *OnlyUIDCookieTransport {
+) *OnlyIDTokenCookieTransport {
 	t.Helper()
 
 	var cookie *http.Cookie
@@ -104,20 +104,20 @@ func NewOnlyUIDCookieTransport(
 		}
 	}
 
-	return &OnlyUIDCookieTransport{
+	return &OnlyIDTokenCookieTransport{
 		T:         t,
 		Cookie:    cookie,
 		Transport: http.DefaultTransport,
 	}
 }
 
-func (ct *OnlyUIDCookieTransport) transport() http.RoundTripper {
+func (ct *OnlyIDTokenCookieTransport) transport() http.RoundTripper {
 	ct.T.Helper()
 
 	return ct.Transport
 }
 
-func (ct *OnlyUIDCookieTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (ct *OnlyIDTokenCookieTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	ct.T.Helper()
 
 	req.AddCookie(ct.Cookie)
@@ -130,16 +130,16 @@ func (ct *OnlyUIDCookieTransport) RoundTrip(req *http.Request) (*http.Response, 
 	return resp, err
 }
 
-type OnlySIDCookieTransport struct {
+type OnlySessionTokenCookieTransport struct {
 	T         *testing.T
 	Cookie    *http.Cookie
 	Transport http.RoundTripper
 }
 
-func NewOnlySIDCookieTransport(
+func NewOnlySessionTokenCookieTransport(
 	t *testing.T,
 	cookies []*http.Cookie,
-) *OnlySIDCookieTransport {
+) *OnlySessionTokenCookieTransport {
 	t.Helper()
 
 	var cookie *http.Cookie
@@ -151,20 +151,20 @@ func NewOnlySIDCookieTransport(
 		}
 	}
 
-	return &OnlySIDCookieTransport{
+	return &OnlySessionTokenCookieTransport{
 		T:         t,
 		Cookie:    cookie,
 		Transport: http.DefaultTransport,
 	}
 }
 
-func (ct *OnlySIDCookieTransport) transport() http.RoundTripper {
+func (ct *OnlySessionTokenCookieTransport) transport() http.RoundTripper {
 	ct.T.Helper()
 
 	return ct.Transport
 }
 
-func (ct *OnlySIDCookieTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (ct *OnlySessionTokenCookieTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	ct.T.Helper()
 
 	req.AddCookie(ct.Cookie)

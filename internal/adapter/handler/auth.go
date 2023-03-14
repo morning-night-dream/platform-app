@@ -60,7 +60,7 @@ func (hdl *Handler) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.IDTokenKey,
-		Value:    string(output.UserToken),
+		Value:    string(output.IDToken),
 		Expires:  time.Now().Add(expires),
 		Secure:   false,
 		HttpOnly: true,
@@ -174,7 +174,7 @@ func (hdl *Handler) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.IDTokenKey,
-		Value:    string(output.UserToken),
+		Value:    string(output.IDToken),
 		Expires:  time.Now().Add(expires),
 		Secure:   false,
 		HttpOnly: true,

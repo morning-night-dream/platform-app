@@ -73,7 +73,7 @@ func TestE2EAuthVerify(t *testing.T) {
 		}
 	})
 
-	t.Run("cookie[SID]がなくて認証できない", func(t *testing.T) {
+	t.Run("cookie[session_token]がなくて認証できない", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -112,7 +112,7 @@ func TestE2EAuthVerify(t *testing.T) {
 		}
 
 		client.Client.Client = &http.Client{
-			Transport: helper.NewOnlyUIDCookieTransport(t, res.Cookies()),
+			Transport: helper.NewOnlyIDTokenCookieTransport(t, res.Cookies()),
 		}
 
 		res, err = client.Client.V1AuthVerify(ctx)
@@ -129,7 +129,7 @@ func TestE2EAuthVerify(t *testing.T) {
 		}
 	})
 
-	t.Run("cookie[UID]がなくて認証できない", func(t *testing.T) {
+	t.Run("cookie[id_token]がなくて認証できない", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -168,7 +168,7 @@ func TestE2EAuthVerify(t *testing.T) {
 		}
 
 		client.Client.Client = &http.Client{
-			Transport: helper.NewOnlySIDCookieTransport(t, res.Cookies()),
+			Transport: helper.NewOnlySessionTokenCookieTransport(t, res.Cookies()),
 		}
 
 		res, err = client.Client.V1AuthVerify(ctx)

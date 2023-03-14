@@ -33,7 +33,7 @@ type APIAuthSignInOutput struct {
 	usecase.Output
 	model.UserID
 	model.SessionID
-	model.UserToken
+	model.IDToken
 	model.SessionToken
 }
 
@@ -50,7 +50,7 @@ type APIAuthRefreshInput struct {
 
 type APIAuthRefreshOutput struct {
 	usecase.Output
-	model.UserToken
+	model.IDToken
 }
 
 type APIAuthRefresh interface {
