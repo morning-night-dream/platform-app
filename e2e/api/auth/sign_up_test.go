@@ -46,4 +46,30 @@ func TestE2EAuthSighUp(t *testing.T) {
 
 		// Userのライフサイクルも未定のため削除は未実施
 	})
+
+	t.Run("Api-Keyがなくサインアップできない", func(t *testing.T) {
+		t.Parallel()
+
+		client := helper.NewOpenAPIClient(t, url)
+
+		id := uuid.New().String()
+
+		email := fmt.Sprintf("%s@example.com", id)
+
+		password := id
+
+		res, err := client.Client.V1AuthSignUp(context.Background(), openapi.V1AuthSignUpJSONRequestBody{
+			Email:    types.Email(email),
+			Password: password,
+		})
+		if err != nil {
+			t.Fatalf("failed to auth sign up: %s", err)
+		}
+
+		if res.StatusCode != http.StatusUnauthorized {
+			t.Fatalf("failed to auth sign up: %d", res.StatusCode)
+		}
+
+		// Userのライフサイクルも未定のため削除は未実施
+	})
 }
