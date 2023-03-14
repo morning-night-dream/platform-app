@@ -43,8 +43,6 @@ func TestE2EAuthSighUp(t *testing.T) {
 		if res.StatusCode != http.StatusOK {
 			t.Fatalf("failed to auth sign up: %d", res.StatusCode)
 		}
-
-		// Userのライフサイクルも未定のため削除は未実施
 	})
 
 	t.Run("Api-Keyがなくサインアップできない", func(t *testing.T) {
@@ -69,7 +67,5 @@ func TestE2EAuthSighUp(t *testing.T) {
 		if res.StatusCode != http.StatusUnauthorized {
 			t.Fatalf("failed to auth sign up: %d", res.StatusCode)
 		}
-
-		// Userのライフサイクルも未定のため削除は未実施
 	})
 }
