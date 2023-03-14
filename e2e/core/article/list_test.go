@@ -28,7 +28,7 @@ func TestE2EArticleList(t *testing.T) {
 		url := helper.GetCoreEndpoint(t)
 
 		hc := &http.Client{
-			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
+			Transport: helper.NewXAPIKeyTransport(t, helper.GetAPIKey(t)),
 		}
 
 		client := helper.NewConnectClient(t, hc, url)

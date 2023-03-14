@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
@@ -15,6 +16,8 @@ import (
 )
 
 var _ openapi.ServerInterface = (*Handler)(nil)
+
+const HeaderApiKey = "Api-Key"
 
 type Auth struct {
 	signIn  port.APIAuthSignIn
@@ -45,6 +48,7 @@ func NewAuth(
 
 type Handler struct {
 	version  string
+	key      string
 	auth     *Auth
 	client   *Client
 	store    *store.Store
@@ -55,6 +59,7 @@ type Handler struct {
 
 func New(
 	version string,
+	key string,
 	auth *Auth,
 	client *Client,
 	store *store.Store,
@@ -64,6 +69,7 @@ func New(
 ) *Handler {
 	return &Handler{
 		version:  version,
+		key:      key,
 		auth:     auth,
 		client:   client,
 		store:    store,
@@ -71,6 +77,20 @@ func New(
 		public:   public,
 		user:     user,
 	}
+}
+
+func (hdl *Handler) IsUnauthorizedAPIKey(w http.ResponseWriter, r *http.Request) bool {
+	key := r.Header.Get(HeaderApiKey)
+
+	if key == hdl.key {
+		return false
+	}
+
+	w.WriteHeader(http.StatusUnauthorized)
+
+	log.GetLogCtx(r.Context()).Warn(fmt.Sprintf("invalid api key: %s", key))
+
+	return true
 }
 
 func (hdl *Handler) Authorize(r *http.Request) (model.Auth, error) {

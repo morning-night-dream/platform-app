@@ -26,6 +26,10 @@ func TestE2EAuthSighIn(t *testing.T) {
 
 		client := helper.NewOpenAPIClient(t, url)
 
+		client.Client.Client = &http.Client{
+			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
+		}
+
 		id := uuid.New().String()
 
 		email := fmt.Sprintf("%s@example.com", id)
@@ -67,6 +71,10 @@ func TestE2EAuthSighIn(t *testing.T) {
 
 		client := helper.NewOpenAPIClient(t, url)
 
+		client.Client.Client = &http.Client{
+			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
+		}
+
 		id := uuid.New().String()
 
 		email := fmt.Sprintf("%s@example.com", id)
@@ -107,6 +115,10 @@ func TestE2EAuthSighIn(t *testing.T) {
 		ctx := context.Background()
 
 		client := helper.NewOpenAPIClient(t, url)
+
+		client.Client.Client = &http.Client{
+			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
+		}
 
 		id := uuid.New().String()
 

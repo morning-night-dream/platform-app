@@ -24,7 +24,7 @@ func TestE2EArticleShare(t *testing.T) {
 		defer adb.Close()
 
 		hc := &http.Client{
-			Transport: helper.NewAPIKeyTransport(t, helper.GetAPIKey(t)),
+			Transport: helper.NewXAPIKeyTransport(t, helper.GetAPIKey(t)),
 		}
 
 		client := helper.NewConnectClient(t, hc, url)

@@ -4,14 +4,16 @@ import (
 	"os"
 )
 
-type gateway struct {
+type api struct {
 	AppCoreURL string
+	APIKey     string
 }
 
-var Gateway gateway
+var API api
 
 func init() {
-	Gateway = gateway{
+	API = api{
 		AppCoreURL: os.Getenv("APP_CORE_URL"),
+		APIKey:     os.Getenv("API_KEY"),
 	}
 }

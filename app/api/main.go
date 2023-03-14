@@ -21,7 +21,7 @@ import (
 var version string
 
 func main() {
-	c, err := client.New().Of(config.Gateway.AppCoreURL)
+	c, err := client.New().Of(config.API.AppCoreURL)
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +53,7 @@ func main() {
 		interactor.NewAPIAuthGenerateCode(codeRepo),
 	)
 
-	hdl := handler.New(version, auth, c, store.New(), fb, public.New(), user.New())
+	hdl := handler.New(version, config.API.APIKey, auth, c, store.New(), fb, public.New(), user.New())
 
 	router := chi.NewRouter()
 

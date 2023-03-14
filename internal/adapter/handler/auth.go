@@ -231,6 +231,10 @@ func (hdl *Handler) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 
 // POST /v1/auth/signup.
 func (hdl *Handler) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
+	if hdl.IsUnauthorizedAPIKey(w, r) {
+		return
+	}
+
 	ctx := r.Context()
 
 	var body openapi.V1AuthSignUpJSONBody

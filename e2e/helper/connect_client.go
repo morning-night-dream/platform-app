@@ -51,7 +51,7 @@ func NewConnectClientWithAPIKey(t *testing.T, key string, url string) *ConnectCl
 	t.Helper()
 
 	client := &http.Client{
-		Transport: NewAPIKeyTransport(t, key),
+		Transport: NewXAPIKeyTransport(t, key),
 	}
 
 	return NewConnectClient(t, client, url)
@@ -67,30 +67,30 @@ func NewConnectClientWithCookie(t *testing.T, cookie string, url string) *Connec
 	return NewConnectClient(t, client, url)
 }
 
-type APIKeyTransport struct {
+type XAPIKeyTransport struct {
 	t         *testing.T
 	APIKey    string
 	Transport http.RoundTripper
 }
 
-func NewAPIKeyTransport(
+func NewXAPIKeyTransport(
 	t *testing.T,
 	key string,
-) *APIKeyTransport {
-	return &APIKeyTransport{
+) *XAPIKeyTransport {
+	return &XAPIKeyTransport{
 		t:         t,
 		APIKey:    key,
 		Transport: http.DefaultTransport,
 	}
 }
 
-func (at *APIKeyTransport) transport() http.RoundTripper {
+func (at *XAPIKeyTransport) transport() http.RoundTripper {
 	at.t.Helper()
 
 	return at.Transport
 }
 
-func (at *APIKeyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+func (at *XAPIKeyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	at.t.Helper()
 
 	req.Header.Add("X-API-KEY", at.APIKey)
