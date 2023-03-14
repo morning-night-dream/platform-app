@@ -16,8 +16,17 @@ Email: <a href="mailto:morning.night.dream@example.com">Support</a>
 
 # Authentication
 
-* API Key (cookieAuth)
-    - Parameter Name: **auth**, in: cookie. 
+* API Key (apiKey)
+    - Parameter Name: **api-key**, in: header. 
+
+* API Key (idToken)
+    - Parameter Name: **id_token**, in: cookie. 
+
+* API Key (accessToken)
+    - Parameter Name: **access_token**, in: cookie. 
+
+* API Key (sessionToken)
+    - Parameter Name: **session_token**, in: cookie. 
 
 <h1 id="morning-night-dream-appgateway-auth">auth</h1>
 
@@ -57,8 +66,9 @@ Email: <a href="mailto:morning.night.dream@example.com">Support</a>
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|成功|None|
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad Request|None|
 
-<aside class="success">
-This operation does not require authentication
+<aside class="warning">
+To perform this operation, you must be authenticated by means of one of the following methods:
+apiKey
 </aside>
 
 ## v1AuthSignIn
@@ -133,7 +143,7 @@ This operation does not require authentication
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
-cookieAuth
+idToken, sessionToken
 </aside>
 
 ## v1AuthRefresh
@@ -163,7 +173,7 @@ cookieAuth
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
-cookieAuth
+sessionToken
 </aside>
 
 ## v1AuthSignOut
@@ -184,7 +194,7 @@ cookieAuth
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
-cookieAuth
+idToken, sessionToken
 </aside>
 
 ## v1AuthResign
@@ -221,7 +231,7 @@ cookieAuth
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
-cookieAuth
+idToken, sessionToken
 </aside>
 
 ## v1Sign
