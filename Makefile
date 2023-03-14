@@ -85,8 +85,8 @@ dev:
 
 .PHONY: redev
 redev:
-	@touch cmd/appcore/main.go
-	@touch cmd/appapi/main.go
+	@touch app/core/main.go
+	@touch app/api/main.go
 
 .PHONY: down
 down:
