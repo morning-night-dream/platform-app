@@ -19,17 +19,17 @@ import (
 type Article struct {
 	key     string
 	article *gateway.Article
-	handle  *Handle
+	ctl     *Controller
 }
 
 func NewArticle(
 	article *gateway.Article,
-	handle *Handle,
+	ctl *Controller,
 ) *Article {
 	return &Article{
 		key:     os.Getenv("API_KEY"),
 		article: article,
-		handle:  handle,
+		ctl:     ctl,
 	}
 }
 
@@ -135,7 +135,7 @@ func (a *Article) Read(
 	ctx context.Context,
 	req *connect.Request[articlev1.ReadRequest],
 ) (*connect.Response[articlev1.ReadResponse], error) {
-	auth, err := a.handle.Authorize(ctx, req.Header())
+	auth, err := a.ctl.Authorize(ctx, req.Header())
 	if err != nil {
 		return nil, ErrUnauthorized
 	}

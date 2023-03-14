@@ -11,40 +11,40 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/driver/redis"
 )
 
-type Handle struct {
+type Controller struct {
 	firebase *firebase.Client
 	cache    *redis.Client
 }
 
-func NewHandle(
+func New(
 	firebase *firebase.Client,
 	cache *redis.Client,
-) *Handle {
-	return &Handle{
+) *Controller {
+	return &Controller{
 		firebase: firebase,
 		cache:    cache,
 	}
 }
 
-func (h *Handle) Authorize(ctx context.Context, header http.Header) (model.Auth, error) {
-	cookie, err := h.getToken(header)
+func (ctl *Controller) Authorize(ctx context.Context, header http.Header) (model.Auth, error) {
+	cookie, err := ctl.getToken(header)
 	if err != nil {
 		return model.Auth{}, ErrUnauthorized
 	}
 
-	auth, err := h.cache.Get(ctx, cookie.Value)
+	auth, err := ctl.cache.Get(ctx, cookie.Value)
 	if err != nil {
 		return model.Auth{}, ErrUnauthorized
 	}
 
-	if err := h.firebase.VerifyIDToken(ctx, string(auth.IDToken)); err != nil {
+	if err := ctl.firebase.VerifyIDToken(ctx, string(auth.IDToken)); err != nil {
 		return model.Auth{}, ErrUnauthorized
 	}
 
 	return auth, nil
 }
 
-func (h *Handle) getToken(header http.Header) (http.Cookie, error) {
+func (ctl *Controller) getToken(header http.Header) (http.Cookie, error) {
 	lines := header["Cookie"]
 	if len(lines) == 0 {
 		return http.Cookie{}, ErrUnauthorized
@@ -72,7 +72,7 @@ func (h *Handle) getToken(header http.Header) (http.Cookie, error) {
 	return http.Cookie{}, ErrUnauthorized
 }
 
-func (h *Handle) GetSession(header http.Header) (string, error) {
+func (ctl *Controller) GetSession(header http.Header) (string, error) {
 	lines := header["Cookie"]
 	if len(lines) == 0 {
 		return "", ErrUnauthorized

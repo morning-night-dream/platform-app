@@ -17,14 +17,14 @@ import (
 )
 
 type Auth struct {
-	handle *Handle
+	ctl *Controller
 }
 
 const age = 5 * 60
 
-func NewAuth(handle *Handle) *Auth {
+func NewAuth(ctl *Controller) *Auth {
 	return &Auth{
-		handle: handle,
+		ctl: ctl,
 	}
 }
 
@@ -47,7 +47,7 @@ func (a *Auth) SignUp(
 	}
 
 	// firebase に新規登録
-	if err := a.handle.firebase.CreateUser(ctx, uuid.NewString(), email, password); err != nil {
+	if err := a.ctl.firebase.CreateUser(ctx, uuid.NewString(), email, password); err != nil {
 		return nil, err
 	}
 
@@ -69,7 +69,7 @@ func (a *Auth) SignIn(
 	}
 
 	// firebase にログイン
-	sres, err := a.handle.firebase.Login(ctx, email, password)
+	sres, err := a.ctl.firebase.Login(ctx, email, password)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to sign in", log.ErrorField(err))
 
@@ -112,12 +112,12 @@ func (a *Auth) SignIn(
 		ExpiresIn:    exp,
 	}
 
-	// token, err := a.handle.firebase.RefreshToken(ctx, sres.RefreshToken)
+	// token, err := a.ctl.firebase.RefreshToken(ctx, sres.RefreshToken)
 	// if err != nil {
 	// 	return nil, err
 	// }
 
-	if err := a.handle.cache.Set(ctx, sessionToken, au); err != nil {
+	if err := a.ctl.cache.Set(ctx, sessionToken, au); err != nil {
 		return nil, err
 	}
 
@@ -148,12 +148,12 @@ func (a *Auth) SignOut(
 	ctx context.Context,
 	req *connect.Request[authv1.SignOutRequest],
 ) (*connect.Response[authv1.SignOutResponse], error) {
-	session, err := a.handle.GetSession(req.Header())
+	session, err := a.ctl.GetSession(req.Header())
 	if err != nil {
 		return nil, err
 	}
 
-	if err := a.handle.cache.Delete(ctx, session); err != nil {
+	if err := a.ctl.cache.Delete(ctx, session); err != nil {
 		return nil, err
 	}
 
@@ -174,12 +174,12 @@ func (a *Auth) ChangePassword(
 	ctx context.Context,
 	req *connect.Request[authv1.ChangePasswordRequest],
 ) (*connect.Response[authv1.ChangePasswordResponse], error) {
-	session, err := a.handle.GetSession(req.Header())
+	session, err := a.ctl.GetSession(req.Header())
 	if err != nil {
 		return nil, err
 	}
 
-	auth, err := a.handle.cache.Get(ctx, session)
+	auth, err := a.ctl.cache.Get(ctx, session)
 	if err != nil {
 		return nil, err
 	}
@@ -194,12 +194,12 @@ func (a *Auth) ChangePassword(
 		return nil, ErrUnauthorized
 	}
 
-	if _, err := a.handle.firebase.Login(ctx, email, password); err != nil {
+	if _, err := a.ctl.firebase.Login(ctx, email, password); err != nil {
 		// log.Printf("fail to sign in caused by %s", err)
 		return nil, ErrUnauthorized
 	}
 
-	if err := a.handle.firebase.ChangePassword(ctx, string(auth.UserID), req.Msg.NewPassword); err != nil {
+	if err := a.ctl.firebase.ChangePassword(ctx, string(auth.UserID), req.Msg.NewPassword); err != nil {
 		// log.Printf("fail to change password caused by %s", err)
 		return nil, ErrUnauthorized
 	}
@@ -211,12 +211,12 @@ func (a *Auth) Delete(
 	ctx context.Context,
 	req *connect.Request[authv1.DeleteRequest],
 ) (*connect.Response[authv1.DeleteResponse], error) {
-	session, err := a.handle.GetSession(req.Header())
+	session, err := a.ctl.GetSession(req.Header())
 	if err != nil {
 		return nil, err
 	}
 
-	auth, err := a.handle.cache.Get(ctx, session)
+	auth, err := a.ctl.cache.Get(ctx, session)
 	if err != nil {
 		return nil, err
 	}
@@ -231,12 +231,12 @@ func (a *Auth) Delete(
 		return nil, ErrUnauthorized
 	}
 
-	if _, err := a.handle.firebase.Login(ctx, email, password); err != nil {
+	if _, err := a.ctl.firebase.Login(ctx, email, password); err != nil {
 		// log.Printf("fail to sign in caused by %s", err)
 		return nil, ErrUnauthorized
 	}
 
-	if err := a.handle.firebase.DeleteUser(ctx, string(auth.UserID)); err != nil {
+	if err := a.ctl.firebase.DeleteUser(ctx, string(auth.UserID)); err != nil {
 		return nil, err
 	}
 

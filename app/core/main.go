@@ -21,13 +21,13 @@ func main() {
 
 	fb := firebase.NewClient(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
 
-	handle := controller.NewHandle(fb, cache)
+	ctl := controller.New(fb, cache)
 
-	ah := controller.NewArticle(da, handle)
+	ah := controller.NewArticle(da, ctl)
 
 	hh := controller.NewHealth()
 
-	auh := controller.NewAuth(handle)
+	auh := controller.NewAuth(ctl)
 
 	vh := controller.NewVersion(version)
 
