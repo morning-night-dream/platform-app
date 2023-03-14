@@ -1,4 +1,4 @@
-package api
+package handler
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ import (
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
-var _ openapi.ServerInterface = (*API)(nil)
+var _ openapi.ServerInterface = (*Handler)(nil)
 
 type Auth struct {
 	signIn  port.APIAuthSignIn
@@ -43,7 +43,7 @@ func NewAuth(
 	}
 }
 
-type API struct {
+type Handler struct {
 	version  string
 	auth     *Auth
 	client   *Client
@@ -61,8 +61,8 @@ func New(
 	firebase *firebase.Client,
 	public *public.Public,
 	user *user.User,
-) *API {
-	return &API{
+) *Handler {
+	return &Handler{
 		version:  version,
 		auth:     auth,
 		client:   client,
@@ -73,7 +73,7 @@ func New(
 	}
 }
 
-func (ctl *API) Authorize(r *http.Request) (model.Auth, error) {
+func (hdl *Handler) Authorize(r *http.Request) (model.Auth, error) {
 	ctx := r.Context()
 
 	uid, err := r.Cookie(model.UIDKey)
@@ -83,19 +83,19 @@ func (ctl *API) Authorize(r *http.Request) (model.Auth, error) {
 		return model.Auth{}, errors.New("error")
 	}
 
-	auth, err := ctl.store.Get(ctx, uid.Value)
+	auth, err := hdl.store.Get(ctx, uid.Value)
 	if err != nil {
 		return model.Auth{}, errors.New("error")
 	}
 
-	if err := ctl.firebase.VerifyIDToken(ctx, string(auth.IDToken)); err != nil {
+	if err := hdl.firebase.VerifyIDToken(ctx, string(auth.IDToken)); err != nil {
 		return model.Auth{}, errors.New("error")
 	}
 
 	return auth, nil
 }
 
-func (ctl *API) Refresh(r *http.Request) (model.Auth, error) {
+func (hdl *Handler) Refresh(r *http.Request) (model.Auth, error) {
 	ctx := r.Context()
 
 	uid, err := r.Cookie(model.UIDKey)
@@ -105,19 +105,19 @@ func (ctl *API) Refresh(r *http.Request) (model.Auth, error) {
 		return model.Auth{}, errors.New("error")
 	}
 
-	auth, err := ctl.store.Get(ctx, uid.Value)
+	auth, err := hdl.store.Get(ctx, uid.Value)
 	if err != nil {
 		return model.Auth{}, errors.New("error")
 	}
 
-	refresh, err := ctl.firebase.RefreshToken(ctx, string(auth.RefreshToken))
+	refresh, err := hdl.firebase.RefreshToken(ctx, string(auth.RefreshToken))
 	if err != nil {
 		return model.Auth{}, errors.New("error")
 	}
 
 	auth.RefreshToken = model.RefreshToken(refresh)
 
-	if err := ctl.store.Set(ctx, uid.Value, auth); err != nil {
+	if err := hdl.store.Set(ctx, uid.Value, auth); err != nil {
 		return model.Auth{}, errors.New("error")
 	}
 

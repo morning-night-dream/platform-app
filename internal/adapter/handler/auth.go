@@ -1,4 +1,4 @@
-package api
+package handler
 
 import (
 	"context"
@@ -18,7 +18,7 @@ import (
 )
 
 // GET /v1/auth/refresh.
-func (api *API) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params openapi.V1AuthRefreshParams) {
+func (hdl *Handler) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params openapi.V1AuthRefreshParams) {
 	// リフレッシュに失敗したらキャッシュトークンは削除する
 	ctx := r.Context()
 
@@ -37,7 +37,7 @@ func (api *API) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params ope
 		SessionToken: model.SessionToken(sidToken.Value),
 	}
 
-	output, err := api.auth.refresh.Execute(ctx, input)
+	output, err := hdl.auth.refresh.Execute(ctx, input)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
 
@@ -71,7 +71,7 @@ func (api *API) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params ope
 }
 
 // POST /v1/auth/signin.
-func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
+func (hdl *Handler) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var body openapi.V1AuthSignInJSONBody
@@ -163,7 +163,7 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		ExpiresIn: model.ExpiresIn(expires),
 	}
 
-	output, err := api.auth.signIn.Execute(ctx, input)
+	output, err := hdl.auth.signIn.Execute(ctx, input)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
 
@@ -194,7 +194,7 @@ func (api *API) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 // GET /v1/auth/signout.
-func (api *API) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
+func (hdl *Handler) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	sidToken, _ := r.Cookie(model.SIDKey)
@@ -206,7 +206,7 @@ func (api *API) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 		SessionToken: model.SessionToken(sidToken.Value),
 	}
 
-	_, _ = api.auth.signOut.Execute(ctx, input)
+	_, _ = hdl.auth.signOut.Execute(ctx, input)
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.UIDKey,
@@ -230,7 +230,7 @@ func (api *API) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 }
 
 // POST /v1/auth/signup.
-func (api *API) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
+func (hdl *Handler) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	var body openapi.V1AuthSignUpJSONBody
@@ -261,7 +261,7 @@ func (api *API) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 		Password: model.Password(body.Password),
 	}
 
-	if _, err := api.auth.signUp.Execute(ctx, input); err != nil {
+	if _, err := hdl.auth.signUp.Execute(ctx, input); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to sign up", log.ErrorField(err))
 
 		w.WriteHeader(http.StatusInternalServerError)
@@ -271,7 +271,7 @@ func (api *API) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 // GET /v1/auth/verify.
-func (api *API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
+func (hdl *Handler) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("header: %+v", r.Header))
@@ -289,7 +289,7 @@ func (api *API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
-		api.unauthorize(w, r, ctx, model.SessionToken(sidToken.Value))
+		hdl.unauthorize(w, r, ctx, model.SessionToken(sidToken.Value))
 
 		return
 	}
@@ -299,26 +299,26 @@ func (api *API) V1AuthVerify(w http.ResponseWriter, r *http.Request) {
 		SessionToken: model.SessionToken(sidToken.Value),
 	}
 
-	if _, err := api.auth.verify.Execute(ctx, input); err != nil {
+	if _, err := hdl.auth.verify.Execute(ctx, input); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
 
-		api.unauthorize(w, r, ctx, model.SessionToken(sidToken.Value))
+		hdl.unauthorize(w, r, ctx, model.SessionToken(sidToken.Value))
 	}
 
 	_, _ = w.Write([]byte("OK"))
 }
 
 // DELETE /v1/auth.
-func (api *API) V1AuthResign(w http.ResponseWriter, r *http.Request) {
+func (hdl *Handler) V1AuthResign(w http.ResponseWriter, r *http.Request) {
 	// TODO: not implemented
 }
 
-func (api *API) unauthorize(w http.ResponseWriter, r *http.Request, ctx context.Context, stk model.SessionToken) {
+func (hdl *Handler) unauthorize(w http.ResponseWriter, r *http.Request, ctx context.Context, stk model.SessionToken) {
 	input := port.APIAuthGenerateCodeInput{
 		SessionToken: stk,
 	}
 
-	output, err := api.auth.code.Execute(ctx, input)
+	output, err := hdl.auth.code.Execute(ctx, input)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to execute", log.ErrorField(err))
 

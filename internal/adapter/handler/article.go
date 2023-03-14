@@ -1,4 +1,4 @@
-package api
+package handler
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
-func (api API) V1ListArticles(w http.ResponseWriter, r *http.Request, params openapi.V1ListArticlesParams) {
+func (hdl *Handler) V1ListArticles(w http.ResponseWriter, r *http.Request, params openapi.V1ListArticlesParams) {
 	pageToken := ""
 	if params.PageToken != nil {
 		pageToken = *params.PageToken
@@ -22,7 +22,7 @@ func (api API) V1ListArticles(w http.ResponseWriter, r *http.Request, params ope
 		MaxPageSize: uint32(params.MaxPageSize),
 	}
 
-	res, err := api.client.Article.List(r.Context(), connect.NewRequest(req))
+	res, err := hdl.client.Article.List(r.Context(), connect.NewRequest(req))
 	if err != nil {
 		w.WriteHeader(http.StatusServiceUnavailable)
 		w.Write([]byte(err.Error()))

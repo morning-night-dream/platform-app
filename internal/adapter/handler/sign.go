@@ -1,4 +1,4 @@
-package api
+package handler
 
 import (
 	"crypto"
@@ -12,7 +12,7 @@ import (
 )
 
 // (GET /v1/sign).
-func (api *API) V1Sign(w http.ResponseWriter, r *http.Request, params openapi.V1SignParams) {
+func (hdl *Handler) V1Sign(w http.ResponseWriter, r *http.Request, params openapi.V1SignParams) {
 	ctx := r.Context()
 
 	sidToken, err := r.Cookie(model.SIDKey)
@@ -33,7 +33,7 @@ func (api *API) V1Sign(w http.ResponseWriter, r *http.Request, params openapi.V1
 		return
 	}
 
-	uid, err := api.user.Get(ctx, sid)
+	uid, err := hdl.user.Get(ctx, sid)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
@@ -42,7 +42,7 @@ func (api *API) V1Sign(w http.ResponseWriter, r *http.Request, params openapi.V1
 		return
 	}
 
-	auth, err := api.store.Get(ctx, uid)
+	auth, err := hdl.store.Get(ctx, uid)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to get auth", log.ErrorField(err))
 
