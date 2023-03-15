@@ -31,7 +31,7 @@ jobs:
           cache: true
           cache-dependency-path: go.sum
       - name: Install ko
-        run: go install github.com/google/ko@latest
+        run: go install github.com/google/ko@v0.12.0
       - name: Docker login
         run: ko login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }} index.docker.io
       - name: Build and push db migrate container
