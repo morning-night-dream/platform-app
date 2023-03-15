@@ -38,16 +38,27 @@ jobs:
         working-directory: ./cmd/app/api
         run: |
           envsubst '$$TAG' < .ko.yaml > .ko.yaml
-          IMAGE_NAME=platform-app-api
-          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
+          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/platform-app-api \
           SOURCE_DATE_EPOCH=$(date +%s) \
           ko build --sbom=none --bare --tags=${TAG},latest ./ --platform=linux/amd64
       - name: Build and push app core container
         working-directory: ./cmd/app/core
         run: |
           envsubst '$$TAG' < .ko.yaml > .ko.yaml
-          IMAGE_NAME=platform-app-core
-          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/${IMAGE_NAME} \
+          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/platform-app-core \
+          SOURCE_DATE_EPOCH=$(date +%s) \
+          ko build --sbom=none --bare --tags=${TAG},latest ./ --platform=linux/amd64
+      - name: Build and push db migrate container
+        working-directory: ./cmd/db/migrate
+        run: |
+          IMAGE_NAME=
+          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/platform-db-migrate \
+          SOURCE_DATE_EPOCH=$(date +%s) \
+          ko build --sbom=none --bare --tags=${TAG},latest ./ --platform=linux/amd64
+      - name: Build and push app core container
+        working-directory: ./cmd/db/backup
+        run: |
+          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/platform-db-backup \
           SOURCE_DATE_EPOCH=$(date +%s) \
           ko build --sbom=none --bare --tags=${TAG},latest ./ --platform=linux/amd64
   tag:

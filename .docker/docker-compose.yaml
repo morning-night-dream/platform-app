@@ -89,11 +89,11 @@ services:
     restart: always
     depends_on:
       - core
-  db-migration:
-    container_name: ${APP_NAME}-db-migration
+  db-migrate:
+    container_name: ${APP_NAME}-db-migrate
     build:
       context: .
-      dockerfile: migration/Dockerfile
+      dockerfile: dbmigrate/Dockerfile
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres-primary:5432/postgres?sslmode=disable
     volumes:
@@ -105,7 +105,7 @@ services:
     container_name: ${APP_NAME}-db-backup
     build:
       context: .
-      dockerfile: backup/Dockerfile
+      dockerfile: dbbackup/Dockerfile
     environment:
       PRIMARY_DATABASE_URL: postgres://postgres:postgres@postgres-primary:5432/postgres?sslmode=disable
       SECONDARY_DATABASE_URL: postgres://postgres:postgres@postgres-secondary:5432/postgres?sslmode=disable
