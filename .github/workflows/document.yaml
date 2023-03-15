@@ -3,7 +3,7 @@ run-name: ${{ github.ref_name }} by @${{ github.actor }} [${{ github.workflow }}
 on:
   push:
     branches:
-      - main
+      - develop
     paths:
       - .github/workflows/document.yaml
       - api/openapi.yaml
