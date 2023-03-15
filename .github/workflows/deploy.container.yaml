@@ -51,7 +51,6 @@ jobs:
       - name: Build and push db migrate container
         working-directory: ./cmd/db/migrate
         run: |
-          IMAGE_NAME=
           KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/platform-db-migrate \
           SOURCE_DATE_EPOCH=$(date +%s) \
           ko build --sbom=none --bare --tags=${TAG},latest ./ --platform=linux/amd64
