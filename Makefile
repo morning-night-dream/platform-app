@@ -85,8 +85,12 @@ dev:
 
 .PHONY: redev
 redev:
-	@touch app/core/main.go
-	@touch app/api/main.go
+	@touch cmd/app/core/main.go
+	@touch cmd/app/api/main.go
+
+.PHONY: backup
+backup:
+	@touch cmd/db/backup/main.go
 
 .PHONY: down
 down:
@@ -96,6 +100,14 @@ down:
 balus: ## Destroy everything about docker. (containers, images, volumes, networks.)
 	@docker compose --project-name ${APP_NAME} down --rmi all --volumes
 
-.PHONY: psql
-psql:
-	@docker exec -it ${APP_NAME}-postgres psql -U postgres
+.PHONY: primary
+primary:
+	@docker exec -it ${APP_NAME}-postgres-primary psql -U postgres
+
+.PHONY: secondary
+secondary:
+	@docker exec -it ${APP_NAME}-postgres-secondary psql -U postgres
+
+.PHONY: migrate
+migrate:
+	@touch cmd/db/migrate/main.go

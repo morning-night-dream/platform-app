@@ -101,3 +101,17 @@ services:
     restart: always
     depends_on:
       - postgres-primary
+  db-backup:
+    container_name: ${APP_NAME}-db-backup
+    build:
+      context: .
+      dockerfile: backup/Dockerfile
+    environment:
+      PRIMARY_DATABASE_URL: postgres://postgres:postgres@postgres-primary:5432/postgres?sslmode=disable
+      SECONDARY_DATABASE_URL: postgres://postgres:postgres@postgres-secondary:5432/postgres?sslmode=disable
+    volumes:
+      - ../:/app
+    restart: always
+    depends_on:
+      - postgres-primary
+      - postgres-secondary
