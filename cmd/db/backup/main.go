@@ -51,13 +51,13 @@ func main() {
 	}
 
 	// めんどくさいのでsecondaryデータぶっぱ
-	if _, err := tx.ArticleTag.Delete().Exec(ctx); err != nil {
+	if _, err := tx.Client().Debug().ArticleTag.Delete().Exec(ctx); err != nil {
 		tx.Rollback()
 
 		log.Log().Panic(fmt.Sprintf("failed to delete tags: %v", err))
 	}
 
-	if _, err := tx.Article.Delete().Exec(ctx); err != nil {
+	if _, err := tx.Client().Debug().Article.Delete().Exec(ctx); err != nil {
 		tx.Rollback()
 
 		log.Log().Panic(fmt.Sprintf("failed to delete articles: %v", err))
@@ -67,7 +67,7 @@ func main() {
 
 	articleBulk := make([]*ent.ArticleCreate, len(articles))
 	for i, article := range articles {
-		articleBulk[i] = tx.Article.Create().
+		articleBulk[i] = tx.Client().Debug().Article.Create().
 			SetID(article.ID).
 			SetTitle(article.Title).
 			SetURL(article.URL).
@@ -77,7 +77,7 @@ func main() {
 			SetUpdatedAt(article.UpdatedAt)
 	}
 
-	if _, err := tx.Article.CreateBulk(articleBulk...).Save(ctx); err != nil {
+	if _, err := tx.Client().Debug().Article.CreateBulk(articleBulk...).Save(ctx); err != nil {
 		tx.Rollback()
 
 		log.Log().Panic(fmt.Sprintf("failed to insert articles: %v", err))
@@ -85,7 +85,7 @@ func main() {
 
 	tagBulk := make([]*ent.ArticleTagCreate, len(tags))
 	for i, tag := range tags {
-		tagBulk[i] = tx.ArticleTag.Create().
+		tagBulk[i] = tx.Client().Debug().ArticleTag.Create().
 			SetArticleID(tag.ID).
 			SetTag(tag.Tag).
 			SetCreatedAt(tag.CreatedAt).
@@ -93,7 +93,7 @@ func main() {
 			SetArticleID(tag.ArticleID)
 	}
 
-	if _, err := tx.ArticleTag.CreateBulk(tagBulk...).Save(ctx); err != nil {
+	if _, err := tx.Client().Debug().ArticleTag.CreateBulk(tagBulk...).Save(ctx); err != nil {
 		tx.Rollback()
 
 		log.Log().Panic(fmt.Sprintf("failed to insert articles: %v", err))
