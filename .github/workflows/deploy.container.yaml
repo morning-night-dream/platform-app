@@ -34,6 +34,18 @@ jobs:
         run: go install github.com/google/ko@latest
       - name: Docker login
         run: ko login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }} index.docker.io
+      - name: Build and push db migrate container
+        working-directory: ./cmd/db/migrate
+        run: |
+          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/platform-db-migrate \
+          SOURCE_DATE_EPOCH=$(date +%s) \
+          ko build --sbom=none --bare --tags=${TAG},latest ./ --platform=linux/amd64
+      - name: Build and push app core container
+        working-directory: ./cmd/db/backup
+        run: |
+          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/platform-db-backup \
+          SOURCE_DATE_EPOCH=$(date +%s) \
+          ko build --sbom=none --bare --tags=${TAG},latest ./ --platform=linux/amd64
       - name: Build and push app api container
         working-directory: ./cmd/app/api
         run: |
@@ -46,18 +58,6 @@ jobs:
         run: |
           envsubst '$$TAG' < .ko.yaml > .ko.yaml
           KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/platform-app-core \
-          SOURCE_DATE_EPOCH=$(date +%s) \
-          ko build --sbom=none --bare --tags=${TAG},latest ./ --platform=linux/amd64
-      - name: Build and push db migrate container
-        working-directory: ./cmd/db/migrate
-        run: |
-          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/platform-db-migrate \
-          SOURCE_DATE_EPOCH=$(date +%s) \
-          ko build --sbom=none --bare --tags=${TAG},latest ./ --platform=linux/amd64
-      - name: Build and push app core container
-        working-directory: ./cmd/db/backup
-        run: |
-          KO_DOCKER_REPO=${{ secrets.DOCKERHUB_USERNAME }}/platform-db-backup \
           SOURCE_DATE_EPOCH=$(date +%s) \
           ko build --sbom=none --bare --tags=${TAG},latest ./ --platform=linux/amd64
   tag:
