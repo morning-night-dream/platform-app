@@ -1,7 +1,6 @@
 package database
 
 import (
-
 	// postgres driver.
 	_ "github.com/lib/pq"
 	"github.com/morning-night-dream/platform-app/pkg/ent"
