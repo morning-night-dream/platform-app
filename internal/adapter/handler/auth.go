@@ -251,17 +251,10 @@ func (hdl *Handler) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("uid: %s", uid))
 
-	email, err := body.Email.MarshalJSON()
-	if err != nil {
-		log.GetLogCtx(ctx).Warn("failed to marshal email", log.ErrorField(err))
-
-		w.WriteHeader(http.StatusBadRequest)
-
-		return
-	}
+	log.GetLogCtx(ctx).Info(fmt.Sprintf("email: %s", body.Email))
 
 	input := port.APIAuthSignUpInput{
-		EMail:    model.EMail(string(email)),
+		EMail:    model.EMail(body.Email),
 		Password: model.Password(body.Password),
 	}
 
