@@ -14,7 +14,6 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/driver/public"
 	"github.com/morning-night-dream/platform-app/internal/driver/redis"
 	"github.com/morning-night-dream/platform-app/internal/driver/server"
-	"github.com/morning-night-dream/platform-app/internal/driver/store"
 	"github.com/morning-night-dream/platform-app/internal/usecase/interactor"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
@@ -54,7 +53,7 @@ func main() {
 		interactor.NewAPIAuthGenerateCode(codeRepo),
 	)
 
-	hdl := handler.New(version, config.API.APIKey, auth, c, store.New(), fb, public.New())
+	hdl := handler.New(version, config.API.APIKey, auth, c, fb, public.New())
 
 	router := chi.NewRouter()
 
