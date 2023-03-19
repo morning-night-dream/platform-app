@@ -6,7 +6,8 @@
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | uuid |  | false | [public.auths](public.auths.md) |  |  |
+| id | uuid |  | false |  |  |  |
+| last_logged_in_at | timestamp with time zone |  | false |  |  |  |
 | created_at | timestamp with time zone |  | false |  |  |  |
 | updated_at | timestamp with time zone |  | false |  |  |  |
 

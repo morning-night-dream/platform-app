@@ -55,15 +55,13 @@ Email: <a href="mailto:morning.night.dream@example.com">Support</a>
 
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
-|body|body|object|true|サインアップリクエストボディ|
-|» email|body|string(email)|true|メールアドレス|
-|» password|body|string(password)|true|パスワード|
+|body|body|[V1AuthSignUpRequestSchema](#schemav1authsignuprequestschema)|true|サインアップリクエストボディ|
 
 <h3 id="v1authsignup-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|成功|None|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|None|
 |400|[Bad Request](https://tools.ietf.org/html/rfc7231#section-6.5.1)|Bad Request|None|
 
 <aside class="warning">
@@ -96,18 +94,26 @@ apiKey
 
 |Name|In|Type|Required|Description|
 |---|---|---|---|---|
-|body|body|object|true|サインインリクエストボディ|
-|» email|body|string(email)|true|メールアドレス|
-|» password|body|string(password)|true|パスワード|
-|» publicKey|body|string(base64)|true|公開鍵|
-|» expiresIn|body|integer|false|トークン有効期限(秒)|
+|body|body|[V1AuthSignInRequestSchema](#schemav1authsigninrequestschema)|true|サインインリクエストボディ|
+
+> Example responses
+
+> 200 Response
+
+```json
+{
+  "accessToken": "string",
+  "refreshToken": "string"
+}
+```
 
 <h3 id="v1authsignin-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|None|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[V1AuthSignInResponseSchema](#schemav1authsigninresponseschema)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Unauthorized|None|
+|500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal Server Error|None|
 
 <aside class="success">
 This operation does not require authentication
@@ -138,7 +144,7 @@ This operation does not require authentication
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
 |200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|None|
-|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Unauthorized|[V1UnauthorizedResponse](#schemav1unauthorizedresponse)|
+|401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Unauthorized|[UnauthorizedResponseSchema](#schemaunauthorizedresponseschema)|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|Internal Server Error|None|
 
 <aside class="warning">
@@ -164,11 +170,22 @@ idToken, sessionToken
 |signature|query|string|true|署名|
 |expiresIn|query|integer|false|none|
 
+> Example responses
+
+> 200 Response
+
+```json
+{
+  "accessToken": "string",
+  "refreshToken": "string"
+}
+```
+
 <h3 id="v1authrefresh-responses">Responses</h3>
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|None|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[V1AuthRefreshResponseSchema](#schemav1authrefreshresponseschema)|
 |401|[Unauthorized](https://tools.ietf.org/html/rfc7235#section-3.1)|Unauthorized|None|
 
 <aside class="warning">
@@ -309,7 +326,7 @@ List articles
 
 |Status|Meaning|Description|Schema|
 |---|---|---|---|
-|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[V1ListArticleResponse](#schemav1listarticleresponse)|
+|200|[OK](https://tools.ietf.org/html/rfc7231#section-6.3.1)|OK|[V1ArticleListResponseSchema](#schemav1articlelistresponseschema)|
 |500|[Internal Server Error](https://tools.ietf.org/html/rfc7231#section-6.6.1)|サーバーエラー|None|
 
 <aside class="success">
@@ -389,23 +406,17 @@ This operation does not require authentication
 
 # Schemas
 
-<h2 id="tocS_Article">Article</h2>
+<h2 id="tocS_V1AuthSignUpRequestSchema">V1AuthSignUpRequestSchema</h2>
 <!-- backwards compatibility -->
-<a id="schemaarticle"></a>
-<a id="schema_Article"></a>
-<a id="tocSarticle"></a>
-<a id="tocsarticle"></a>
+<a id="schemav1authsignuprequestschema"></a>
+<a id="schema_V1AuthSignUpRequestSchema"></a>
+<a id="tocSv1authsignuprequestschema"></a>
+<a id="tocsv1authsignuprequestschema"></a>
 
 ```json
 {
-  "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
-  "url": "https://example.com",
-  "title": "sample title",
-  "description": "sample description",
-  "thumbnail": "https://example.com",
-  "tags": [
-    "tag"
-  ]
+  "email": "morning.night.dream@example.com",
+  "password": "password"
 }
 
 ```
@@ -414,19 +425,85 @@ This operation does not require authentication
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|id|string(uuid)|false|none|id|
-|url|string(uri)|false|none|記事のURL|
-|title|string|false|none|タイトル|
-|description|string|false|none|description|
-|thumbnail|string(uri)|false|none|サムネイルのURL|
-|tags|[string]|false|none|タグ|
+|email|string(email)|true|none|メールアドレス|
+|password|string(password)|true|none|パスワード|
 
-<h2 id="tocS_V1ListArticleResponse">V1ListArticleResponse</h2>
+<h2 id="tocS_V1AuthSignInRequestSchema">V1AuthSignInRequestSchema</h2>
 <!-- backwards compatibility -->
-<a id="schemav1listarticleresponse"></a>
-<a id="schema_V1ListArticleResponse"></a>
-<a id="tocSv1listarticleresponse"></a>
-<a id="tocsv1listarticleresponse"></a>
+<a id="schemav1authsigninrequestschema"></a>
+<a id="schema_V1AuthSignInRequestSchema"></a>
+<a id="tocSv1authsigninrequestschema"></a>
+<a id="tocsv1authsigninrequestschema"></a>
+
+```json
+{
+  "email": "morning.night.dream@example.com",
+  "password": "password",
+  "publicKey": "string",
+  "expiresIn": 86400
+}
+
+```
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|email|string(email)|true|none|メールアドレス|
+|password|string(password)|true|none|パスワード|
+|publicKey|string(base64)|true|none|公開鍵|
+|expiresIn|integer|false|none|トークン有効期限(秒)|
+
+<h2 id="tocS_V1AuthSignInResponseSchema">V1AuthSignInResponseSchema</h2>
+<!-- backwards compatibility -->
+<a id="schemav1authsigninresponseschema"></a>
+<a id="schema_V1AuthSignInResponseSchema"></a>
+<a id="tocSv1authsigninresponseschema"></a>
+<a id="tocsv1authsigninresponseschema"></a>
+
+```json
+{
+  "accessToken": "string",
+  "refreshToken": "string"
+}
+
+```
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|accessToken|string|true|none|アクセストークン|
+|refreshToken|string|true|none|リフレッシュトークン|
+
+<h2 id="tocS_V1AuthRefreshResponseSchema">V1AuthRefreshResponseSchema</h2>
+<!-- backwards compatibility -->
+<a id="schemav1authrefreshresponseschema"></a>
+<a id="schema_V1AuthRefreshResponseSchema"></a>
+<a id="tocSv1authrefreshresponseschema"></a>
+<a id="tocsv1authrefreshresponseschema"></a>
+
+```json
+{
+  "accessToken": "string",
+  "refreshToken": "string"
+}
+
+```
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|accessToken|string|true|none|アクセストークン|
+|refreshToken|string|true|none|リフレッシュトークン|
+
+<h2 id="tocS_V1ArticleListResponseSchema">V1ArticleListResponseSchema</h2>
+<!-- backwards compatibility -->
+<a id="schemav1articlelistresponseschema"></a>
+<a id="schema_V1ArticleListResponseSchema"></a>
+<a id="tocSv1articlelistresponseschema"></a>
+<a id="tocsv1articlelistresponseschema"></a>
 
 ```json
 {
@@ -454,12 +531,12 @@ This operation does not require authentication
 |articles|[[Article](#schemaarticle)]|false|none|none|
 |nextPageToken|string|false|none|次回リクエスト時に指定するページトークン|
 
-<h2 id="tocS_V1UnauthorizedResponse">V1UnauthorizedResponse</h2>
+<h2 id="tocS_UnauthorizedResponseSchema">UnauthorizedResponseSchema</h2>
 <!-- backwards compatibility -->
-<a id="schemav1unauthorizedresponse"></a>
-<a id="schema_V1UnauthorizedResponse"></a>
-<a id="tocSv1unauthorizedresponse"></a>
-<a id="tocsv1unauthorizedresponse"></a>
+<a id="schemaunauthorizedresponseschema"></a>
+<a id="schema_UnauthorizedResponseSchema"></a>
+<a id="tocSunauthorizedresponseschema"></a>
+<a id="tocsunauthorizedresponseschema"></a>
 
 ```json
 {
@@ -473,4 +550,36 @@ This operation does not require authentication
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
 |code|string(uuid)|true|none|コード|
+
+<h2 id="tocS_Article">Article</h2>
+<!-- backwards compatibility -->
+<a id="schemaarticle"></a>
+<a id="schema_Article"></a>
+<a id="tocSarticle"></a>
+<a id="tocsarticle"></a>
+
+```json
+{
+  "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+  "url": "https://example.com",
+  "title": "sample title",
+  "description": "sample description",
+  "thumbnail": "https://example.com",
+  "tags": [
+    "tag"
+  ]
+}
+
+```
+
+### Properties
+
+|Name|Type|Required|Restrictions|Description|
+|---|---|---|---|---|
+|id|string(uuid)|true|none|id|
+|url|string(uri)|true|none|記事のURL|
+|title|string|false|none|タイトル|
+|description|string|false|none|description|
+|thumbnail|string(uri)|false|none|サムネイルのURL|
+|tags|[string]|false|none|タグ|
 
