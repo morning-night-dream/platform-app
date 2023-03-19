@@ -17,7 +17,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/morning-night-dream/platform-app/pkg/ent/article"
 	"github.com/morning-night-dream/platform-app/pkg/ent/articletag"
-	"github.com/morning-night-dream/platform-app/pkg/ent/auth"
 	"github.com/morning-night-dream/platform-app/pkg/ent/readarticle"
 	"github.com/morning-night-dream/platform-app/pkg/ent/user"
 )
@@ -31,8 +30,6 @@ type Client struct {
 	Article *ArticleClient
 	// ArticleTag is the client for interacting with the ArticleTag builders.
 	ArticleTag *ArticleTagClient
-	// Auth is the client for interacting with the Auth builders.
-	Auth *AuthClient
 	// ReadArticle is the client for interacting with the ReadArticle builders.
 	ReadArticle *ReadArticleClient
 	// User is the client for interacting with the User builders.
@@ -52,7 +49,6 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Article = NewArticleClient(c.config)
 	c.ArticleTag = NewArticleTagClient(c.config)
-	c.Auth = NewAuthClient(c.config)
 	c.ReadArticle = NewReadArticleClient(c.config)
 	c.User = NewUserClient(c.config)
 }
@@ -139,7 +135,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:      cfg,
 		Article:     NewArticleClient(cfg),
 		ArticleTag:  NewArticleTagClient(cfg),
-		Auth:        NewAuthClient(cfg),
 		ReadArticle: NewReadArticleClient(cfg),
 		User:        NewUserClient(cfg),
 	}, nil
@@ -163,7 +158,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:      cfg,
 		Article:     NewArticleClient(cfg),
 		ArticleTag:  NewArticleTagClient(cfg),
-		Auth:        NewAuthClient(cfg),
 		ReadArticle: NewReadArticleClient(cfg),
 		User:        NewUserClient(cfg),
 	}, nil
@@ -196,7 +190,6 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Article.Use(hooks...)
 	c.ArticleTag.Use(hooks...)
-	c.Auth.Use(hooks...)
 	c.ReadArticle.Use(hooks...)
 	c.User.Use(hooks...)
 }
@@ -206,7 +199,6 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Article.Intercept(interceptors...)
 	c.ArticleTag.Intercept(interceptors...)
-	c.Auth.Intercept(interceptors...)
 	c.ReadArticle.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
@@ -218,8 +210,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Article.mutate(ctx, m)
 	case *ArticleTagMutation:
 		return c.ArticleTag.mutate(ctx, m)
-	case *AuthMutation:
-		return c.Auth.mutate(ctx, m)
 	case *ReadArticleMutation:
 		return c.ReadArticle.mutate(ctx, m)
 	case *UserMutation:
@@ -513,140 +503,6 @@ func (c *ArticleTagClient) mutate(ctx context.Context, m *ArticleTagMutation) (V
 	}
 }
 
-// AuthClient is a client for the Auth schema.
-type AuthClient struct {
-	config
-}
-
-// NewAuthClient returns a client for the Auth from the given config.
-func NewAuthClient(c config) *AuthClient {
-	return &AuthClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `auth.Hooks(f(g(h())))`.
-func (c *AuthClient) Use(hooks ...Hook) {
-	c.hooks.Auth = append(c.hooks.Auth, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `auth.Intercept(f(g(h())))`.
-func (c *AuthClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Auth = append(c.inters.Auth, interceptors...)
-}
-
-// Create returns a builder for creating a Auth entity.
-func (c *AuthClient) Create() *AuthCreate {
-	mutation := newAuthMutation(c.config, OpCreate)
-	return &AuthCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Auth entities.
-func (c *AuthClient) CreateBulk(builders ...*AuthCreate) *AuthCreateBulk {
-	return &AuthCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Auth.
-func (c *AuthClient) Update() *AuthUpdate {
-	mutation := newAuthMutation(c.config, OpUpdate)
-	return &AuthUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *AuthClient) UpdateOne(a *Auth) *AuthUpdateOne {
-	mutation := newAuthMutation(c.config, OpUpdateOne, withAuth(a))
-	return &AuthUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *AuthClient) UpdateOneID(id uuid.UUID) *AuthUpdateOne {
-	mutation := newAuthMutation(c.config, OpUpdateOne, withAuthID(id))
-	return &AuthUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Auth.
-func (c *AuthClient) Delete() *AuthDelete {
-	mutation := newAuthMutation(c.config, OpDelete)
-	return &AuthDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *AuthClient) DeleteOne(a *Auth) *AuthDeleteOne {
-	return c.DeleteOneID(a.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *AuthClient) DeleteOneID(id uuid.UUID) *AuthDeleteOne {
-	builder := c.Delete().Where(auth.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &AuthDeleteOne{builder}
-}
-
-// Query returns a query builder for Auth.
-func (c *AuthClient) Query() *AuthQuery {
-	return &AuthQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeAuth},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Auth entity by its id.
-func (c *AuthClient) Get(ctx context.Context, id uuid.UUID) (*Auth, error) {
-	return c.Query().Where(auth.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *AuthClient) GetX(ctx context.Context, id uuid.UUID) *Auth {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryUser queries the user edge of a Auth.
-func (c *AuthClient) QueryUser(a *Auth) *UserQuery {
-	query := (&UserClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(auth.Table, auth.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, auth.UserTable, auth.UserColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *AuthClient) Hooks() []Hook {
-	return c.hooks.Auth
-}
-
-// Interceptors returns the client interceptors.
-func (c *AuthClient) Interceptors() []Interceptor {
-	return c.inters.Auth
-}
-
-func (c *AuthClient) mutate(ctx context.Context, m *AuthMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&AuthCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&AuthUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&AuthUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&AuthDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Auth mutation op: %q", m.Op())
-	}
-}
-
 // ReadArticleClient is a client for the ReadArticle schema.
 type ReadArticleClient struct {
 	config
@@ -874,22 +730,6 @@ func (c *UserClient) GetX(ctx context.Context, id uuid.UUID) *User {
 	return obj
 }
 
-// QueryAuths queries the auths edge of a User.
-func (c *UserClient) QueryAuths(u *User) *AuthQuery {
-	query := (&AuthClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(auth.Table, auth.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.AuthsTable, user.AuthsColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -918,9 +758,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Article, ArticleTag, Auth, ReadArticle, User []ent.Hook
+		Article, ArticleTag, ReadArticle, User []ent.Hook
 	}
 	inters struct {
-		Article, ArticleTag, Auth, ReadArticle, User []ent.Interceptor
+		Article, ArticleTag, ReadArticle, User []ent.Interceptor
 	}
 )

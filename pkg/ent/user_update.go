@@ -11,8 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
-	"github.com/morning-night-dream/platform-app/pkg/ent/auth"
 	"github.com/morning-night-dream/platform-app/pkg/ent/predicate"
 	"github.com/morning-night-dream/platform-app/pkg/ent/user"
 )
@@ -27,6 +25,20 @@ type UserUpdate struct {
 // Where appends a list predicates to the UserUpdate builder.
 func (uu *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 	uu.mutation.Where(ps...)
+	return uu
+}
+
+// SetLastLoggedInAt sets the "last_logged_in_at" field.
+func (uu *UserUpdate) SetLastLoggedInAt(t time.Time) *UserUpdate {
+	uu.mutation.SetLastLoggedInAt(t)
+	return uu
+}
+
+// SetNillableLastLoggedInAt sets the "last_logged_in_at" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLastLoggedInAt(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetLastLoggedInAt(*t)
+	}
 	return uu
 }
 
@@ -50,45 +62,9 @@ func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 	return uu
 }
 
-// AddAuthIDs adds the "auths" edge to the Auth entity by IDs.
-func (uu *UserUpdate) AddAuthIDs(ids ...uuid.UUID) *UserUpdate {
-	uu.mutation.AddAuthIDs(ids...)
-	return uu
-}
-
-// AddAuths adds the "auths" edges to the Auth entity.
-func (uu *UserUpdate) AddAuths(a ...*Auth) *UserUpdate {
-	ids := make([]uuid.UUID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return uu.AddAuthIDs(ids...)
-}
-
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
-}
-
-// ClearAuths clears all "auths" edges to the Auth entity.
-func (uu *UserUpdate) ClearAuths() *UserUpdate {
-	uu.mutation.ClearAuths()
-	return uu
-}
-
-// RemoveAuthIDs removes the "auths" edge to Auth entities by IDs.
-func (uu *UserUpdate) RemoveAuthIDs(ids ...uuid.UUID) *UserUpdate {
-	uu.mutation.RemoveAuthIDs(ids...)
-	return uu
-}
-
-// RemoveAuths removes "auths" edges to Auth entities.
-func (uu *UserUpdate) RemoveAuths(a ...*Auth) *UserUpdate {
-	ids := make([]uuid.UUID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return uu.RemoveAuthIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -136,65 +112,14 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := uu.mutation.LastLoggedInAt(); ok {
+		_spec.SetField(user.FieldLastLoggedInAt, field.TypeTime, value)
+	}
 	if value, ok := uu.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 	}
 	if value, ok := uu.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if uu.mutation.AuthsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.AuthsTable,
-			Columns: []string{user.AuthsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: auth.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uu.mutation.RemovedAuthsIDs(); len(nodes) > 0 && !uu.mutation.AuthsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.AuthsTable,
-			Columns: []string{user.AuthsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: auth.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uu.mutation.AuthsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.AuthsTable,
-			Columns: []string{user.AuthsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: auth.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -214,6 +139,20 @@ type UserUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *UserMutation
+}
+
+// SetLastLoggedInAt sets the "last_logged_in_at" field.
+func (uuo *UserUpdateOne) SetLastLoggedInAt(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetLastLoggedInAt(t)
+	return uuo
+}
+
+// SetNillableLastLoggedInAt sets the "last_logged_in_at" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLastLoggedInAt(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetLastLoggedInAt(*t)
+	}
+	return uuo
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -236,45 +175,9 @@ func (uuo *UserUpdateOne) SetUpdatedAt(t time.Time) *UserUpdateOne {
 	return uuo
 }
 
-// AddAuthIDs adds the "auths" edge to the Auth entity by IDs.
-func (uuo *UserUpdateOne) AddAuthIDs(ids ...uuid.UUID) *UserUpdateOne {
-	uuo.mutation.AddAuthIDs(ids...)
-	return uuo
-}
-
-// AddAuths adds the "auths" edges to the Auth entity.
-func (uuo *UserUpdateOne) AddAuths(a ...*Auth) *UserUpdateOne {
-	ids := make([]uuid.UUID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return uuo.AddAuthIDs(ids...)
-}
-
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
-}
-
-// ClearAuths clears all "auths" edges to the Auth entity.
-func (uuo *UserUpdateOne) ClearAuths() *UserUpdateOne {
-	uuo.mutation.ClearAuths()
-	return uuo
-}
-
-// RemoveAuthIDs removes the "auths" edge to Auth entities by IDs.
-func (uuo *UserUpdateOne) RemoveAuthIDs(ids ...uuid.UUID) *UserUpdateOne {
-	uuo.mutation.RemoveAuthIDs(ids...)
-	return uuo
-}
-
-// RemoveAuths removes "auths" edges to Auth entities.
-func (uuo *UserUpdateOne) RemoveAuths(a ...*Auth) *UserUpdateOne {
-	ids := make([]uuid.UUID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return uuo.RemoveAuthIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -352,65 +255,14 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			}
 		}
 	}
+	if value, ok := uuo.mutation.LastLoggedInAt(); ok {
+		_spec.SetField(user.FieldLastLoggedInAt, field.TypeTime, value)
+	}
 	if value, ok := uuo.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 	}
 	if value, ok := uuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(user.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if uuo.mutation.AuthsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.AuthsTable,
-			Columns: []string{user.AuthsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: auth.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uuo.mutation.RemovedAuthsIDs(); len(nodes) > 0 && !uuo.mutation.AuthsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.AuthsTable,
-			Columns: []string{user.AuthsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: auth.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uuo.mutation.AuthsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.AuthsTable,
-			Columns: []string{user.AuthsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: auth.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues

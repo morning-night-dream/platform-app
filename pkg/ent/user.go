@@ -17,31 +17,12 @@ type User struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
+	// LastLoggedInAt holds the value of the "last_logged_in_at" field.
+	LastLoggedInAt time.Time `json:"last_logged_in_at,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the UserQuery when eager-loading is set.
-	Edges UserEdges `json:"edges"`
-}
-
-// UserEdges holds the relations/edges for other nodes in the graph.
-type UserEdges struct {
-	// Auths holds the value of the auths edge.
-	Auths []*Auth `json:"auths,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
-}
-
-// AuthsOrErr returns the Auths value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) AuthsOrErr() ([]*Auth, error) {
-	if e.loadedTypes[0] {
-		return e.Auths, nil
-	}
-	return nil, &NotLoadedError{edge: "auths"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -49,7 +30,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldCreatedAt, user.FieldUpdatedAt:
+		case user.FieldLastLoggedInAt, user.FieldCreatedAt, user.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case user.FieldID:
 			values[i] = new(uuid.UUID)
@@ -74,6 +55,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				u.ID = *value
 			}
+		case user.FieldLastLoggedInAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_logged_in_at", values[i])
+			} else if value.Valid {
+				u.LastLoggedInAt = value.Time
+			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -89,11 +76,6 @@ func (u *User) assignValues(columns []string, values []any) error {
 		}
 	}
 	return nil
-}
-
-// QueryAuths queries the "auths" edge of the User entity.
-func (u *User) QueryAuths() *AuthQuery {
-	return NewUserClient(u.config).QueryAuths(u)
 }
 
 // Update returns a builder for updating this User.
@@ -119,6 +101,9 @@ func (u *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
+	builder.WriteString("last_logged_in_at=")
+	builder.WriteString(u.LastLoggedInAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")

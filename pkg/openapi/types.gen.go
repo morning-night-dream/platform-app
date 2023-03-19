@@ -19,7 +19,7 @@ type Article struct {
 	Description *string `json:"description,omitempty"`
 
 	// Id id
-	Id *openapi_types.UUID `json:"id,omitempty"`
+	Id openapi_types.UUID `json:"id"`
 
 	// Tags タグ
 	Tags *[]string `json:"tags,omitempty"`
@@ -31,21 +31,60 @@ type Article struct {
 	Title *string `json:"title,omitempty"`
 
 	// Url 記事のURL
-	Url *string `json:"url,omitempty"`
+	Url string `json:"url"`
 }
 
-// V1ListArticleResponse defines model for V1ListArticleResponse.
-type V1ListArticleResponse struct {
+// UnauthorizedResponseSchema defines model for UnauthorizedResponseSchema.
+type UnauthorizedResponseSchema struct {
+	// Code コード
+	Code openapi_types.UUID `json:"code"`
+}
+
+// V1ArticleListResponseSchema defines model for V1ArticleListResponseSchema.
+type V1ArticleListResponseSchema struct {
 	Articles *[]Article `json:"articles,omitempty"`
 
 	// NextPageToken 次回リクエスト時に指定するページトークン
 	NextPageToken *string `json:"nextPageToken,omitempty"`
 }
 
-// V1UnauthorizedResponse defines model for V1UnauthorizedResponse.
-type V1UnauthorizedResponse struct {
-	// Code コード
-	Code openapi_types.UUID `json:"code"`
+// V1AuthRefreshResponseSchema defines model for V1AuthRefreshResponseSchema.
+type V1AuthRefreshResponseSchema struct {
+	// IdToken IDトークン
+	IdToken string `json:"idToken"`
+}
+
+// V1AuthSignInRequestSchema defines model for V1AuthSignInRequestSchema.
+type V1AuthSignInRequestSchema struct {
+	// Email メールアドレス
+	Email openapi_types.Email `json:"email"`
+
+	// ExpiresIn トークン有効期限(秒)
+	ExpiresIn *int `json:"expiresIn,omitempty"`
+
+	// Password パスワード
+	Password string `json:"password"`
+
+	// PublicKey 公開鍵
+	PublicKey string `json:"publicKey"`
+}
+
+// V1AuthSignInResponseSchema defines model for V1AuthSignInResponseSchema.
+type V1AuthSignInResponseSchema struct {
+	// IdToken IDトークン
+	IdToken string `json:"idToken"`
+
+	// SessionToken セッショントークン
+	SessionToken string `json:"sessionToken"`
+}
+
+// V1AuthSignUpRequestSchema defines model for V1AuthSignUpRequestSchema.
+type V1AuthSignUpRequestSchema struct {
+	// Email メールアドレス
+	Email openapi_types.Email `json:"email"`
+
+	// Password パスワード
+	Password string `json:"password"`
 }
 
 // V1ListArticlesParams defines parameters for V1ListArticles.
@@ -73,30 +112,6 @@ type V1AuthRefreshParams struct {
 	ExpiresIn *int   `form:"expiresIn,omitempty" json:"expiresIn,omitempty"`
 }
 
-// V1AuthSignInJSONBody defines parameters for V1AuthSignIn.
-type V1AuthSignInJSONBody struct {
-	// Email メールアドレス
-	Email openapi_types.Email `json:"email"`
-
-	// ExpiresIn トークン有効期限(秒)
-	ExpiresIn *int `json:"expiresIn,omitempty"`
-
-	// Password パスワード
-	Password string `json:"password"`
-
-	// PublicKey 公開鍵
-	PublicKey string `json:"publicKey"`
-}
-
-// V1AuthSignUpJSONBody defines parameters for V1AuthSignUp.
-type V1AuthSignUpJSONBody struct {
-	// Email メールアドレス
-	Email openapi_types.Email `json:"email"`
-
-	// Password パスワード
-	Password string `json:"password"`
-}
-
 // V1SignParams defines parameters for V1Sign.
 type V1SignParams struct {
 	// Code 署名付きコード
@@ -110,7 +125,7 @@ type V1SignParams struct {
 type V1AuthResignJSONRequestBody V1AuthResignJSONBody
 
 // V1AuthSignInJSONRequestBody defines body for V1AuthSignIn for application/json ContentType.
-type V1AuthSignInJSONRequestBody V1AuthSignInJSONBody
+type V1AuthSignInJSONRequestBody = V1AuthSignInRequestSchema
 
 // V1AuthSignUpJSONRequestBody defines body for V1AuthSignUp for application/json ContentType.
-type V1AuthSignUpJSONRequestBody V1AuthSignUpJSONBody
+type V1AuthSignUpJSONRequestBody = V1AuthSignUpRequestSchema

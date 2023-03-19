@@ -13,26 +13,20 @@ const (
 	Label = "user"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldLastLoggedInAt holds the string denoting the last_logged_in_at field in the database.
+	FieldLastLoggedInAt = "last_logged_in_at"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeAuths holds the string denoting the auths edge name in mutations.
-	EdgeAuths = "auths"
 	// Table holds the table name of the user in the database.
 	Table = "users"
-	// AuthsTable is the table that holds the auths relation/edge.
-	AuthsTable = "auths"
-	// AuthsInverseTable is the table name for the Auth entity.
-	// It exists in this package in order to avoid circular dependency with the "auth" package.
-	AuthsInverseTable = "auths"
-	// AuthsColumn is the table column denoting the auths relation/edge.
-	AuthsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
 var Columns = []string{
 	FieldID,
+	FieldLastLoggedInAt,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -48,6 +42,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultLastLoggedInAt holds the default value on creation for the "last_logged_in_at" field.
+	DefaultLastLoggedInAt func() time.Time
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

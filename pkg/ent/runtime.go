@@ -8,7 +8,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/morning-night-dream/platform-app/pkg/ent/article"
 	"github.com/morning-night-dream/platform-app/pkg/ent/articletag"
-	"github.com/morning-night-dream/platform-app/pkg/ent/auth"
 	"github.com/morning-night-dream/platform-app/pkg/ent/readarticle"
 	"github.com/morning-night-dream/platform-app/pkg/ent/schema"
 	"github.com/morning-night-dream/platform-app/pkg/ent/user"
@@ -50,26 +49,6 @@ func init() {
 	articletagDescID := articletagFields[0].Descriptor()
 	// articletag.DefaultID holds the default value on creation for the id field.
 	articletag.DefaultID = articletagDescID.Default.(func() uuid.UUID)
-	authFields := schema.Auth{}.Fields()
-	_ = authFields
-	// authDescUserID is the schema descriptor for user_id field.
-	authDescUserID := authFields[1].Descriptor()
-	// auth.DefaultUserID holds the default value on creation for the user_id field.
-	auth.DefaultUserID = authDescUserID.Default.(func() uuid.UUID)
-	// authDescCreatedAt is the schema descriptor for created_at field.
-	authDescCreatedAt := authFields[5].Descriptor()
-	// auth.DefaultCreatedAt holds the default value on creation for the created_at field.
-	auth.DefaultCreatedAt = authDescCreatedAt.Default.(func() time.Time)
-	// authDescUpdatedAt is the schema descriptor for updated_at field.
-	authDescUpdatedAt := authFields[6].Descriptor()
-	// auth.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	auth.DefaultUpdatedAt = authDescUpdatedAt.Default.(func() time.Time)
-	// auth.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	auth.UpdateDefaultUpdatedAt = authDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// authDescID is the schema descriptor for id field.
-	authDescID := authFields[0].Descriptor()
-	// auth.DefaultID holds the default value on creation for the id field.
-	auth.DefaultID = authDescID.Default.(func() uuid.UUID)
 	readarticleFields := schema.ReadArticle{}.Fields()
 	_ = readarticleFields
 	// readarticleDescReadAt is the schema descriptor for read_at field.
@@ -82,12 +61,16 @@ func init() {
 	readarticle.DefaultID = readarticleDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
+	// userDescLastLoggedInAt is the schema descriptor for last_logged_in_at field.
+	userDescLastLoggedInAt := userFields[1].Descriptor()
+	// user.DefaultLastLoggedInAt holds the default value on creation for the last_logged_in_at field.
+	user.DefaultLastLoggedInAt = userDescLastLoggedInAt.Default.(func() time.Time)
 	// userDescCreatedAt is the schema descriptor for created_at field.
-	userDescCreatedAt := userFields[1].Descriptor()
+	userDescCreatedAt := userFields[2].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescUpdatedAt is the schema descriptor for updated_at field.
-	userDescUpdatedAt := userFields[2].Descriptor()
+	userDescUpdatedAt := userFields[3].Descriptor()
 	// user.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	user.DefaultUpdatedAt = userDescUpdatedAt.Default.(func() time.Time)
 	// user.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

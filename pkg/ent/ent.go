@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/morning-night-dream/platform-app/pkg/ent/article"
 	"github.com/morning-night-dream/platform-app/pkg/ent/articletag"
-	"github.com/morning-night-dream/platform-app/pkg/ent/auth"
 	"github.com/morning-night-dream/platform-app/pkg/ent/readarticle"
 	"github.com/morning-night-dream/platform-app/pkg/ent/user"
 )
@@ -71,7 +70,6 @@ func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		article.Table:     article.ValidColumn,
 		articletag.Table:  articletag.ValidColumn,
-		auth.Table:        auth.ValidColumn,
 		readarticle.Table: readarticle.ValidColumn,
 		user.Table:        user.ValidColumn,
 	}

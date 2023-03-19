@@ -36,7 +36,7 @@ jobs:
         with:
           node-version: 18.13.0
       - name: Set up go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
           cache: true
@@ -44,7 +44,7 @@ jobs:
       - name: Migrate
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
-        run: go run cmd/migrate/main.go
+        run: go run cmd/db/migrate/main.go
       - name: Run firebase authentication
         working-directory: ./.docker/firebase
         run: |
@@ -62,7 +62,7 @@ jobs:
           FIREBASE_API_KEY: emulator
           FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
         run: |
-          go run cmd/appcore/main.go &
+          go run cmd/app/core/main.go &
           echo CORE_PID=$! >> $GITHUB_ENV
           sleep 30
       - name: Go run api
@@ -76,7 +76,7 @@ jobs:
           FIREBASE_API_KEY: emulator
           FIREBASE_AUTH_EMULATOR_HOST: localhost:9099
         run: |
-          go run cmd/appapi/main.go &
+          go run cmd/app/api/main.go &
           echo API_PID=$! >> $GITHUB_ENV
           sleep 30
       - name: Go test e2e

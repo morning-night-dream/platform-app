@@ -94,7 +94,7 @@ func TestE2EAuthRefresh(t *testing.T) {
 
 		body, _ := io.ReadAll(res.Body)
 
-		var unauthorized openapi.V1UnauthorizedResponse
+		var unauthorized openapi.UnauthorizedResponseSchema
 		if err := json.Unmarshal(body, &unauthorized); err != nil {
 			t.Fatalf("failed marshal response: %s caused by %s", body, err)
 			return
@@ -124,11 +124,11 @@ func TestE2EAuthRefresh(t *testing.T) {
 
 		res, err = client.Client.V1AuthRefresh(ctx, params)
 		if err != nil {
-			t.Fatalf("failed to refresh in: %s", err)
+			t.Errorf("failed to refresh in: %s", err)
 		}
 
 		if res.StatusCode != http.StatusOK {
-			t.Fatalf("failed to refresh in: %d", res.StatusCode)
+			t.Errorf("failed to refresh in: %d", res.StatusCode)
 		}
 
 		cookies := res.Cookies()
@@ -139,13 +139,28 @@ func TestE2EAuthRefresh(t *testing.T) {
 			Transport: helper.NewCookiesTransport(t, cookies),
 		}
 
+		defer res.Body.Close()
+
+		refBody, _ := io.ReadAll(res.Body)
+
+		var response openapi.V1AuthRefreshResponseSchema
+		if err := json.Unmarshal(refBody, &response); err != nil {
+			t.Errorf("failed marshal response: %s caused by %s", body, err)
+
+			return
+		}
+
+		if response.IdToken == "" {
+			t.Errorf("failed to auth sign in: %s", response.IdToken)
+		}
+
 		res, err = client.Client.V1AuthVerify(ctx)
 		if err != nil {
-			t.Fatalf("failed to verify in: %s", err)
+			t.Errorf("failed to verify in: %s", err)
 		}
 
 		if res.StatusCode != http.StatusOK {
-			t.Fatalf("failed to verify in: %d", res.StatusCode)
+			t.Errorf("failed to verify in: %d", res.StatusCode)
 		}
 	})
 }
