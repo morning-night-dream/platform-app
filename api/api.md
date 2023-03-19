@@ -19,14 +19,17 @@ Email: <a href="mailto:morning.night.dream@example.com">Support</a>
 * API Key (apiKey)
     - Parameter Name: **api-key**, in: header. 
 
-* API Key (idToken)
-    - Parameter Name: **id_token**, in: cookie. 
+* API Key (idTokenHeader)
+    - Parameter Name: **id-token**, in: header. 
 
-* API Key (accessToken)
-    - Parameter Name: **access_token**, in: cookie. 
+* API Key (sessionTokenHeader)
+    - Parameter Name: **session-token**, in: header. 
 
-* API Key (sessionToken)
-    - Parameter Name: **session_token**, in: cookie. 
+* API Key (idTokenCookie)
+    - Parameter Name: **id-token**, in: cookie. 
+
+* API Key (sessionTokenCookie)
+    - Parameter Name: **session-token**, in: cookie. 
 
 <h1 id="morning-night-dream-appgateway-auth">auth</h1>
 
@@ -149,7 +152,7 @@ This operation does not require authentication
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
-idToken, sessionToken
+None, None
 </aside>
 
 ## v1AuthRefresh
@@ -189,7 +192,7 @@ idToken, sessionToken
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
-sessionToken
+None
 </aside>
 
 ## v1AuthSignOut
@@ -210,7 +213,7 @@ sessionToken
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
-idToken, sessionToken
+None, None
 </aside>
 
 ## v1AuthResign
@@ -247,7 +250,7 @@ idToken, sessionToken
 
 <aside class="warning">
 To perform this operation, you must be authenticated by means of one of the following methods:
-idToken, sessionToken
+None, None
 </aside>
 
 ## v1Sign
