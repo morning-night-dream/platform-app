@@ -74,7 +74,7 @@ func (hdl *Handler) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params
 func (hdl *Handler) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var body openapi.V1AuthSignInJSONBody
+	var body openapi.V1AuthSignInRequestSchema
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to decode request body", log.ErrorField(err))
@@ -232,7 +232,7 @@ func (hdl *Handler) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 
 	ctx := r.Context()
 
-	var body openapi.V1AuthSignUpJSONBody
+	var body openapi.V1AuthSignUpRequestSchema
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to decode request body", log.ErrorField(err))
@@ -321,7 +321,7 @@ func (hdl *Handler) unauthorize(w http.ResponseWriter, r *http.Request, ctx cont
 
 	w.WriteHeader(http.StatusUnauthorized)
 
-	rs := openapi.V1UnauthorizedResponse{
+	rs := openapi.UnauthorizedResponseSchema{
 		Code: uuid.MustParse(string(output.CodeID)),
 	}
 
