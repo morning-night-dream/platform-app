@@ -50,11 +50,8 @@ type V1ArticleListResponseSchema struct {
 
 // V1AuthRefreshResponseSchema defines model for V1AuthRefreshResponseSchema.
 type V1AuthRefreshResponseSchema struct {
-	// AccessToken アクセストークン
-	AccessToken string `json:"accessToken"`
-
-	// RefreshToken リフレッシュトークン
-	RefreshToken string `json:"refreshToken"`
+	// IdToken IDトークン
+	IdToken string `json:"idToken"`
 }
 
 // V1AuthSignInRequestSchema defines model for V1AuthSignInRequestSchema.
@@ -74,11 +71,11 @@ type V1AuthSignInRequestSchema struct {
 
 // V1AuthSignInResponseSchema defines model for V1AuthSignInResponseSchema.
 type V1AuthSignInResponseSchema struct {
-	// AccessToken アクセストークン
-	AccessToken string `json:"accessToken"`
+	// IdToken IDトークン
+	IdToken string `json:"idToken"`
 
-	// RefreshToken リフレッシュトークン
-	RefreshToken string `json:"refreshToken"`
+	// SessionToken セッショントークン
+	SessionToken string `json:"sessionToken"`
 }
 
 // V1AuthSignUpRequestSchema defines model for V1AuthSignUpRequestSchema.

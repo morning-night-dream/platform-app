@@ -339,27 +339,23 @@ components:
     V1AuthSignInResponseSchema:
       type: object
       properties:
-        accessToken:
+        idToken:
           type: string
-          description: アクセストークン
-        refreshToken:
+          description: IDトークン
+        sessionToken:
           type: string
-          description: リフレッシュトークン
+          description: セッショントークン
       required:
-        - accessToken
-        - refreshToken
+        - idToken
+        - sessionToken
     V1AuthRefreshResponseSchema:
       type: object
       properties:
-        accessToken:
+        idToken:
           type: string
-          description: アクセストークン
-        refreshToken:
-          type: string
-          description: リフレッシュトークン
+          description: IDトークン
       required:
-        - accessToken
-        - refreshToken
+        - idToken
     V1ArticleListResponseSchema:
       type: object
       properties:

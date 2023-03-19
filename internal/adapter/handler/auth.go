@@ -67,7 +67,13 @@ func (hdl *Handler) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params
 		Path:     "/",
 	})
 
-	_, _ = w.Write([]byte("OK"))
+	res := openapi.V1AuthRefreshResponseSchema{
+		IdToken: string(output.IDToken),
+	}
+
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
 
 // POST /v1/auth/signin.
@@ -185,7 +191,14 @@ func (hdl *Handler) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 	})
 
-	_, _ = w.Write([]byte("OK"))
+	res := openapi.V1AuthSignInResponseSchema{
+		IdToken:      string(output.IDToken),
+		SessionToken: string(output.SessionToken),
+	}
+
+	if err := json.NewEncoder(w).Encode(res); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 }
 
 // GET /v1/auth/signout.
