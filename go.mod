@@ -22,7 +22,7 @@ require (
 	golang.org/x/net v0.8.0
 	google.golang.org/api v0.114.0
 	google.golang.org/grpc v1.53.0
-	google.golang.org/protobuf v1.29.1
+	google.golang.org/protobuf v1.30.0
 )
 
 require (
