@@ -102,8 +102,8 @@ apiKey
 
 ```json
 {
-  "accessToken": "string",
-  "refreshToken": "string"
+  "idToken": "string",
+  "sessionToken": "string"
 }
 ```
 
@@ -176,8 +176,7 @@ idToken, sessionToken
 
 ```json
 {
-  "accessToken": "string",
-  "refreshToken": "string"
+  "idToken": "string"
 }
 ```
 
@@ -463,8 +462,8 @@ This operation does not require authentication
 
 ```json
 {
-  "accessToken": "string",
-  "refreshToken": "string"
+  "idToken": "string",
+  "sessionToken": "string"
 }
 
 ```
@@ -473,8 +472,8 @@ This operation does not require authentication
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|accessToken|string|true|none|アクセストークン|
-|refreshToken|string|true|none|リフレッシュトークン|
+|idToken|string|true|none|IDトークン|
+|sessionToken|string|true|none|セッショントークン|
 
 <h2 id="tocS_V1AuthRefreshResponseSchema">V1AuthRefreshResponseSchema</h2>
 <!-- backwards compatibility -->
@@ -485,8 +484,7 @@ This operation does not require authentication
 
 ```json
 {
-  "accessToken": "string",
-  "refreshToken": "string"
+  "idToken": "string"
 }
 
 ```
@@ -495,8 +493,7 @@ This operation does not require authentication
 
 |Name|Type|Required|Restrictions|Description|
 |---|---|---|---|---|
-|accessToken|string|true|none|アクセストークン|
-|refreshToken|string|true|none|リフレッシュトークン|
+|idToken|string|true|none|IDトークン|
 
 <h2 id="tocS_V1ArticleListResponseSchema">V1ArticleListResponseSchema</h2>
 <!-- backwards compatibility -->
