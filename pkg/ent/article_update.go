@@ -249,10 +249,7 @@ func (au *ArticleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{article.TagsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: articletag.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(articletag.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -265,10 +262,7 @@ func (au *ArticleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{article.TagsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: articletag.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(articletag.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -284,10 +278,7 @@ func (au *ArticleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{article.TagsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: articletag.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(articletag.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -303,10 +294,7 @@ func (au *ArticleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{article.ReadArticlesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: readarticle.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(readarticle.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -319,10 +307,7 @@ func (au *ArticleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{article.ReadArticlesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: readarticle.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(readarticle.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -338,10 +323,7 @@ func (au *ArticleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{article.ReadArticlesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: readarticle.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(readarticle.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -617,10 +599,7 @@ func (auo *ArticleUpdateOne) sqlSave(ctx context.Context) (_node *Article, err e
 			Columns: []string{article.TagsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: articletag.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(articletag.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -633,10 +612,7 @@ func (auo *ArticleUpdateOne) sqlSave(ctx context.Context) (_node *Article, err e
 			Columns: []string{article.TagsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: articletag.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(articletag.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -652,10 +628,7 @@ func (auo *ArticleUpdateOne) sqlSave(ctx context.Context) (_node *Article, err e
 			Columns: []string{article.TagsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: articletag.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(articletag.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -671,10 +644,7 @@ func (auo *ArticleUpdateOne) sqlSave(ctx context.Context) (_node *Article, err e
 			Columns: []string{article.ReadArticlesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: readarticle.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(readarticle.FieldID, field.TypeUUID),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -687,10 +657,7 @@ func (auo *ArticleUpdateOne) sqlSave(ctx context.Context) (_node *Article, err e
 			Columns: []string{article.ReadArticlesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: readarticle.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(readarticle.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -706,10 +673,7 @@ func (auo *ArticleUpdateOne) sqlSave(ctx context.Context) (_node *Article, err e
 			Columns: []string{article.ReadArticlesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: readarticle.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(readarticle.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {

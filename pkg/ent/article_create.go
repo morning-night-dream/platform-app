@@ -277,10 +277,7 @@ func (ac *ArticleCreate) createSpec() (*Article, *sqlgraph.CreateSpec) {
 			Columns: []string{article.TagsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: articletag.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(articletag.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
@@ -296,10 +293,7 @@ func (ac *ArticleCreate) createSpec() (*Article, *sqlgraph.CreateSpec) {
 			Columns: []string{article.ReadArticlesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: readarticle.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(readarticle.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
