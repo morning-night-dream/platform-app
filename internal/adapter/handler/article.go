@@ -38,16 +38,16 @@ func (hdl *Handler) V1ListArticles(w http.ResponseWriter, r *http.Request, param
 		id := openapi_types.UUID(uid)
 
 		articles[i] = openapi.Article{
-			Id:          &id,
+			Id:          id,
+			Url:         item.Url,
 			Title:       &item.Title,
-			Url:         &item.Url,
 			Description: &item.Description,
 			Thumbnail:   &item.Thumbnail,
 			Tags:        &item.Tags,
 		}
 	}
 
-	rs := openapi.V1ListArticleResponse{
+	rs := openapi.V1ArticleListResponseSchema{
 		Articles:      &articles,
 		NextPageToken: &res.Msg.NextPageToken,
 	}

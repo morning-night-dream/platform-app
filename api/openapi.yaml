@@ -39,24 +39,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: メールアドレス
-                  format: email
-                  example: morning.night.dream@example.com
-                password:
-                  type: string
-                  description: パスワード
-                  format: password
-                  example: password
-              required:
-                - email
-                - password
+              $ref: '#/components/schemas/V1AuthSignUpRequestSchema'
       responses:
         '200':
-          description: 成功
+          description: OK
         '400':
           description: Bad Request
   /v1/auth/signin:
@@ -72,37 +58,18 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  description: メールアドレス
-                  format: email
-                  example: morning.night.dream@example.com
-                password:
-                  type: string
-                  description: パスワード
-                  format: password
-                  example: password
-                publicKey:
-                  type: string
-                  description: 公開鍵
-                  format: base64
-                expiresIn:
-                  type: integer
-                  description: トークン有効期限(秒)
-                  default: 86400
-                  minimum: 1
-                  maximum: 86400
-              required:
-                - email
-                - password
-                - publicKey
+              $ref: '#/components/schemas/V1AuthSignInRequestSchema'
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1AuthSignInResponseSchema'
         '401':
           description: Unauthorized
+        '500':
+          description: Internal Server Error
   /v1/auth/verify:
     get:
       tags:
@@ -121,7 +88,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/V1UnauthorizedResponse'
+                $ref: '#/components/schemas/UnauthorizedResponseSchema'
         '500':
           description: Internal Server Error
   /v1/auth/refresh:
@@ -161,6 +128,10 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/V1AuthRefreshResponseSchema'
         '401':
           description: Unauthorized
   /v1/auth/signout:
@@ -264,7 +235,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/V1ListArticleResponse'
+                $ref: '#/components/schemas/V1ArticleListResponseSchema'
         500:
           description: サーバーエラー
   /v1/health:
@@ -322,6 +293,88 @@ components:
       name: session_token
       in: cookie
   schemas:
+    V1AuthSignUpRequestSchema:
+      type: object
+      properties:
+        email:
+          type: string
+          description: メールアドレス
+          format: email
+          example: morning.night.dream@example.com
+        password:
+          type: string
+          description: パスワード
+          format: password
+          example: password
+      required:
+        - email
+        - password
+    V1AuthSignInRequestSchema:
+      type: object
+      properties:
+        email:
+          type: string
+          description: メールアドレス
+          format: email
+          example: morning.night.dream@example.com
+        password:
+          type: string
+          description: パスワード
+          format: password
+          example: password
+        publicKey:
+          type: string
+          description: 公開鍵
+          format: base64
+        expiresIn:
+          type: integer
+          description: トークン有効期限(秒)
+          default: 86400
+          minimum: 1
+          maximum: 86400
+      required:
+        - email
+        - password
+        - publicKey
+    V1AuthSignInResponseSchema:
+      type: object
+      properties:
+        idToken:
+          type: string
+          description: IDトークン
+        sessionToken:
+          type: string
+          description: セッショントークン
+      required:
+        - idToken
+        - sessionToken
+    V1AuthRefreshResponseSchema:
+      type: object
+      properties:
+        idToken:
+          type: string
+          description: IDトークン
+      required:
+        - idToken
+    V1ArticleListResponseSchema:
+      type: object
+      properties:
+        articles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Article'
+        nextPageToken:
+          type: string
+          description: 次回リクエスト時に指定するページトークン
+    UnauthorizedResponseSchema:
+      type: object
+      properties:
+        code:
+          type: string
+          description: コード
+          format: uuid
+      required:
+        - code
     Article:
       type: object
       properties:
@@ -353,22 +406,6 @@ components:
           items:
             type: string
             example: tag
-    V1ListArticleResponse:
-      type: object
-      properties:
-        articles:
-          type: array
-          items:
-            $ref: '#/components/schemas/Article'
-        nextPageToken:
-          type: string
-          description: 次回リクエスト時に指定するページトークン
-    V1UnauthorizedResponse:
-      type: object
-      properties:
-        code:
-          type: string
-          description: コード
-          format: uuid
       required:
-        - code
+        - id
+        - url

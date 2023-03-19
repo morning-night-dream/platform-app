@@ -26,13 +26,13 @@ jobs:
           ref: ${{ github.head_ref }}
           token: ${{ steps.generate-token.outputs.token }}
       - name: Setup go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version-file: go.mod
       - name: Setup aqua
         uses: aquaproj/aqua-installer@v2.0.2
         with:
-          aqua_version: v1.37.0
+          aqua_version: v1.37.2
       - name: Install buf
         run: ${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin/aqua install -t buf
       - name: Install protoc-gen-go

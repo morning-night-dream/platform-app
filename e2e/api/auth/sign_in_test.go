@@ -4,7 +4,9 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/rsa"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"testing"
 
@@ -54,11 +56,30 @@ func TestE2EAuthSighIn(t *testing.T) {
 			PublicKey: helper.Public(t, prv),
 		})
 		if err != nil {
-			t.Fatalf("failed to auth sign in: %s", err)
+			t.Errorf("failed to auth sign in: %s", err)
 		}
 
 		if res.StatusCode != http.StatusOK {
-			t.Fatalf("failed to auth sign in: %d", res.StatusCode)
+			t.Errorf("failed to auth sign in: %d", res.StatusCode)
+		}
+
+		defer res.Body.Close()
+
+		body, _ := io.ReadAll(res.Body)
+
+		var response openapi.V1AuthSignInResponseSchema
+		if err := json.Unmarshal(body, &response); err != nil {
+			t.Errorf("failed marshal response: %s caused by %s", body, err)
+
+			return
+		}
+
+		if response.IdToken == "" {
+			t.Errorf("failed to auth sign in: %s", response.IdToken)
+		}
+
+		if response.SessionToken == "" {
+			t.Errorf("failed to auth sign in: %s", response.SessionToken)
 		}
 
 		// TODO cookieがセットされていることを確認する必要がある
@@ -99,11 +120,11 @@ func TestE2EAuthSighIn(t *testing.T) {
 			PublicKey: helper.Public(t, prv),
 		})
 		if err != nil {
-			t.Fatalf("failed to auth sign in: %s", err)
+			t.Errorf("failed to auth sign in: %s", err)
 		}
 
 		if res.StatusCode == http.StatusOK {
-			t.Fatalf("success to auth sign in: %d", res.StatusCode)
+			t.Errorf("success to auth sign in: %d", res.StatusCode)
 		}
 
 		// TODO cookieがセットされていないことを確認する
@@ -144,11 +165,11 @@ func TestE2EAuthSighIn(t *testing.T) {
 			PublicKey: helper.Public(t, prv),
 		})
 		if err != nil {
-			t.Fatalf("failed to auth sign in: %s", err)
+			t.Errorf("failed to auth sign in: %s", err)
 		}
 
 		if res.StatusCode == http.StatusOK {
-			t.Fatalf("success to auth sign in: %d", res.StatusCode)
+			t.Errorf("success to auth sign in: %d", res.StatusCode)
 		}
 
 		// TODO cookieがセットされていないことを確認する
