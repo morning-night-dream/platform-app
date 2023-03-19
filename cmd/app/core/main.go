@@ -25,11 +25,13 @@ func main() {
 
 	ah := controller.NewArticle(da, ctl)
 
+	uh := controller.NewUser()
+
 	hh := controller.NewHealth()
 
 	vh := controller.NewVersion(version)
 
-	ch := server.NewConnectHandler(hh, ah, vh)
+	ch := server.NewConnectHandler(hh, uh, ah, vh)
 
 	srv := server.NewHTTPServer(ch)
 
