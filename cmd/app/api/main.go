@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/morning-night-dream/platform-app/internal/adapter/gateway"
@@ -12,8 +14,6 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/driver/public"
 	"github.com/morning-night-dream/platform-app/internal/driver/redis"
 	"github.com/morning-night-dream/platform-app/internal/driver/server"
-	"github.com/morning-night-dream/platform-app/internal/driver/store"
-	"github.com/morning-night-dream/platform-app/internal/driver/user"
 	"github.com/morning-night-dream/platform-app/internal/usecase/interactor"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
@@ -53,12 +53,12 @@ func main() {
 		interactor.NewAPIAuthGenerateCode(codeRepo),
 	)
 
-	hdl := handler.New(version, config.API.APIKey, auth, c, store.New(), fb, public.New(), user.New())
+	hdl := handler.New(version, config.API.APIKey, auth, c, fb, public.New())
 
 	router := chi.NewRouter()
 
 	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowedOrigins:   strings.Split(config.API.CorsAllowOrigins, ","),
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},

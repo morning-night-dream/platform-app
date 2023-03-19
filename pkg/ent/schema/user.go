@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"entgo.io/ent"
-	"entgo.io/ent/dialect/entsql"
-	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 )
@@ -19,15 +17,8 @@ type User struct {
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
+		field.Time("last_logged_in_at").Default(time.Now().UTC),
 		field.Time("created_at").Default(time.Now().UTC),
 		field.Time("updated_at").Default(time.Now().UTC).UpdateDefault(time.Now().UTC),
-	}
-}
-
-// Edges of the User.
-func (User) Edges() []ent.Edge {
-	return []ent.Edge{
-		edge.To("auths", Auth.Type).
-			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 	}
 }

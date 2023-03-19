@@ -200,7 +200,7 @@ func TestE2EAuthVerify(t *testing.T) {
 
 		body, _ := io.ReadAll(res.Body)
 
-		var unauthorized openapi.V1UnauthorizedResponse
+		var unauthorized openapi.UnauthorizedResponseSchema
 		if err := json.Unmarshal(body, &unauthorized); err != nil {
 			t.Fatalf("failed marshal response: %s caused by %s", body, err)
 			return

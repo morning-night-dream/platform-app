@@ -33,18 +33,6 @@ func (f ArticleTagFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArticleTagMutation", m)
 }
 
-// The AuthFunc type is an adapter to allow the use of ordinary
-// function as Auth mutator.
-type AuthFunc func(context.Context, *ent.AuthMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f AuthFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.AuthMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthMutation", m)
-}
-
 // The ReadArticleFunc type is an adapter to allow the use of ordinary
 // function as ReadArticle mutator.
 type ReadArticleFunc func(context.Context, *ent.ReadArticleMutation) (ent.Value, error)

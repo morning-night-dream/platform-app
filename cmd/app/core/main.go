@@ -27,11 +27,9 @@ func main() {
 
 	hh := controller.NewHealth()
 
-	auh := controller.NewAuth(ctl)
-
 	vh := controller.NewVersion(version)
 
-	ch := server.NewConnectHandler(hh, ah, auh, vh)
+	ch := server.NewConnectHandler(hh, ah, vh)
 
 	srv := server.NewHTTPServer(ch)
 

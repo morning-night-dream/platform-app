@@ -823,7 +823,7 @@ type ClientWithResponsesInterface interface {
 type V1ListArticlesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *V1ListArticleResponse
+	JSON200      *V1ArticleListResponseSchema
 }
 
 // Status returns HTTPResponse.Status
@@ -866,6 +866,7 @@ func (r V1AuthResignResponse) StatusCode() int {
 type V1AuthRefreshResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *V1AuthRefreshResponseSchema
 }
 
 // Status returns HTTPResponse.Status
@@ -887,6 +888,7 @@ func (r V1AuthRefreshResponse) StatusCode() int {
 type V1AuthSignInResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *V1AuthSignInResponseSchema
 }
 
 // Status returns HTTPResponse.Status
@@ -950,7 +952,7 @@ func (r V1AuthSignUpResponse) StatusCode() int {
 type V1AuthVerifyResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON401      *V1UnauthorizedResponse
+	JSON401      *UnauthorizedResponseSchema
 }
 
 // Status returns HTTPResponse.Status
@@ -1191,7 +1193,7 @@ func ParseV1ListArticlesResponse(rsp *http.Response) (*V1ListArticlesResponse, e
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest V1ListArticleResponse
+		var dest V1ArticleListResponseSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -1231,6 +1233,16 @@ func ParseV1AuthRefreshResponse(rsp *http.Response) (*V1AuthRefreshResponse, err
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest V1AuthRefreshResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -1245,6 +1257,16 @@ func ParseV1AuthSignInResponse(rsp *http.Response) (*V1AuthSignInResponse, error
 	response := &V1AuthSignInResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest V1AuthSignInResponseSchema
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
 	}
 
 	return response, nil
@@ -1297,7 +1319,7 @@ func ParseV1AuthVerifyResponse(rsp *http.Response) (*V1AuthVerifyResponse, error
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 401:
-		var dest V1UnauthorizedResponse
+		var dest UnauthorizedResponseSchema
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

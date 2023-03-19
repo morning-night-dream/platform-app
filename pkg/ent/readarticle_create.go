@@ -181,10 +181,7 @@ func (rac *ReadArticleCreate) createSpec() (*ReadArticle, *sqlgraph.CreateSpec) 
 			Columns: []string{readarticle.ArticleColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: article.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(article.FieldID, field.TypeUUID),
 			},
 		}
 		for _, k := range nodes {
