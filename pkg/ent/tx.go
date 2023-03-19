@@ -16,8 +16,6 @@ type Tx struct {
 	Article *ArticleClient
 	// ArticleTag is the client for interacting with the ArticleTag builders.
 	ArticleTag *ArticleTagClient
-	// Auth is the client for interacting with the Auth builders.
-	Auth *AuthClient
 	// ReadArticle is the client for interacting with the ReadArticle builders.
 	ReadArticle *ReadArticleClient
 	// User is the client for interacting with the User builders.
@@ -155,7 +153,6 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Article = NewArticleClient(tx.config)
 	tx.ArticleTag = NewArticleTagClient(tx.config)
-	tx.Auth = NewAuthClient(tx.config)
 	tx.ReadArticle = NewReadArticleClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }

@@ -84,14 +84,9 @@ func (hdl *Handler) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	email, err := body.Email.MarshalJSON()
-	if err != nil {
-		log.GetLogCtx(ctx).Warn("failed to marshal email", log.ErrorField(err))
+	log.GetLogCtx(ctx).Info(fmt.Sprintf("email: %s", body.Email))
 
-		w.WriteHeader(http.StatusBadRequest)
-
-		return
-	}
+	email := body.Email
 
 	// --------------------------------------------------
 	// from frontend

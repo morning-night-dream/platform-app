@@ -71,37 +71,6 @@ var (
 			},
 		},
 	}
-	// AuthsColumns holds the columns for the "auths" table.
-	AuthsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUUID},
-		{Name: "login_id", Type: field.TypeString, Unique: true},
-		{Name: "email", Type: field.TypeString, Unique: true},
-		{Name: "password", Type: field.TypeString},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "user_id", Type: field.TypeUUID},
-	}
-	// AuthsTable holds the schema information for the "auths" table.
-	AuthsTable = &schema.Table{
-		Name:       "auths",
-		Columns:    AuthsColumns,
-		PrimaryKey: []*schema.Column{AuthsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "auths_users_auths",
-				Columns:    []*schema.Column{AuthsColumns[6]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "login_id_index",
-				Unique:  true,
-				Columns: []*schema.Column{AuthsColumns[1]},
-			},
-		},
-	}
 	// ReadArticlesColumns holds the columns for the "read_articles" table.
 	ReadArticlesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -138,6 +107,7 @@ var (
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
+		{Name: "last_logged_in_at", Type: field.TypeTime},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}
@@ -151,7 +121,6 @@ var (
 	Tables = []*schema.Table{
 		ArticlesTable,
 		ArticleTagsTable,
-		AuthsTable,
 		ReadArticlesTable,
 		UsersTable,
 	}
@@ -159,6 +128,5 @@ var (
 
 func init() {
 	ArticleTagsTable.ForeignKeys[0].RefTable = ArticlesTable
-	AuthsTable.ForeignKeys[0].RefTable = UsersTable
 	ReadArticlesTable.ForeignKeys[0].RefTable = ArticlesTable
 }

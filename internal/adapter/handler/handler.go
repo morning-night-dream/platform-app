@@ -9,7 +9,6 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
 	"github.com/morning-night-dream/platform-app/internal/driver/public"
 	"github.com/morning-night-dream/platform-app/internal/driver/store"
-	"github.com/morning-night-dream/platform-app/internal/driver/user"
 	"github.com/morning-night-dream/platform-app/internal/usecase/port"
 	"github.com/morning-night-dream/platform-app/pkg/log"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
@@ -54,7 +53,6 @@ type Handler struct {
 	store    *store.Store
 	firebase *firebase.Client
 	public   *public.Public
-	user     *user.User
 }
 
 func New(
@@ -65,7 +63,6 @@ func New(
 	store *store.Store,
 	firebase *firebase.Client,
 	public *public.Public,
-	user *user.User,
 ) *Handler {
 	return &Handler{
 		version:  version,
@@ -75,7 +72,6 @@ func New(
 		store:    store,
 		firebase: firebase,
 		public:   public,
-		user:     user,
 	}
 }
 

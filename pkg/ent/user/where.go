@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 	"github.com/morning-night-dream/platform-app/pkg/ent/predicate"
 )
@@ -56,6 +55,11 @@ func IDLTE(id uuid.UUID) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldID, id))
 }
 
+// LastLoggedInAt applies equality check predicate on the "last_logged_in_at" field. It's identical to LastLoggedInAtEQ.
+func LastLoggedInAt(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastLoggedInAt, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -64,6 +68,46 @@ func CreatedAt(v time.Time) predicate.User {
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// LastLoggedInAtEQ applies the EQ predicate on the "last_logged_in_at" field.
+func LastLoggedInAtEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastLoggedInAt, v))
+}
+
+// LastLoggedInAtNEQ applies the NEQ predicate on the "last_logged_in_at" field.
+func LastLoggedInAtNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLastLoggedInAt, v))
+}
+
+// LastLoggedInAtIn applies the In predicate on the "last_logged_in_at" field.
+func LastLoggedInAtIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLastLoggedInAt, vs...))
+}
+
+// LastLoggedInAtNotIn applies the NotIn predicate on the "last_logged_in_at" field.
+func LastLoggedInAtNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLastLoggedInAt, vs...))
+}
+
+// LastLoggedInAtGT applies the GT predicate on the "last_logged_in_at" field.
+func LastLoggedInAtGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLastLoggedInAt, v))
+}
+
+// LastLoggedInAtGTE applies the GTE predicate on the "last_logged_in_at" field.
+func LastLoggedInAtGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLastLoggedInAt, v))
+}
+
+// LastLoggedInAtLT applies the LT predicate on the "last_logged_in_at" field.
+func LastLoggedInAtLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLastLoggedInAt, v))
+}
+
+// LastLoggedInAtLTE applies the LTE predicate on the "last_logged_in_at" field.
+func LastLoggedInAtLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLastLoggedInAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -144,33 +188,6 @@ func UpdatedAtLT(v time.Time) predicate.User {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldUpdatedAt, v))
-}
-
-// HasAuths applies the HasEdge predicate on the "auths" edge.
-func HasAuths() predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AuthsTable, AuthsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasAuthsWith applies the HasEdge predicate on the "auths" edge with a given conditions (other predicates).
-func HasAuthsWith(preds ...predicate.Auth) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AuthsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AuthsTable, AuthsColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
 }
 
 // And groups predicates with the AND operator between them.
