@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	IDTokenKey      = "id_token"
-	SessionTokenKey = "session_token"
+	IDTokenKey      = "id-token"
+	SessionTokenKey = "session-token"
 	IDKey           = "id"
 	SignKey         = "secret"
 	DefaultExpires  = 86400 // 1 day

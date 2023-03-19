@@ -280,17 +280,21 @@ components:
       type: apiKey
       name: api-key
       in: header
-    idToken:
+    idTokenHeader:
       type: apiKey
-      name: id_token
+      name: id-token
+      in: header
+    sessionTokenHeader:
+      type: apiKey
+      name: session-token
+      in: header
+    idTokenCookie:
+      type: apiKey
+      name: id-token
       in: cookie
-    accessToken:
+    sessionTokenCookie:
       type: apiKey
-      name: access_token
-      in: cookie
-    sessionToken:
-      type: apiKey
-      name: session_token
+      name: session-token
       in: cookie
   schemas:
     V1AuthSignUpRequestSchema:
