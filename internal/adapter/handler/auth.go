@@ -255,10 +255,6 @@ func (hdl *Handler) V1AuthSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	uid := uuid.New().String()
-
-	log.GetLogCtx(ctx).Info(fmt.Sprintf("uid: %s", uid))
-
 	log.GetLogCtx(ctx).Info(fmt.Sprintf("email: %s", body.Email))
 
 	input := port.APIAuthSignUpInput{
