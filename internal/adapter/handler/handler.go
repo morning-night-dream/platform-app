@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
 	"github.com/morning-night-dream/platform-app/internal/driver/public"
 	"github.com/morning-night-dream/platform-app/internal/usecase/port"
 	"github.com/morning-night-dream/platform-app/pkg/log"
@@ -43,12 +42,11 @@ func NewAuth(
 }
 
 type Handler struct {
-	version  string
-	key      string
-	auth     *Auth
-	client   *Client
-	firebase *firebase.Client
-	public   *public.Public
+	version string
+	key     string
+	auth    *Auth
+	client  *Client
+	public  *public.Public
 }
 
 func New(
@@ -56,16 +54,14 @@ func New(
 	key string,
 	auth *Auth,
 	client *Client,
-	firebase *firebase.Client,
 	public *public.Public,
 ) *Handler {
 	return &Handler{
-		version:  version,
-		key:      key,
-		auth:     auth,
-		client:   client,
-		firebase: firebase,
-		public:   public,
+		version: version,
+		key:     key,
+		auth:    auth,
+		client:  client,
+		public:  public,
 	}
 }
 

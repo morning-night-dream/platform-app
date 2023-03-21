@@ -83,6 +83,30 @@ func TestE2EAuthSighOut(t *testing.T) {
 			}
 		}
 
-		// Redis の中身が削除されていることを確認する
+		defer func() {
+			prv, err := rsa.GenerateKey(rand.Reader, 2048)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
+				Email:     types.Email(email),
+				Password:  password,
+				PublicKey: helper.Public(t, prv),
+			})
+			if err != nil {
+				t.Fatalf("failed to auth sign in: %s", err)
+			}
+
+			defer res.Body.Close()
+
+			uid := helper.ExtractUserID(t, res.Cookies())
+
+			udb := helper.NewUserDB(t, helper.GetDSN(t))
+
+			defer udb.Client.Close()
+
+			udb.BulkDelete([]string{uid})
+		}()
 	})
 }

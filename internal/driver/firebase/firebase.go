@@ -10,9 +10,51 @@ import (
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/auth"
+	"github.com/morning-night-dream/platform-app/internal/adapter/external"
 	"github.com/morning-night-dream/platform-app/pkg/log"
 	"google.golang.org/api/option"
 )
+
+type Firebase struct{}
+
+func New() *Firebase {
+	return &Firebase{}
+}
+
+func (fb *Firebase) Of(
+	secret string,
+	endpoint string,
+	apiKey string,
+) (*external.Auth, error) {
+	opt := option.WithCredentialsJSON([]byte(secret))
+
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		log.Log().Fatal("error initializing app", log.ErrorField(err))
+	}
+
+	auth, err := app.Auth(context.Background())
+	if err != nil {
+		return nil, fmt.Errorf("error create auth client: %w", err)
+	}
+
+	if endpoint == "" {
+		return nil, fmt.Errorf("firebase api endpoint is empty")
+	}
+
+	if apiKey == "" {
+		return nil, fmt.Errorf("firebase api key is empty")
+	}
+
+	return &external.Auth{
+		Endpoint:     endpoint,
+		APIKey:       apiKey,
+		HTTPClient:   http.DefaultClient,
+		FirebaseAuth: auth,
+	}, nil
+}
+
+// TODO 以下は削除して問題ない
 
 // @see https://firebase.google.com/docs/reference/rest/auth
 type APIRestClient struct {

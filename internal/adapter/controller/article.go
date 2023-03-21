@@ -17,19 +17,19 @@ import (
 )
 
 type Article struct {
+	ctl     *Controller
 	key     string
 	article *gateway.Article
-	ctl     *Controller
 }
 
 func NewArticle(
-	article *gateway.Article,
 	ctl *Controller,
+	article *gateway.Article,
 ) *Article {
 	return &Article{
+		ctl:     ctl,
 		key:     os.Getenv("API_KEY"),
 		article: article,
-		ctl:     ctl,
 	}
 }
 

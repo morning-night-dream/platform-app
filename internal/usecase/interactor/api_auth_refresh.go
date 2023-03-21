@@ -8,23 +8,22 @@ import (
 
 	"github.com/morning-night-dream/platform-app/internal/domain/cache"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
-	"github.com/morning-night-dream/platform-app/internal/domain/repository"
 	"github.com/morning-night-dream/platform-app/internal/usecase/port"
 	"github.com/morning-night-dream/platform-app/pkg/log"
 )
 
 type APIAuthRefresh struct {
-	sessionCache   cache.Cache[model.Session]
-	codeRepository repository.APICode
+	sessionCache cache.Cache[model.Session]
+	codeCache    cache.Cache[model.Code]
 }
 
 func NewAPIAuthRefresh(
 	sessionCache cache.Cache[model.Session],
-	codeRepository repository.APICode,
+	codeCache cache.Cache[model.Code],
 ) port.APIAuthRefresh {
 	return &APIAuthRefresh{
-		sessionCache:   sessionCache,
-		codeRepository: codeRepository,
+		sessionCache: sessionCache,
+		codeCache:    codeCache,
 	}
 }
 
@@ -33,7 +32,7 @@ func (aar *APIAuthRefresh) Execute(
 	input port.APIAuthRefreshInput,
 ) (port.APIAuthRefreshOutput, error) {
 	// code から session id 取得
-	code, err := aar.codeRepository.Find(ctx, input.CodeID)
+	code, err := aar.codeCache.Get(ctx, string(input.CodeID))
 	if err != nil {
 		return port.APIAuthRefreshOutput{}, err
 	}
@@ -70,7 +69,7 @@ func (aar *APIAuthRefresh) Execute(
 	}
 
 	// code の削除
-	if err := aar.codeRepository.Delete(ctx, input.CodeID); err != nil {
+	if err := aar.codeCache.Del(ctx, string(input.CodeID)); err != nil {
 		return port.APIAuthRefreshOutput{}, err
 	}
 
