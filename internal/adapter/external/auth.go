@@ -16,20 +16,20 @@ import (
 	"github.com/morning-night-dream/platform-app/pkg/log"
 )
 
-var _ rpc.Auth = (*Firebase)(nil)
+var _ rpc.Auth = (*Auth)(nil)
 
-type FirebaseFactory interface {
-	Of(secret string, endpoint string, apiKey string) (*Firebase, error)
+type AuthFactory interface {
+	Auth(secret string, endpoint string, apiKey string) (*Auth, error)
 }
 
-type Firebase struct {
+type Auth struct {
 	Endpoint     string
 	APIKey       string
 	HTTPClient   *http.Client
 	FirebaseAuth *auth.Client
 }
 
-func (fb *Firebase) SignUp(ctx context.Context, uid model.UserID, email model.EMail, password model.Password) error {
+func (fb *Auth) SignUp(ctx context.Context, uid model.UserID, email model.EMail, password model.Password) error {
 	params := (&auth.UserToCreate{}).
 		UID(string(uid)).
 		Email(string(email)).
@@ -58,7 +58,7 @@ type SignInResponse struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
-func (fb *Firebase) SignIn(ctx context.Context, email model.EMail, password model.Password) (model.Auth, error) {
+func (fb *Auth) SignIn(ctx context.Context, email model.EMail, password model.Password) (model.Auth, error) {
 	// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password
 	url := fmt.Sprintf("%s/v1/accounts:signInWithPassword?key=%s", fb.Endpoint, fb.APIKey)
 

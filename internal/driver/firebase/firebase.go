@@ -25,7 +25,7 @@ func (fb *Firebase) Of(
 	secret string,
 	endpoint string,
 	apiKey string,
-) (*external.Firebase, error) {
+) (*external.Auth, error) {
 	opt := option.WithCredentialsJSON([]byte(secret))
 
 	app, err := firebase.NewApp(context.Background(), nil, opt)
@@ -46,7 +46,7 @@ func (fb *Firebase) Of(
 		return nil, fmt.Errorf("firebase api key is empty")
 	}
 
-	return &external.Firebase{
+	return &external.Auth{
 		Endpoint:     endpoint,
 		APIKey:       apiKey,
 		HTTPClient:   http.DefaultClient,
