@@ -82,7 +82,31 @@ func TestE2EAuthSighIn(t *testing.T) {
 			t.Errorf("failed to auth sign in: %s", response.SessionToken)
 		}
 
-		// TODO cookieがセットされていることを確認する必要がある
+		defer func() {
+			prv, err := rsa.GenerateKey(rand.Reader, 2048)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
+				Email:     types.Email(email),
+				Password:  password,
+				PublicKey: helper.Public(t, prv),
+			})
+			if err != nil {
+				t.Fatalf("failed to auth sign in: %s", err)
+			}
+
+			defer res.Body.Close()
+
+			uid := helper.ExtractUserID(t, res.Cookies())
+
+			udb := helper.NewUserDB(t, helper.GetDSN(t))
+
+			defer udb.Client.Close()
+
+			udb.BulkDelete([]string{uid})
+		}()
 	})
 
 	t.Run("存在しないメアドでサインインできない", func(t *testing.T) {
@@ -127,7 +151,31 @@ func TestE2EAuthSighIn(t *testing.T) {
 			t.Errorf("success to auth sign in: %d", res.StatusCode)
 		}
 
-		// TODO cookieがセットされていないことを確認する
+		defer func() {
+			prv, err := rsa.GenerateKey(rand.Reader, 2048)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
+				Email:     types.Email(email),
+				Password:  password,
+				PublicKey: helper.Public(t, prv),
+			})
+			if err != nil {
+				t.Fatalf("failed to auth sign in: %s", err)
+			}
+
+			defer res.Body.Close()
+
+			uid := helper.ExtractUserID(t, res.Cookies())
+
+			udb := helper.NewUserDB(t, helper.GetDSN(t))
+
+			defer udb.Client.Close()
+
+			udb.BulkDelete([]string{uid})
+		}()
 	})
 
 	t.Run("パスワードが異なりサインインできない", func(t *testing.T) {
@@ -172,6 +220,30 @@ func TestE2EAuthSighIn(t *testing.T) {
 			t.Errorf("success to auth sign in: %d", res.StatusCode)
 		}
 
-		// TODO cookieがセットされていないことを確認する
+		defer func() {
+			prv, err := rsa.GenerateKey(rand.Reader, 2048)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
+				Email:     types.Email(email),
+				Password:  password,
+				PublicKey: helper.Public(t, prv),
+			})
+			if err != nil {
+				t.Fatalf("failed to auth sign in: %s", err)
+			}
+
+			defer res.Body.Close()
+
+			uid := helper.ExtractUserID(t, res.Cookies())
+
+			udb := helper.NewUserDB(t, helper.GetDSN(t))
+
+			defer udb.Client.Close()
+
+			udb.BulkDelete([]string{uid})
+		}()
 	})
 }

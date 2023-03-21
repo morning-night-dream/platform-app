@@ -6,26 +6,26 @@ import (
 	"github.com/google/uuid"
 	"github.com/morning-night-dream/platform-app/internal/domain/cache"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
-	"github.com/morning-night-dream/platform-app/internal/domain/repository"
+	"github.com/morning-night-dream/platform-app/internal/domain/rpc"
 	"github.com/morning-night-dream/platform-app/internal/usecase/port"
 	"github.com/morning-night-dream/platform-app/pkg/log"
 )
 
 type APIAuthSignIn struct {
-	authCache      cache.Cache[model.Auth]
-	authRepository repository.APIAuth
-	sessionCache   cache.Cache[model.Session]
+	authCache    cache.Cache[model.Auth]
+	authRPC      rpc.Auth
+	sessionCache cache.Cache[model.Session]
 }
 
 func NewAPIAuthSignIn(
-	authRepository repository.APIAuth,
+	authRPC rpc.Auth,
 	authCache cache.Cache[model.Auth],
 	sessionCache cache.Cache[model.Session],
 ) port.APIAuthSignIn {
 	return &APIAuthSignIn{
-		authRepository: authRepository,
-		authCache:      authCache,
-		sessionCache:   sessionCache,
+		authRPC:      authRPC,
+		authCache:    authCache,
+		sessionCache: sessionCache,
 	}
 }
 
@@ -33,7 +33,7 @@ func (aas *APIAuthSignIn) Execute(
 	ctx context.Context,
 	input port.APIAuthSignInInput,
 ) (port.APIAuthSignInOutput, error) {
-	auth, err := aas.authRepository.SignIn(ctx, input.EMail, input.Password)
+	auth, err := aas.authRPC.SignIn(ctx, input.EMail, input.Password)
 	if err != nil {
 		return port.APIAuthSignInOutput{}, err
 	}

@@ -2,22 +2,23 @@ package interactor
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/morning-night-dream/platform-app/internal/domain/cache"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
-	"github.com/morning-night-dream/platform-app/internal/domain/repository"
 	"github.com/morning-night-dream/platform-app/internal/usecase/port"
 )
 
 type ApiAuthGenerateCode struct {
-	codeRepository repository.APICode
+	codeCache cache.Cache[model.Code]
 }
 
 func NewAPIAuthGenerateCode(
-	codeRepository repository.APICode,
+	codeCache cache.Cache[model.Code],
 ) port.APIAuthGenerateCode {
 	return &ApiAuthGenerateCode{
-		codeRepository: codeRepository,
+		codeCache: codeCache,
 	}
 }
 
@@ -32,10 +33,12 @@ func (aac *ApiAuthGenerateCode) Execute(
 
 	codeID := model.CodeID(uuid.NewString())
 
-	if err := aac.codeRepository.Save(ctx, model.Code{
+	code := model.Code{
 		CodeID:    codeID,
 		SessionID: model.SessionID(sessionID),
-	}); err != nil {
+	}
+
+	if err := aac.codeCache.Set(ctx, string(codeID), code, time.Duration(time.Minute)); err != nil {
 		return port.APIAuthGenerateCodeOutput{}, err
 	}
 

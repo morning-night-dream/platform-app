@@ -21,11 +21,13 @@ func TestAPIE2EArticleList(t *testing.T) {
 	t.Run("記事が一覧できる", func(t *testing.T) {
 		t.Parallel()
 
-		art := helper.NewArticleDB(t, helper.GetDSN(t))
+		adb := helper.NewArticleDB(t, helper.GetDSN(t))
+
+		defer adb.Client.Close()
 
 		ids := helper.GenerateIDs(t, int(size))
 
-		art.BulkInsert(ids)
+		adb.BulkInsert(ids)
 
 		client := helper.NewOpenAPIClient(t, url)
 

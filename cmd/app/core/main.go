@@ -5,9 +5,9 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/adapter/gateway"
 	"github.com/morning-night-dream/platform-app/internal/driver/config"
 	"github.com/morning-night-dream/platform-app/internal/driver/database"
-	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
 	"github.com/morning-night-dream/platform-app/internal/driver/redis"
 	"github.com/morning-night-dream/platform-app/internal/driver/server"
+	"github.com/morning-night-dream/platform-app/internal/usecase/interactor"
 )
 
 var version string
@@ -17,19 +17,23 @@ func main() {
 
 	cache := redis.NewClient(config.Core.RedisURL)
 
-	da := gateway.NewArticle(db)
+	articleRepo := gateway.NewArticle(db)
 
-	fb := firebase.NewClient(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
+	userRepo := gateway.NewUser(db)
 
-	ctl := controller.New(fb, cache)
+	userCreate := interactor.NewCoreUserCreate(userRepo)
 
-	ah := controller.NewArticle(da, ctl)
+	ctl := controller.New(cache)
+
+	ah := controller.NewArticle(ctl, articleRepo)
+
+	uh := controller.NewUser(ctl, userCreate)
 
 	hh := controller.NewHealth()
 
 	vh := controller.NewVersion(version)
 
-	ch := server.NewConnectHandler(hh, ah, vh)
+	ch := server.NewConnectHandler(hh, uh, ah, vh)
 
 	srv := server.NewHTTPServer(ch)
 

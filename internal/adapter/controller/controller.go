@@ -17,12 +17,10 @@ type Controller struct {
 }
 
 func New(
-	firebase *firebase.Client,
 	cache *redis.Client,
 ) *Controller {
 	return &Controller{
-		firebase: firebase,
-		cache:    cache,
+		cache: cache,
 	}
 }
 

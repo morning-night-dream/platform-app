@@ -8,14 +8,17 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
+	"encoding/json"
 	"encoding/pem"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"testing"
 
 	"github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/google/uuid"
+	"github.com/morning-night-dream/platform-app/internal/domain/model"
 	"github.com/morning-night-dream/platform-app/pkg/openapi"
 )
 
@@ -121,4 +124,38 @@ func (user *User) Sign(code string) string {
 	}
 
 	return base64.StdEncoding.EncodeToString(signed)
+}
+
+func ExtractUserID(t *testing.T, cookies []*http.Cookie) string {
+	t.Helper()
+
+	var cookie *http.Cookie
+
+	for _, c := range cookies {
+		if c.Name == model.IDTokenKey {
+			cookie = c
+			break
+		}
+	}
+
+	log.Printf("cookie: %+v", cookie)
+
+	payload := strings.Split(cookie.Value, ".")[1]
+
+	decode, err := base64.RawURLEncoding.DecodeString(payload)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	type token struct {
+		ID string `json:"id"`
+	}
+
+	var p token
+
+	if err := json.Unmarshal(decode, &p); err != nil {
+		t.Fatal(err)
+	}
+
+	return p.ID
 }
