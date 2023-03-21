@@ -26,7 +26,10 @@ func main() {
 		panic(err)
 	}
 
-	fb := firebase.NewClient(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
+	authRPC, err := firebase.New().Of(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
+	if err != nil {
+		panic(err)
+	}
 
 	rds := redis.NewRedis(config.Core.RedisURL)
 
@@ -40,20 +43,18 @@ func main() {
 		panic(err)
 	}
 
-	authRepo := gateway.NewAPIAuth(fb)
-
 	codeRepo := gateway.NewAPICode()
 
 	auth := handler.NewAuth(
-		interactor.NewAPIAuthSignIn(authRepo, authCache, sessionCache),
+		interactor.NewAPIAuthSignIn(authRPC, authCache, sessionCache),
 		interactor.NewAPIAuthSignOut(authCache, sessionCache),
-		interactor.NewAPIAuthSignUp(authRepo),
+		interactor.NewAPIAuthSignUp(authRPC),
 		interactor.NewAPIAuthVerify(authCache),
 		interactor.NewAPIAuthRefresh(sessionCache, codeRepo),
 		interactor.NewAPIAuthGenerateCode(codeRepo),
 	)
 
-	hdl := handler.New(version, config.API.APIKey, auth, c, fb, public.New())
+	hdl := handler.New(version, config.API.APIKey, auth, c, public.New())
 
 	router := chi.NewRouter()
 
