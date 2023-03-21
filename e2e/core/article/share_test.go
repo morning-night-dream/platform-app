@@ -21,7 +21,8 @@ func TestE2EArticleShare(t *testing.T) {
 		t.Parallel()
 
 		adb := helper.NewArticleDB(t, helper.GetDSN(t))
-		defer adb.Close()
+
+		defer adb.Client.Close()
 
 		hc := &http.Client{
 			Transport: helper.NewXAPIKeyTransport(t, helper.GetAPIKey(t)),

@@ -12,7 +12,7 @@ import (
 
 type ArticleDB struct {
 	T      *testing.T
-	client *ent.Client
+	Client *ent.Client
 }
 
 func NewArticleDB(
@@ -23,12 +23,8 @@ func NewArticleDB(
 
 	return &ArticleDB{
 		T:      t,
-		client: database.NewClient(dsn),
+		Client: database.NewClient(dsn),
 	}
-}
-
-func (adb *ArticleDB) Close() error {
-	return adb.client.Close()
 }
 
 func (adb *ArticleDB) BulkInsert(ids []string) {
@@ -37,7 +33,7 @@ func (adb *ArticleDB) BulkInsert(ids []string) {
 	bulk := make([]*ent.ArticleCreate, len(ids))
 
 	for i, id := range ids {
-		bulk[i] = adb.client.Article.Create().
+		bulk[i] = adb.Client.Article.Create().
 			SetID(uuid.MustParse(id)).
 			SetTitle("title-" + id).
 			SetURL("https://example.com/" + id).
@@ -47,7 +43,7 @@ func (adb *ArticleDB) BulkInsert(ids []string) {
 			SetUpdatedAt(time.Now())
 	}
 
-	if err := adb.client.Article.CreateBulk(bulk...).OnConflict().UpdateNewValues().DoNothing().Exec(context.Background()); err != nil {
+	if err := adb.Client.Article.CreateBulk(bulk...).OnConflict().UpdateNewValues().DoNothing().Exec(context.Background()); err != nil {
 		adb.T.Fatal(err)
 	}
 }
@@ -55,7 +51,7 @@ func (adb *ArticleDB) BulkInsert(ids []string) {
 func (adb ArticleDB) BulkDelete(ids []string) {
 	adb.T.Helper()
 
-	tx, err := adb.client.Tx(context.Background())
+	tx, err := adb.Client.Tx(context.Background())
 	if err != nil {
 		adb.T.Error(err)
 
@@ -72,5 +68,43 @@ func (adb ArticleDB) BulkDelete(ids []string) {
 
 	if err := tx.Commit(); err != nil {
 		adb.T.Error(err)
+	}
+}
+
+type UserDB struct {
+	T      *testing.T
+	Client *ent.Client
+}
+
+func NewUserDB(
+	t *testing.T,
+	dsn string,
+) *UserDB {
+	t.Helper()
+
+	return &UserDB{
+		T:      t,
+		Client: database.NewClient(dsn),
+	}
+}
+
+func (udb *UserDB) BulkDelete(ids []string) {
+	tx, err := udb.Client.Tx(context.Background())
+	if err != nil {
+		udb.T.Error(err)
+
+		return
+	}
+
+	for _, id := range ids {
+		if err := tx.User.DeleteOneID(uuid.MustParse(id)).Exec(context.Background()); err != nil {
+			udb.T.Error(err)
+
+			_ = tx.Rollback()
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		udb.T.Error(err)
 	}
 }

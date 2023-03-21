@@ -75,6 +75,32 @@ func TestE2EAuthVerify(t *testing.T) {
 		if res.StatusCode != http.StatusOK {
 			t.Fatalf("failed to verify in: %d", res.StatusCode)
 		}
+
+		defer func() {
+			prv, err := rsa.GenerateKey(rand.Reader, 2048)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
+				Email:     types.Email(email),
+				Password:  password,
+				PublicKey: helper.Public(t, prv),
+			})
+			if err != nil {
+				t.Fatalf("failed to auth sign in: %s", err)
+			}
+
+			defer res.Body.Close()
+
+			uid := helper.ExtractUserID(t, res.Cookies())
+
+			udb := helper.NewUserDB(t, helper.GetDSN(t))
+
+			defer udb.Client.Close()
+
+			udb.BulkDelete([]string{uid})
+		}()
 	})
 
 	t.Run("cookie[session_token]がなくて認証できない", func(t *testing.T) {
@@ -135,6 +161,32 @@ func TestE2EAuthVerify(t *testing.T) {
 		if res.StatusCode != http.StatusUnauthorized {
 			t.Fatalf("failed to verify in: %d", res.StatusCode)
 		}
+
+		defer func() {
+			prv, err := rsa.GenerateKey(rand.Reader, 2048)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
+				Email:     types.Email(email),
+				Password:  password,
+				PublicKey: helper.Public(t, prv),
+			})
+			if err != nil {
+				t.Fatalf("failed to auth sign in: %s", err)
+			}
+
+			defer res.Body.Close()
+
+			uid := helper.ExtractUserID(t, res.Cookies())
+
+			udb := helper.NewUserDB(t, helper.GetDSN(t))
+
+			defer udb.Client.Close()
+
+			udb.BulkDelete([]string{uid})
+		}()
 	})
 
 	t.Run("cookie[id_token]がなくて認証できない", func(t *testing.T) {
@@ -210,5 +262,31 @@ func TestE2EAuthVerify(t *testing.T) {
 		if _, err := uuid.Parse(unauthorized.Code.String()); err != nil {
 			t.Errorf("failed to parse code: %s caused by %s", unauthorized.Code.String(), err)
 		}
+
+		defer func() {
+			prv, err := rsa.GenerateKey(rand.Reader, 2048)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
+				Email:     types.Email(email),
+				Password:  password,
+				PublicKey: helper.Public(t, prv),
+			})
+			if err != nil {
+				t.Fatalf("failed to auth sign in: %s", err)
+			}
+
+			defer res.Body.Close()
+
+			uid := helper.ExtractUserID(t, res.Cookies())
+
+			udb := helper.NewUserDB(t, helper.GetDSN(t))
+
+			defer udb.Client.Close()
+
+			udb.BulkDelete([]string{uid})
+		}()
 	})
 }

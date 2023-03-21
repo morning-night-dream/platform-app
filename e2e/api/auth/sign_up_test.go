@@ -2,6 +2,8 @@ package auth_test
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
 	"fmt"
 	"net/http"
 	"testing"
@@ -43,6 +45,34 @@ func TestE2EAuthSighUp(t *testing.T) {
 		if res.StatusCode != http.StatusOK {
 			t.Fatalf("failed to auth sign up: %d", res.StatusCode)
 		}
+
+		defer res.Body.Close()
+
+		defer func() {
+			prv, err := rsa.GenerateKey(rand.Reader, 2048)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			res, err := client.Client.V1AuthSignIn(context.Background(), openapi.V1AuthSignInJSONRequestBody{
+				Email:     types.Email(email),
+				Password:  password,
+				PublicKey: helper.Public(t, prv),
+			})
+			if err != nil {
+				t.Fatalf("failed to auth sign in: %s", err)
+			}
+
+			defer res.Body.Close()
+
+			uid := helper.ExtractUserID(t, res.Cookies())
+
+			udb := helper.NewUserDB(t, helper.GetDSN(t))
+
+			defer udb.Client.Close()
+
+			udb.BulkDelete([]string{uid})
+		}()
 	})
 
 	t.Run("Api-Keyがなくサインアップできない", func(t *testing.T) {
