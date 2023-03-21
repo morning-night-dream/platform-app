@@ -28,10 +28,10 @@ func NewUser(
 	}
 }
 
-func (us *User) SignUp(ctx context.Context) (model.User, error) {
-	req := NewRequestWithTID(ctx, &userv1.SignUpRequest{})
+func (us *User) Create(ctx context.Context) (model.User, error) {
+	req := NewRequestWithTID(ctx, &userv1.CreateRequest{})
 
-	user, err := us.connect.SignUp(ctx, req)
+	user, err := us.connect.Create(ctx, req)
 	if err != nil {
 		return model.User{}, fmt.Errorf("failed to sign up: %w", err)
 	}

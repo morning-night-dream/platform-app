@@ -27,7 +27,7 @@ func (aas *APIAuthSignUp) Execute(
 	ctx context.Context,
 	input port.APIAuthSignUpInput,
 ) (port.APIAuthSignUpOutput, error) {
-	res, err := aas.userRPC.SignUp(ctx)
+	res, err := aas.userRPC.Create(ctx)
 	if err != nil {
 		return port.APIAuthSignUpOutput{}, fmt.Errorf("failed to user sign up: %w", err)
 	}

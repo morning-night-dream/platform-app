@@ -7,44 +7,47 @@ import (
 	"github.com/bufbuild/connect-go"
 	"github.com/morning-night-dream/platform-app/internal/usecase/port"
 	userv1 "github.com/morning-night-dream/platform-app/pkg/connect/user/v1"
+	"github.com/morning-night-dream/platform-app/pkg/connect/user/v1/userv1connect"
 )
+
+var _ userv1connect.UserServiceHandler = (*User)(nil)
 
 type User struct {
 	ctl    *Controller
-	signUp port.CoreUserSignUp
+	create port.CoreUserCreate
 }
 
 func NewUser(
 	ctl *Controller,
-	signUp port.CoreUserSignUp,
+	create port.CoreUserCreate,
 ) *User {
 	return &User{
 		ctl:    ctl,
-		signUp: signUp,
+		create: create,
 	}
 }
 
-func (us *User) SignUp(
+func (us *User) Create(
 	ctx context.Context,
-	req *connect.Request[userv1.SignUpRequest],
-) (*connect.Response[userv1.SignUpResponse], error) {
-	input := port.CoreUserSignUpInput{}
+	req *connect.Request[userv1.CreateRequest],
+) (*connect.Response[userv1.CreateResponse], error) {
+	input := port.CoreUserCreateInput{}
 
-	output, err := us.signUp.Execute(ctx, input)
+	output, err := us.create.Execute(ctx, input)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute sign up: %w", err)
 	}
 
-	return connect.NewResponse(&userv1.SignUpResponse{
+	return connect.NewResponse(&userv1.CreateResponse{
 		User: &userv1.User{
 			Id: string(output.User.UserID),
 		},
 	}), nil
 }
 
-func (us *User) SignIn(
+func (us *User) Update(
 	ctx context.Context,
-	req *connect.Request[userv1.SignInRequest],
-) (*connect.Response[userv1.SignInResponse], error) {
-	return connect.NewResponse(&userv1.SignInResponse{}), nil
+	req *connect.Request[userv1.UpdateRequest],
+) (*connect.Response[userv1.UpdateResponse], error) {
+	return connect.NewResponse(&userv1.UpdateResponse{}), nil
 }

@@ -6,10 +6,10 @@ option go_package = "github.com/morning-night-dream/platform-app/pkg/connect/use
 
 // ユーザーサービス
 service UserService {
-  // サインアップ
-  rpc SignUp(SignUpRequest) returns (SignUpResponse) {}
-  // サインイン
-  rpc SignIn(SignInRequest) returns (SignInResponse) {}
+  // 作成
+  rpc Create(CreateRequest) returns (CreateResponse) {}
+  // 更新
+  rpc Update(UpdateRequest) returns (UpdateResponse) {}
 }
 
 // ユーザーモデル
@@ -17,18 +17,18 @@ message User {
   string id = 1;
 }
 
-// サインアップリクエスト
-message SignUpRequest {}
+// 作成リクエスト
+message CreateRequest {}
 
-// サインアップレスポンス
-message SignUpResponse {
+// 作成レスポンス
+message CreateResponse {
   User user = 1;
 }
 
-// サインインリクエスト
-message SignInRequest {
+// 更新リクエスト
+message UpdateRequest {
   string id = 1;
 }
 
-// サインインレスポンス
-message SignInResponse {}
+// 更新レスポンス
+message UpdateResponse {}

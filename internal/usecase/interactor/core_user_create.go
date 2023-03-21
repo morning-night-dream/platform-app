@@ -10,22 +10,22 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/usecase/port"
 )
 
-type CoreUserSignUp struct {
+type CoreUserCreate struct {
 	userRepo repository.User
 }
 
-func NewCoreUserSignUp(
+func NewCoreUserCreate(
 	userRepo repository.User,
-) port.CoreUserSignUp {
-	return &CoreUserSignUp{
+) port.CoreUserCreate {
+	return &CoreUserCreate{
 		userRepo: userRepo,
 	}
 }
 
-func (aas *CoreUserSignUp) Execute(
+func (aas *CoreUserCreate) Execute(
 	ctx context.Context,
-	input port.CoreUserSignUpInput,
-) (port.CoreUserSignUpOutput, error) {
+	input port.CoreUserCreateInput,
+) (port.CoreUserCreateOutput, error) {
 	uid := uuid.New().String()
 
 	user := model.User{
@@ -33,10 +33,10 @@ func (aas *CoreUserSignUp) Execute(
 	}
 
 	if err := aas.userRepo.Save(ctx, user); err != nil {
-		return port.CoreUserSignUpOutput{}, fmt.Errorf("failed to save user: %w", err)
+		return port.CoreUserCreateOutput{}, fmt.Errorf("failed to save user: %w", err)
 	}
 
-	return port.CoreUserSignUpOutput{
+	return port.CoreUserCreateOutput{
 		User: user,
 	}, nil
 }

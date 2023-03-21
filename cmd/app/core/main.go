@@ -21,13 +21,13 @@ func main() {
 
 	userRepo := gateway.NewUser(db)
 
-	userSignUp := interactor.NewCoreUserSignUp(userRepo)
+	userCreate := interactor.NewCoreUserCreate(userRepo)
 
 	ctl := controller.New(cache)
 
 	ah := controller.NewArticle(ctl, articleRepo)
 
-	uh := controller.NewUser(ctl, userSignUp)
+	uh := controller.NewUser(ctl, userCreate)
 
 	hh := controller.NewHealth()
 

@@ -7,5 +7,5 @@ import (
 )
 
 type User interface {
-	SignUp(context.Context) (model.User, error)
+	Create(context.Context) (model.User, error)
 }

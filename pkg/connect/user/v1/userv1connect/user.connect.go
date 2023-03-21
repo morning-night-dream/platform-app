@@ -27,10 +27,10 @@ const (
 
 // UserServiceClient is a client for the user.v1.UserService service.
 type UserServiceClient interface {
-	// サインアップ
-	SignUp(context.Context, *connect_go.Request[v1.SignUpRequest]) (*connect_go.Response[v1.SignUpResponse], error)
-	// サインイン
-	SignIn(context.Context, *connect_go.Request[v1.SignInRequest]) (*connect_go.Response[v1.SignInResponse], error)
+	// 作成
+	Create(context.Context, *connect_go.Request[v1.CreateRequest]) (*connect_go.Response[v1.CreateResponse], error)
+	// 更新
+	Update(context.Context, *connect_go.Request[v1.UpdateRequest]) (*connect_go.Response[v1.UpdateResponse], error)
 }
 
 // NewUserServiceClient constructs a client for the user.v1.UserService service. By default, it uses
@@ -43,14 +43,14 @@ type UserServiceClient interface {
 func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts ...connect_go.ClientOption) UserServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &userServiceClient{
-		signUp: connect_go.NewClient[v1.SignUpRequest, v1.SignUpResponse](
+		create: connect_go.NewClient[v1.CreateRequest, v1.CreateResponse](
 			httpClient,
-			baseURL+"/user.v1.UserService/SignUp",
+			baseURL+"/user.v1.UserService/Create",
 			opts...,
 		),
-		signIn: connect_go.NewClient[v1.SignInRequest, v1.SignInResponse](
+		update: connect_go.NewClient[v1.UpdateRequest, v1.UpdateResponse](
 			httpClient,
-			baseURL+"/user.v1.UserService/SignIn",
+			baseURL+"/user.v1.UserService/Update",
 			opts...,
 		),
 	}
@@ -58,26 +58,26 @@ func NewUserServiceClient(httpClient connect_go.HTTPClient, baseURL string, opts
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
-	signUp *connect_go.Client[v1.SignUpRequest, v1.SignUpResponse]
-	signIn *connect_go.Client[v1.SignInRequest, v1.SignInResponse]
+	create *connect_go.Client[v1.CreateRequest, v1.CreateResponse]
+	update *connect_go.Client[v1.UpdateRequest, v1.UpdateResponse]
 }
 
-// SignUp calls user.v1.UserService.SignUp.
-func (c *userServiceClient) SignUp(ctx context.Context, req *connect_go.Request[v1.SignUpRequest]) (*connect_go.Response[v1.SignUpResponse], error) {
-	return c.signUp.CallUnary(ctx, req)
+// Create calls user.v1.UserService.Create.
+func (c *userServiceClient) Create(ctx context.Context, req *connect_go.Request[v1.CreateRequest]) (*connect_go.Response[v1.CreateResponse], error) {
+	return c.create.CallUnary(ctx, req)
 }
 
-// SignIn calls user.v1.UserService.SignIn.
-func (c *userServiceClient) SignIn(ctx context.Context, req *connect_go.Request[v1.SignInRequest]) (*connect_go.Response[v1.SignInResponse], error) {
-	return c.signIn.CallUnary(ctx, req)
+// Update calls user.v1.UserService.Update.
+func (c *userServiceClient) Update(ctx context.Context, req *connect_go.Request[v1.UpdateRequest]) (*connect_go.Response[v1.UpdateResponse], error) {
+	return c.update.CallUnary(ctx, req)
 }
 
 // UserServiceHandler is an implementation of the user.v1.UserService service.
 type UserServiceHandler interface {
-	// サインアップ
-	SignUp(context.Context, *connect_go.Request[v1.SignUpRequest]) (*connect_go.Response[v1.SignUpResponse], error)
-	// サインイン
-	SignIn(context.Context, *connect_go.Request[v1.SignInRequest]) (*connect_go.Response[v1.SignInResponse], error)
+	// 作成
+	Create(context.Context, *connect_go.Request[v1.CreateRequest]) (*connect_go.Response[v1.CreateResponse], error)
+	// 更新
+	Update(context.Context, *connect_go.Request[v1.UpdateRequest]) (*connect_go.Response[v1.UpdateResponse], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -87,14 +87,14 @@ type UserServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewUserServiceHandler(svc UserServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/user.v1.UserService/SignUp", connect_go.NewUnaryHandler(
-		"/user.v1.UserService/SignUp",
-		svc.SignUp,
+	mux.Handle("/user.v1.UserService/Create", connect_go.NewUnaryHandler(
+		"/user.v1.UserService/Create",
+		svc.Create,
 		opts...,
 	))
-	mux.Handle("/user.v1.UserService/SignIn", connect_go.NewUnaryHandler(
-		"/user.v1.UserService/SignIn",
-		svc.SignIn,
+	mux.Handle("/user.v1.UserService/Update", connect_go.NewUnaryHandler(
+		"/user.v1.UserService/Update",
+		svc.Update,
 		opts...,
 	))
 	return "/user.v1.UserService/", mux
@@ -103,10 +103,10 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect_go.HandlerOpt
 // UnimplementedUserServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedUserServiceHandler struct{}
 
-func (UnimplementedUserServiceHandler) SignUp(context.Context, *connect_go.Request[v1.SignUpRequest]) (*connect_go.Response[v1.SignUpResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.SignUp is not implemented"))
+func (UnimplementedUserServiceHandler) Create(context.Context, *connect_go.Request[v1.CreateRequest]) (*connect_go.Response[v1.CreateResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.Create is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) SignIn(context.Context, *connect_go.Request[v1.SignInRequest]) (*connect_go.Response[v1.SignInResponse], error) {
-	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.SignIn is not implemented"))
+func (UnimplementedUserServiceHandler) Update(context.Context, *connect_go.Request[v1.UpdateRequest]) (*connect_go.Response[v1.UpdateResponse], error) {
+	return nil, connect_go.NewError(connect_go.CodeUnimplemented, errors.New("user.v1.UserService.Update is not implemented"))
 }

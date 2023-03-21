@@ -5,15 +5,15 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/usecase"
 )
 
-type CoreUserSignUpInput struct {
+type CoreUserCreateInput struct {
 	usecase.Input
 }
 
-type CoreUserSignUpOutput struct {
+type CoreUserCreateOutput struct {
 	usecase.Output
 	model.User
 }
 
-type CoreUserSignUp interface {
-	usecase.Usecase[CoreUserSignUpInput, CoreUserSignUpOutput]
+type CoreUserCreate interface {
+	usecase.Usecase[CoreUserCreateInput, CoreUserCreateOutput]
 }
