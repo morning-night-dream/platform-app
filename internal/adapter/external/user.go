@@ -13,17 +13,25 @@ import (
 var _ rpc.User = (*User)(nil)
 
 type UserFactory interface {
-	User(userv1connect.UserServiceClient) (*User, error)
+	User(string) (*User, error)
 }
 
 type User struct {
-	client userv1connect.UserServiceClient
+	connect userv1connect.UserServiceClient
+}
+
+func NewUser(
+	connect userv1connect.UserServiceClient,
+) *User {
+	return &User{
+		connect: connect,
+	}
 }
 
 func (us *User) SignUp(ctx context.Context) (model.User, error) {
 	req := NewRequestWithTID(ctx, &userv1.SignUpRequest{})
 
-	user, err := us.client.SignUp(ctx, req)
+	user, err := us.connect.SignUp(ctx, req)
 	if err != nil {
 		return model.User{}, fmt.Errorf("failed to sign up: %w", err)
 	}

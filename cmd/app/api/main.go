@@ -7,8 +7,8 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/morning-night-dream/platform-app/internal/adapter/handler"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
-	"github.com/morning-night-dream/platform-app/internal/driver/client"
 	"github.com/morning-night-dream/platform-app/internal/driver/config"
+	"github.com/morning-night-dream/platform-app/internal/driver/connect"
 	"github.com/morning-night-dream/platform-app/internal/driver/firebase"
 	"github.com/morning-night-dream/platform-app/internal/driver/public"
 	"github.com/morning-night-dream/platform-app/internal/driver/redis"
@@ -20,17 +20,24 @@ import (
 var version string
 
 func main() {
-	c, err := client.New().Of(config.API.AppCoreURL)
+	c, err := connect.NewClient().Of(config.API.AppCoreURL)
 	if err != nil {
 		panic(err)
 	}
 
-	authRPC, err := firebase.New().Of(config.Core.FirebaseSecret, config.Core.FirebaseAPIEndpoint, config.Core.FirebaseAPIKey)
+	authRPC, err := firebase.New().Of(config.API.FirebaseSecret, config.API.FirebaseAPIEndpoint, config.API.FirebaseAPIKey)
 	if err != nil {
 		panic(err)
 	}
 
-	rds := redis.NewRedis(config.Core.RedisURL)
+	conn := connect.New()
+
+	userRPC, err := conn.User(config.API.AppCoreURL)
+	if err != nil {
+		panic(err)
+	}
+
+	rds := redis.NewRedis(config.API.RedisURL)
 
 	authCache, err := redis.New[model.Auth]().Of(rds)
 	if err != nil {
@@ -50,7 +57,7 @@ func main() {
 	auth := handler.NewAuth(
 		interactor.NewAPIAuthSignIn(authRPC, authCache, sessionCache),
 		interactor.NewAPIAuthSignOut(authCache, sessionCache),
-		interactor.NewAPIAuthSignUp(authRPC),
+		interactor.NewAPIAuthSignUp(authRPC, userRPC),
 		interactor.NewAPIAuthVerify(authCache),
 		interactor.NewAPIAuthRefresh(sessionCache, codeCache),
 		interactor.NewAPIAuthGenerateCode(codeCache),
