@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
-	"github.com/morning-night-dream/platform-app/internal/adapter/gateway"
 	"github.com/morning-night-dream/platform-app/internal/adapter/handler"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
 	"github.com/morning-night-dream/platform-app/internal/driver/client"
@@ -43,15 +42,18 @@ func main() {
 		panic(err)
 	}
 
-	codeRepo := gateway.NewAPICode()
+	codeCache, err := redis.New[model.Code]().Of(rds)
+	if err != nil {
+		panic(err)
+	}
 
 	auth := handler.NewAuth(
 		interactor.NewAPIAuthSignIn(authRPC, authCache, sessionCache),
 		interactor.NewAPIAuthSignOut(authCache, sessionCache),
 		interactor.NewAPIAuthSignUp(authRPC),
 		interactor.NewAPIAuthVerify(authCache),
-		interactor.NewAPIAuthRefresh(sessionCache, codeRepo),
-		interactor.NewAPIAuthGenerateCode(codeRepo),
+		interactor.NewAPIAuthRefresh(sessionCache, codeCache),
+		interactor.NewAPIAuthGenerateCode(codeCache),
 	)
 
 	hdl := handler.New(version, config.API.APIKey, auth, c, public.New())
