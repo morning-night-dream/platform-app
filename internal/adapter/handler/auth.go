@@ -65,10 +65,10 @@ func (hdl *Handler) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params
 		Value:    string(output.IDToken),
 		Expires:  time.Now().Add(expires),
 		Domain:   config.API.Domain,
-		Secure:   server.Secure(),
+		Secure:   server.CookieSecure(),
 		HttpOnly: true,
 		Path:     "/",
-		SameSite: server.SameSiteMode(),
+		SameSite: server.CookieSameSiteMode(),
 	})
 
 	res := openapi.V1AuthRefreshResponseSchema{
@@ -182,10 +182,10 @@ func (hdl *Handler) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		Value:    string(output.IDToken),
 		Expires:  time.Now().Add(expires),
 		Domain:   config.API.Domain,
-		Secure:   server.Secure(),
+		Secure:   server.CookieSecure(),
 		HttpOnly: true,
 		Path:     "/",
-		SameSite: server.SameSiteMode(),
+		SameSite: server.CookieSameSiteMode(),
 	})
 
 	http.SetCookie(w, &http.Cookie{
@@ -193,10 +193,10 @@ func (hdl *Handler) V1AuthSignIn(w http.ResponseWriter, r *http.Request) {
 		Value:    string(output.SessionToken),
 		Expires:  time.Now().Add(model.Age),
 		Domain:   config.API.Domain,
-		Secure:   server.Secure(),
+		Secure:   server.CookieSecure(),
 		HttpOnly: true,
 		Path:     "/",
-		SameSite: server.SameSiteMode(),
+		SameSite: server.CookieSameSiteMode(),
 	})
 
 	res := openapi.V1AuthSignInResponseSchema{
@@ -229,10 +229,10 @@ func (hdl *Handler) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 		Value:    "",
 		MaxAge:   -1,
 		Domain:   config.API.Domain,
-		Secure:   server.Secure(),
+		Secure:   server.CookieSecure(),
 		HttpOnly: true,
 		Path:     "/",
-		SameSite: server.SameSiteMode(),
+		SameSite: server.CookieSameSiteMode(),
 	})
 
 	http.SetCookie(w, &http.Cookie{
@@ -240,10 +240,10 @@ func (hdl *Handler) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 		Value:    "",
 		MaxAge:   -1,
 		Domain:   config.API.Domain,
-		Secure:   server.Secure(),
+		Secure:   server.CookieSecure(),
 		HttpOnly: true,
 		Path:     "/",
-		SameSite: server.SameSiteMode(),
+		SameSite: server.CookieSameSiteMode(),
 	})
 
 	_, _ = w.Write([]byte("OK"))
