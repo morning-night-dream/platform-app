@@ -6,11 +6,11 @@ import (
 	"github.com/morning-night-dream/platform-app/internal/driver/config"
 )
 
-func Secure() bool {
+func CookieSecure() bool {
 	return config.API.Domain != ""
 }
 
-func SameSiteMode() http.SameSite {
+func CookieSameSiteMode() http.SameSite {
 	if config.API.Domain == "" {
 		return http.SameSiteDefaultMode
 	}
