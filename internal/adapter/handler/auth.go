@@ -63,9 +63,11 @@ func (hdl *Handler) V1AuthRefresh(w http.ResponseWriter, r *http.Request, params
 		Name:     model.IDTokenKey,
 		Value:    string(output.IDToken),
 		Expires:  time.Now().Add(expires),
+		Domain:   config.API.Domain,
 		Secure:   false,
 		HttpOnly: true,
 		Path:     "/",
+		SameSite: http.SameSiteNoneMode,
 	})
 
 	res := openapi.V1AuthRefreshResponseSchema{
@@ -225,18 +227,22 @@ func (hdl *Handler) V1AuthSignOut(w http.ResponseWriter, r *http.Request) {
 		Name:     model.IDTokenKey,
 		Value:    "",
 		MaxAge:   -1,
+		Domain:   config.API.Domain,
 		Secure:   false,
 		HttpOnly: true,
 		Path:     "/",
+		SameSite: http.SameSiteNoneMode,
 	})
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     model.SessionTokenKey,
 		Value:    "",
 		MaxAge:   -1,
+		Domain:   config.API.Domain,
 		Secure:   false,
 		HttpOnly: true,
 		Path:     "/",
+		SameSite: http.SameSiteNoneMode,
 	})
 
 	_, _ = w.Write([]byte("OK"))
