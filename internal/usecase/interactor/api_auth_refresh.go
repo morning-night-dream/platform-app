@@ -60,7 +60,7 @@ func (aar *APIAuthRefresh) Execute(
 		return port.APIAuthRefreshOutput{}, err
 	}
 
-	if err := rsa.VerifyPSS(session.PublicKey, crypto.SHA256, hashed, []byte(sig), &rsa.PSSOptions{
+	if err := rsa.VerifyPSS(session.PublicKey, crypto.SHA256, hashed, sig, &rsa.PSSOptions{
 		Hash: crypto.SHA256,
 	}); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to verify signature", log.ErrorField(err))
