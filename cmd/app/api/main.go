@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -75,6 +76,8 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
+
+	router.Get("/health", func(w http.ResponseWriter, r *http.Request) {})
 
 	handler := openapi.HandlerWithOptions(hdl, openapi.ChiServerOptions{
 		BaseURL:     "/api",
