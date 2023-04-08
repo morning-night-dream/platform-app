@@ -5,7 +5,7 @@ go 1.20
 require (
 	entgo.io/ent v0.11.10
 	firebase.google.com/go v3.13.0+incompatible
-	firebase.google.com/go/v4 v4.10.0
+	firebase.google.com/go/v4 v4.11.0
 	github.com/bufbuild/connect-go v1.5.2
 	github.com/bufbuild/connect-grpchealth-go v1.0.0
 	github.com/deepmap/oapi-codegen v1.12.4
@@ -35,7 +35,7 @@ require (
 	cloud.google.com/go/firestore v1.9.0 // indirect
 	cloud.google.com/go/iam v0.13.0 // indirect
 	cloud.google.com/go/longrunning v0.4.1 // indirect
-	cloud.google.com/go/storage v1.30.0 // indirect
+	cloud.google.com/go/storage v1.30.1 // indirect
 	github.com/MicahParks/keyfunc v1.9.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
@@ -63,5 +63,5 @@ require (
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/appengine/v2 v2.0.2 // indirect
-	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4 // indirect
+	google.golang.org/genproto v0.0.0-20230320184635-7606e756e683 // indirect
 )
