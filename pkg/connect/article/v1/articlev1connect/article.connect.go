@@ -25,6 +25,28 @@ const (
 	ArticleServiceName = "article.v1.ArticleService"
 )
 
+// These constants are the fully-qualified names of the RPCs defined in this package. They're
+// exposed at runtime as Spec.Procedure and as the final two segments of the HTTP route.
+//
+// Note that these are different from the fully-qualified method names used by
+// google.golang.org/protobuf/reflect/protoreflect. To convert from these constants to
+// reflection-formatted method names, remove the leading slash and convert the remaining slash to a
+// period.
+const (
+	// ArticleServiceShareProcedure is the fully-qualified name of the ArticleService's Share RPC.
+	ArticleServiceShareProcedure = "/article.v1.ArticleService/Share"
+	// ArticleServiceListProcedure is the fully-qualified name of the ArticleService's List RPC.
+	ArticleServiceListProcedure = "/article.v1.ArticleService/List"
+	// ArticleServiceDeleteProcedure is the fully-qualified name of the ArticleService's Delete RPC.
+	ArticleServiceDeleteProcedure = "/article.v1.ArticleService/Delete"
+	// ArticleServiceReadProcedure is the fully-qualified name of the ArticleService's Read RPC.
+	ArticleServiceReadProcedure = "/article.v1.ArticleService/Read"
+	// ArticleServiceAddTagProcedure is the fully-qualified name of the ArticleService's AddTag RPC.
+	ArticleServiceAddTagProcedure = "/article.v1.ArticleService/AddTag"
+	// ArticleServiceListTagProcedure is the fully-qualified name of the ArticleService's ListTag RPC.
+	ArticleServiceListTagProcedure = "/article.v1.ArticleService/ListTag"
+)
+
 // ArticleServiceClient is a client for the article.v1.ArticleService service.
 type ArticleServiceClient interface {
 	// 共有
@@ -57,32 +79,32 @@ func NewArticleServiceClient(httpClient connect_go.HTTPClient, baseURL string, o
 	return &articleServiceClient{
 		share: connect_go.NewClient[v1.ShareRequest, v1.ShareResponse](
 			httpClient,
-			baseURL+"/article.v1.ArticleService/Share",
+			baseURL+ArticleServiceShareProcedure,
 			opts...,
 		),
 		list: connect_go.NewClient[v1.ListRequest, v1.ListResponse](
 			httpClient,
-			baseURL+"/article.v1.ArticleService/List",
+			baseURL+ArticleServiceListProcedure,
 			opts...,
 		),
 		delete: connect_go.NewClient[v1.DeleteRequest, v1.DeleteResponse](
 			httpClient,
-			baseURL+"/article.v1.ArticleService/Delete",
+			baseURL+ArticleServiceDeleteProcedure,
 			opts...,
 		),
 		read: connect_go.NewClient[v1.ReadRequest, v1.ReadResponse](
 			httpClient,
-			baseURL+"/article.v1.ArticleService/Read",
+			baseURL+ArticleServiceReadProcedure,
 			opts...,
 		),
 		addTag: connect_go.NewClient[v1.AddTagRequest, v1.AddTagResponse](
 			httpClient,
-			baseURL+"/article.v1.ArticleService/AddTag",
+			baseURL+ArticleServiceAddTagProcedure,
 			opts...,
 		),
 		listTag: connect_go.NewClient[v1.ListTagRequest, v1.ListTagResponse](
 			httpClient,
-			baseURL+"/article.v1.ArticleService/ListTag",
+			baseURL+ArticleServiceListTagProcedure,
 			opts...,
 		),
 	}
@@ -155,33 +177,33 @@ type ArticleServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewArticleServiceHandler(svc ArticleServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/article.v1.ArticleService/Share", connect_go.NewUnaryHandler(
-		"/article.v1.ArticleService/Share",
+	mux.Handle(ArticleServiceShareProcedure, connect_go.NewUnaryHandler(
+		ArticleServiceShareProcedure,
 		svc.Share,
 		opts...,
 	))
-	mux.Handle("/article.v1.ArticleService/List", connect_go.NewUnaryHandler(
-		"/article.v1.ArticleService/List",
+	mux.Handle(ArticleServiceListProcedure, connect_go.NewUnaryHandler(
+		ArticleServiceListProcedure,
 		svc.List,
 		opts...,
 	))
-	mux.Handle("/article.v1.ArticleService/Delete", connect_go.NewUnaryHandler(
-		"/article.v1.ArticleService/Delete",
+	mux.Handle(ArticleServiceDeleteProcedure, connect_go.NewUnaryHandler(
+		ArticleServiceDeleteProcedure,
 		svc.Delete,
 		opts...,
 	))
-	mux.Handle("/article.v1.ArticleService/Read", connect_go.NewUnaryHandler(
-		"/article.v1.ArticleService/Read",
+	mux.Handle(ArticleServiceReadProcedure, connect_go.NewUnaryHandler(
+		ArticleServiceReadProcedure,
 		svc.Read,
 		opts...,
 	))
-	mux.Handle("/article.v1.ArticleService/AddTag", connect_go.NewUnaryHandler(
-		"/article.v1.ArticleService/AddTag",
+	mux.Handle(ArticleServiceAddTagProcedure, connect_go.NewUnaryHandler(
+		ArticleServiceAddTagProcedure,
 		svc.AddTag,
 		opts...,
 	))
-	mux.Handle("/article.v1.ArticleService/ListTag", connect_go.NewUnaryHandler(
-		"/article.v1.ArticleService/ListTag",
+	mux.Handle(ArticleServiceListTagProcedure, connect_go.NewUnaryHandler(
+		ArticleServiceListTagProcedure,
 		svc.ListTag,
 		opts...,
 	))

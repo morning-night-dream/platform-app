@@ -25,6 +25,18 @@ const (
 	VersionServiceName = "version.v1.VersionService"
 )
 
+// These constants are the fully-qualified names of the RPCs defined in this package. They're
+// exposed at runtime as Spec.Procedure and as the final two segments of the HTTP route.
+//
+// Note that these are different from the fully-qualified method names used by
+// google.golang.org/protobuf/reflect/protoreflect. To convert from these constants to
+// reflection-formatted method names, remove the leading slash and convert the remaining slash to a
+// period.
+const (
+	// VersionServiceConfirmProcedure is the fully-qualified name of the VersionService's Confirm RPC.
+	VersionServiceConfirmProcedure = "/version.v1.VersionService/Confirm"
+)
+
 // VersionServiceClient is a client for the version.v1.VersionService service.
 type VersionServiceClient interface {
 	// 確認
@@ -43,7 +55,7 @@ func NewVersionServiceClient(httpClient connect_go.HTTPClient, baseURL string, o
 	return &versionServiceClient{
 		confirm: connect_go.NewClient[v1.ConfirmRequest, v1.ConfirmResponse](
 			httpClient,
-			baseURL+"/version.v1.VersionService/Confirm",
+			baseURL+VersionServiceConfirmProcedure,
 			opts...,
 		),
 	}
@@ -72,8 +84,8 @@ type VersionServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewVersionServiceHandler(svc VersionServiceHandler, opts ...connect_go.HandlerOption) (string, http.Handler) {
 	mux := http.NewServeMux()
-	mux.Handle("/version.v1.VersionService/Confirm", connect_go.NewUnaryHandler(
-		"/version.v1.VersionService/Confirm",
+	mux.Handle(VersionServiceConfirmProcedure, connect_go.NewUnaryHandler(
+		VersionServiceConfirmProcedure,
 		svc.Confirm,
 		opts...,
 	))
