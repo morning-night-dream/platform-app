@@ -1,6 +1,6 @@
 module github.com/morning-night-dream/platform-app
 
-go 1.19
+go 1.20
 
 require (
 	entgo.io/ent v0.11.10
