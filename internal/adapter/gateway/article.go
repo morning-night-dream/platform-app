@@ -24,8 +24,8 @@ func NewArticle(db *ent.Client) *Article {
 	}
 }
 
-func (a Article) Save(ctx context.Context, item model.Article) error {
-	id, err := uuid.Parse(item.ID)
+func (a Article) Save(ctx context.Context, item *model.Article) error {
+	id, err := uuid.Parse(item.ArticleId)
 	if err != nil {
 		return errors.Wrap(err, "failed to parse uuid")
 	}
@@ -41,7 +41,7 @@ func (a Article) Save(ctx context.Context, item model.Article) error {
 		SetID(id).
 		SetTitle(item.Title).
 		SetDescription(item.Description).
-		SetURL(item.URL).
+		SetURL(item.Url).
 		SetThumbnail(item.Thumbnail).
 		SetCreatedAt(now).
 		SetUpdatedAt(now).
@@ -118,10 +118,10 @@ func (a Article) Save(ctx context.Context, item model.Article) error {
 	return errors.Wrap(err, "")
 }
 
-func (a Article) Find(ctx context.Context, id string) (model.Article, error) {
+func (a Article) Find(ctx context.Context, id string) (*model.Article, error) {
 	tid, err := uuid.Parse(id)
 	if err != nil {
-		return model.Article{}, errors.Wrap(err, "failed to parse uuid")
+		return nil, errors.Wrap(err, "failed to parse uuid")
 	}
 
 	item, err := a.db.Article.Query().
@@ -129,7 +129,7 @@ func (a Article) Find(ctx context.Context, id string) (model.Article, error) {
 		Where(article.IDEQ(tid)).
 		First(ctx)
 	if err != nil {
-		return model.Article{}, errors.Wrap(err, "failed to find article")
+		return nil, errors.Wrap(err, "failed to find article")
 	}
 
 	tags := make([]string, len(item.Edges.Tags))
@@ -138,9 +138,9 @@ func (a Article) Find(ctx context.Context, id string) (model.Article, error) {
 		tags[i] = tag.Tag
 	}
 
-	return model.Article{
-		ID:          item.ID.String(),
-		URL:         item.URL,
+	return &model.Article{
+		ArticleId:   item.ID.String(),
+		Url:         item.URL,
 		Title:       item.Title,
 		Thumbnail:   item.Thumbnail,
 		Description: item.Description,
@@ -148,7 +148,7 @@ func (a Article) Find(ctx context.Context, id string) (model.Article, error) {
 	}, nil
 }
 
-func (a Article) FindAll(ctx context.Context, limit int, offset int) ([]model.Article, error) {
+func (a Article) FindAll(ctx context.Context, limit int, offset int) ([]*model.Article, error) {
 	res, err := a.db.Article.Query().
 		WithTags().
 		Where(
@@ -162,7 +162,7 @@ func (a Article) FindAll(ctx context.Context, limit int, offset int) ([]model.Ar
 		return nil, errors.Wrap(err, "")
 	}
 
-	articles := make([]model.Article, 0, len(res))
+	articles := make([]*model.Article, 0, len(res))
 
 	for _, r := range res {
 		tags := make([]string, 0, len(r.Edges.Tags))
@@ -170,9 +170,9 @@ func (a Article) FindAll(ctx context.Context, limit int, offset int) ([]model.Ar
 			tags = append(tags, t.Tag)
 		}
 
-		articles = append(articles, model.Article{
-			ID:          r.ID.String(),
-			URL:         r.URL,
+		articles = append(articles, &model.Article{
+			ArticleId:   r.ID.String(),
+			Url:         r.URL,
 			Title:       r.Title,
 			Thumbnail:   r.Thumbnail,
 			Description: r.Description,

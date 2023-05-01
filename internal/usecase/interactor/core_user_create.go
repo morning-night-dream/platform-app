@@ -28,8 +28,8 @@ func (aas *CoreUserCreate) Execute(
 ) (port.CoreUserCreateOutput, error) {
 	uid := uuid.New().String()
 
-	user := model.User{
-		UserID: model.UserID(uid),
+	user := &model.User{
+		UserId: uid,
 	}
 
 	if err := aas.userRepo.Save(ctx, user); err != nil {

@@ -35,10 +35,10 @@ func TestArticleSave(t *testing.T) {
 
 		ctx := context.Background()
 
-		item := model.Article{
-			ID:          uuid.NewString(),
+		item := &model.Article{
+			ArticleId:   uuid.NewString(),
 			Title:       "title",
-			URL:         "url",
+			Url:         "url",
 			Description: "description",
 			Thumbnail:   "thumbnail",
 			Tags:        []string{"tag"},
@@ -48,7 +48,7 @@ func TestArticleSave(t *testing.T) {
 			t.Error(err)
 		}
 
-		got, err := sa.Find(ctx, item.ID)
+		got, err := sa.Find(ctx, item.ArticleId)
 		if err != nil {
 			t.Error(err)
 		}
@@ -70,7 +70,7 @@ func TestArticleSave(t *testing.T) {
 			t.Error(err)
 		}
 
-		got, err = sa.Find(ctx, item.ID)
+		got, err = sa.Find(ctx, item.ArticleId)
 		if err != nil {
 			t.Error(err)
 		}
@@ -91,20 +91,20 @@ func TestArticleSave(t *testing.T) {
 
 		ctx := context.Background()
 
-		if err := sa.Save(ctx, model.Article{
-			ID:          uuid.NewString(),
+		if err := sa.Save(ctx, &model.Article{
+			ArticleId:   uuid.NewString(),
 			Title:       "title1",
-			URL:         "url1",
+			Url:         "url1",
 			Description: "description1",
 			Thumbnail:   "thumbnail1",
 		}); err != nil {
 			t.Error(err)
 		}
 
-		if err := sa.Save(ctx, model.Article{
-			ID:          uuid.NewString(),
+		if err := sa.Save(ctx, &model.Article{
+			ArticleId:   uuid.NewString(),
 			Title:       "title1",
-			URL:         "url1",
+			Url:         "url1",
 			Description: "description1",
 			Thumbnail:   "thumbnail1",
 		}); err != nil {
@@ -132,20 +132,20 @@ func TestArticleSave(t *testing.T) {
 
 		ctx := context.Background()
 
-		if err := sa.Save(ctx, model.Article{
-			ID:          uuid.NewString(),
+		if err := sa.Save(ctx, &model.Article{
+			ArticleId:   uuid.NewString(),
 			Title:       "title1",
-			URL:         "url1",
+			Url:         "url1",
 			Description: "description1",
 			Thumbnail:   "thumbnail1",
 		}); err != nil {
 			t.Error(err)
 		}
 
-		if err := sa.Save(ctx, model.Article{
-			ID:          uuid.NewString(),
+		if err := sa.Save(ctx, &model.Article{
+			ArticleId:   uuid.NewString(),
 			Title:       "title2",
-			URL:         "url2",
+			Url:         "url2",
 			Description: "description2",
 			Thumbnail:   "thumbnail2",
 		}); err != nil {
@@ -157,7 +157,7 @@ func TestArticleSave(t *testing.T) {
 			t.Error(err)
 		}
 
-		id := articles[0].ID
+		id := articles[0].ArticleId
 
 		if err := sa.LogicalDelete(ctx, id); err != nil {
 			t.Error(err)
@@ -184,10 +184,10 @@ func TestArticleSave(t *testing.T) {
 
 		ctx := context.Background()
 
-		if err := sa.Save(ctx, model.Article{
-			ID:          uuid.NewString(),
+		if err := sa.Save(ctx, &model.Article{
+			ArticleId:   uuid.NewString(),
 			Title:       "title1",
-			URL:         "url1",
+			Url:         "url1",
 			Description: "description1",
 			Thumbnail:   "thumbnail1",
 			Tags:        []string{"tag1"},
@@ -195,10 +195,10 @@ func TestArticleSave(t *testing.T) {
 			t.Error(err)
 		}
 
-		if err := sa.Save(ctx, model.Article{
-			ID:          uuid.NewString(),
+		if err := sa.Save(ctx, &model.Article{
+			ArticleId:   uuid.NewString(),
 			Title:       "title2",
-			URL:         "url2",
+			Url:         "url2",
 			Description: "description2",
 			Thumbnail:   "thumbnail2",
 			Tags:        []string{"tag2", "tag3"},

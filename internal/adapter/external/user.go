@@ -37,6 +37,6 @@ func (us *User) Create(ctx context.Context) (model.User, error) {
 	}
 
 	return model.User{
-		UserID: model.UserID(user.Msg.User.Id),
+		UserId: user.Msg.User.Id,
 	}, nil
 }

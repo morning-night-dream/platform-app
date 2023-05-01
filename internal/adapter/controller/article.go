@@ -48,9 +48,9 @@ func (a *Article) Share(
 
 	id := uuid.NewString()
 
-	if err := a.article.Save(ctx, model.Article{
-		ID:          id,
-		URL:         u.String(),
+	if err := a.article.Save(ctx, &model.Article{
+		ArticleId:   id,
+		Url:         u.String(),
 		Title:       req.Msg.Title,
 		Thumbnail:   req.Msg.Thumbnail,
 		Description: req.Msg.Description,
@@ -98,9 +98,9 @@ func (a *Article) List(
 
 	for _, item := range items {
 		articles = append(articles, &articlev1.Article{
-			Id:          item.ID,
+			Id:          item.ArticleId,
 			Title:       item.Title,
-			Url:         item.URL,
+			Url:         item.Url,
 			Description: item.Description,
 			Thumbnail:   item.Thumbnail,
 			Tags:        item.Tags,

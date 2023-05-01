@@ -29,7 +29,7 @@ type Auth struct {
 	FirebaseAuth *auth.Client
 }
 
-func (fb *Auth) SignUp(ctx context.Context, uid model.UserID, email model.EMail, password model.Password) error {
+func (fb *Auth) SignUp(ctx context.Context, uid string, email model.EMail, password model.Password) error {
 	params := (&auth.UserToCreate{}).
 		UID(string(uid)).
 		Email(string(email)).
@@ -123,7 +123,7 @@ func (fb *Auth) SignIn(ctx context.Context, email model.EMail, password model.Pa
 	}
 
 	return model.Auth{
-		UserID:       model.UserID(payload.UserID),
+		UserID:       payload.UserID,
 		IDToken:      model.IDToken(resp.IDToken),
 		RefreshToken: model.RefreshToken(resp.RefreshToken),
 	}, nil

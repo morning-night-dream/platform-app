@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package user.v1;
 
+import "../internal/domain/model/user.proto";
+
 option go_package = "github.com/morning-night-dream/platform-app/pkg/connect/user/v1;userv1";
 
 // ユーザーサービス
@@ -10,11 +12,6 @@ service UserService {
   rpc Create(CreateRequest) returns (CreateResponse) {}
   // 更新
   rpc Update(UpdateRequest) returns (UpdateResponse) {}
-}
-
-// ユーザーモデル
-message User {
-  string id = 1;
 }
 
 // 作成リクエスト

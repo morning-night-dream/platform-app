@@ -32,7 +32,7 @@ func (aas *APIAuthSignUp) Execute(
 		return port.APIAuthSignUpOutput{}, fmt.Errorf("failed to user sign up: %w", err)
 	}
 
-	if err := aas.authRPC.SignUp(ctx, res.UserID, input.EMail, input.Password); err != nil {
+	if err := aas.authRPC.SignUp(ctx, res.UserId, input.EMail, input.Password); err != nil {
 		return port.APIAuthSignUpOutput{}, fmt.Errorf("failed to auth sign up: %w", err)
 	}
 

@@ -40,7 +40,7 @@ func (us *User) Create(
 
 	return connect.NewResponse(&userv1.CreateResponse{
 		User: &userv1.User{
-			Id: string(output.User.UserID),
+			Id: output.User.UserId,
 		},
 	}), nil
 }

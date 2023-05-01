@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package article.v1;
 
+import "../internal/domain/model/article.proto";
+
 option go_package = "github.com/morning-night-dream/platform-app/pkg/connect/article/v1;articlev1";
 
 // 記事サービス
@@ -23,16 +25,6 @@ service ArticleService {
   rpc AddTag(AddTagRequest) returns (AddTagResponse) {}
   // タグ一覧
   rpc ListTag(ListTagRequest) returns (ListTagResponse) {}
-}
-
-// 記事モデル
-message Article {
-  string id = 1;
-  string url = 2;
-  string title = 3;
-  string description = 4;
-  string thumbnail = 5;
-  repeated string tags = 6;
 }
 
 // 記事共有リクエスト

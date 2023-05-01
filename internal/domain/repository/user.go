@@ -7,5 +7,5 @@ import (
 )
 
 type User interface {
-	Save(context.Context, model.User) error
+	Save(context.Context, *model.User) error
 }

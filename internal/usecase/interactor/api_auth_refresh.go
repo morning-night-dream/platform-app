@@ -73,7 +73,7 @@ func (aar *APIAuthRefresh) Execute(
 		return port.APIAuthRefreshOutput{}, err
 	}
 
-	idToken, err := model.GenerateToken(string(session.UserID), string(session.SessionID))
+	idToken, err := model.GenerateToken(session.UserID, string(session.SessionID))
 	if err != nil {
 		return port.APIAuthRefreshOutput{}, err
 	}

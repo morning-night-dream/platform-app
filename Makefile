@@ -56,7 +56,9 @@ gen:
 	@oapi-codegen -generate types -package openapi ./api/openapi.yaml > ./pkg/openapi/types.gen.go
 	@oapi-codegen -generate chi-server -package openapi ./api/openapi.yaml > ./pkg/openapi/server.gen.go
 	@oapi-codegen -generate client -package openapi ./api/openapi.yaml > ./pkg/openapi/client.gen.go
-	@(cd proto && buf generate --template buf.gen.yaml)
+	@(cd proto && buf generate --template buf.gen.yaml --include-imports ../internal)
+	@rm -rf pkg/connect/domain
+	@(cd internal/domain && buf generate --template buf.gen.yaml)
 	@go mod tidy
 
 .PHONY: bufmt
@@ -66,6 +68,7 @@ bufmt:
 .PHONY: buflint
 buflint:
 	@(cd proto && buf lint)
+	@(cd internal/domain && buf lint)
 
 .PHONY: apilint
 apilint:

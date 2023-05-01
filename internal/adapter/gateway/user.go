@@ -22,8 +22,8 @@ func NewUser(db *ent.Client) *User {
 	}
 }
 
-func (us *User) Save(ctx context.Context, item model.User) error {
-	if _, err := us.db.User.Create().SetID(uuid.MustParse(string(item.UserID))).Save(ctx); err != nil {
+func (us *User) Save(ctx context.Context, item *model.User) error {
+	if _, err := us.db.User.Create().SetID(uuid.MustParse(item.UserId)).Save(ctx); err != nil {
 		return fmt.Errorf("failed to save user: %w", err)
 	}
 

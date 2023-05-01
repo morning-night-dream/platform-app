@@ -11,7 +11,7 @@ type CoreUserCreateInput struct {
 
 type CoreUserCreateOutput struct {
 	usecase.Output
-	model.User
+	*model.User
 }
 
 type CoreUserCreate interface {

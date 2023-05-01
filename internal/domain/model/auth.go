@@ -25,7 +25,7 @@ type Signature string
 
 type Auth struct {
 	ID           string         `json:"id"`
-	UserID       UserID         `json:"userId"`
+	UserID       string         `json:"userId"`
 	IDToken      IDToken        `json:"idToken"`
 	PublicKey    *rsa.PublicKey `json:"publicKey"`
 	RefreshToken RefreshToken   `json:"refreshToken"`

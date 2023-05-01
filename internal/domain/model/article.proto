@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+// buf:lint:ignore PACKAGE_VERSION_SUFFIX
+package model;
+
+option go_package = "github.com/morning-night-dream/platform-app/internal/domain;model";
+
+message Article {
+  string article_id = 1;
+  string url = 2;
+  string title = 3;
+  string thumbnail = 4;
+  string description = 5;
+  repeated string tags = 6;
+}
