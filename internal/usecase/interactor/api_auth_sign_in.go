@@ -33,7 +33,7 @@ func (aas *APIAuthSignIn) Execute(
 	ctx context.Context,
 	input port.APIAuthSignInInput,
 ) (port.APIAuthSignInOutput, error) {
-	auth, err := aas.authRPC.SignIn(ctx, input.EMail, input.Password)
+	user, err := aas.authRPC.SignIn(ctx, input.EMail, input.Password)
 	if err != nil {
 		return port.APIAuthSignInOutput{}, err
 	}
@@ -47,7 +47,7 @@ func (aas *APIAuthSignIn) Execute(
 
 	session := &model.Session{
 		SessionId: sid,
-		UserId:    auth.UserID,
+		UserId:    user.UserId,
 		PublicKey: key,
 	}
 
@@ -56,7 +56,12 @@ func (aas *APIAuthSignIn) Execute(
 		return port.APIAuthSignInOutput{}, err
 	}
 
-	if err := aas.authCache.Set(ctx, string(auth.UserID), &auth, model.Age); err != nil {
+	auth := &model.Auth{
+		ID:     user.UserId,
+		UserID: user.UserId,
+	}
+
+	if err := aas.authCache.Set(ctx, user.UserId, auth, model.Age); err != nil {
 		if err := aas.sessionCache.Del(ctx, sid); err != nil {
 			log.GetLogCtx(ctx).Warn("failed to delete session", log.ErrorField(err))
 		}

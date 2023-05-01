@@ -8,5 +8,5 @@ import (
 
 type Auth interface {
 	SignUp(context.Context, string, model.EMail, model.Password) error
-	SignIn(context.Context, model.EMail, model.Password) (model.Auth, error)
+	SignIn(context.Context, model.EMail, model.Password) (*model.User, error)
 }

@@ -58,7 +58,7 @@ type SignInResponse struct {
 	RefreshToken string `json:"refreshToken"`
 }
 
-func (fb *Auth) SignIn(ctx context.Context, email model.EMail, password model.Password) (model.Auth, error) {
+func (fb *Auth) SignIn(ctx context.Context, email model.EMail, password model.Password) (*model.User, error) {
 	// https://firebase.google.com/docs/reference/rest/auth#section-sign-in-email-password
 	url := fmt.Sprintf("%s/v1/accounts:signInWithPassword?key=%s", fb.Endpoint, fb.APIKey)
 
@@ -74,14 +74,14 @@ func (fb *Auth) SignIn(ctx context.Context, email model.EMail, password model.Pa
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to encode json", log.ErrorField(err))
 
-		return model.Auth{}, err
+		return nil, err
 	}
 
 	res, err := fb.HTTPClient.Post(url, "application/json", &buf)
 	if err != nil {
 		log.GetLogCtx(ctx).Warn("failed to post "+url, log.ErrorField(err))
 
-		return model.Auth{}, err
+		return nil, err
 	}
 
 	if res.StatusCode != http.StatusOK {
@@ -92,7 +92,7 @@ func (fb *Auth) SignIn(ctx context.Context, email model.EMail, password model.Pa
 			message = []byte(fmt.Sprintf("could not laod message caused by %v", err))
 		}
 
-		return model.Auth{}, fmt.Errorf("firebase error. status code is %d, message is %v", res.StatusCode, string(message))
+		return nil, fmt.Errorf("firebase error. status code is %d, message is %v", res.StatusCode, string(message))
 	}
 
 	var resp SignInResponse
@@ -100,7 +100,7 @@ func (fb *Auth) SignIn(ctx context.Context, email model.EMail, password model.Pa
 	if err := json.NewDecoder(res.Body).Decode(&resp); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to decode json", log.ErrorField(err))
 
-		return model.Auth{}, err
+		return nil, err
 	}
 
 	// exp, _ := strconv.Atoi(res.ExpiresIn)
@@ -109,7 +109,7 @@ func (fb *Auth) SignIn(ctx context.Context, email model.EMail, password model.Pa
 
 	tmpPayload, err := base64.RawStdEncoding.DecodeString(strs[1])
 	if err != nil {
-		return model.Auth{}, fmt.Errorf("failed to decode payload: %w", err)
+		return nil, fmt.Errorf("failed to decode payload: %w", err)
 	}
 
 	type Payload struct {
@@ -119,12 +119,10 @@ func (fb *Auth) SignIn(ctx context.Context, email model.EMail, password model.Pa
 	var payload Payload
 
 	if err := json.Unmarshal(tmpPayload, &payload); err != nil {
-		return model.Auth{}, fmt.Errorf("failed to unmarshal payload: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal payload: %w", err)
 	}
 
-	return model.Auth{
-		UserID:       payload.UserID,
-		IDToken:      model.IDToken(resp.IDToken),
-		RefreshToken: model.RefreshToken(resp.RefreshToken),
+	return &model.User{
+		UserId: payload.UserID,
 	}, nil
 }
