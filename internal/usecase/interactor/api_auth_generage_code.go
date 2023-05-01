@@ -33,7 +33,7 @@ func (aac *ApiAuthGenerateCode) Execute(
 
 	codeID := model.CodeID(uuid.NewString())
 
-	code := model.Code{
+	code := &model.Code{
 		CodeID:    codeID,
 		SessionID: model.SessionID(sessionID),
 	}

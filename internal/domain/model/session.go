@@ -2,6 +2,8 @@ package model
 
 import (
 	"crypto/rsa"
+	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -11,8 +13,21 @@ type SessionID string
 
 type SessionToken string
 
-type Session struct {
-	SessionID SessionID      `json:"id"`
-	UserID    string         `json:"user_id"`
-	PublicKey *rsa.PublicKey `json:"key"`
+func (sss *Session) RSAPublicKey() (*rsa.PublicKey, error) {
+	var p *rsa.PublicKey
+
+	if err := json.Unmarshal([]byte(sss.PublicKey), p); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal public key: %w", err)
+	}
+
+	return p, nil
+}
+
+func PublicKeyToString(key *rsa.PublicKey) (string, error) {
+	bytes, err := json.Marshal(key)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal public key: %w", err)
+	}
+
+	return string(bytes), nil
 }

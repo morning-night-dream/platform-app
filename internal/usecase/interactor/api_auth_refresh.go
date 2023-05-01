@@ -60,7 +60,14 @@ func (aar *APIAuthRefresh) Execute(
 		return port.APIAuthRefreshOutput{}, err
 	}
 
-	if err := rsa.VerifyPSS(session.PublicKey, crypto.SHA256, hashed, sig, &rsa.PSSOptions{
+	key, err := session.RSAPublicKey()
+	if err != nil {
+		log.GetLogCtx(ctx).Warn("failed to get rsa public key", log.ErrorField(err))
+
+		return port.APIAuthRefreshOutput{}, err
+	}
+
+	if err := rsa.VerifyPSS(key, crypto.SHA256, hashed, sig, &rsa.PSSOptions{
 		Hash: crypto.SHA256,
 	}); err != nil {
 		log.GetLogCtx(ctx).Warn("failed to verify signature", log.ErrorField(err))
@@ -73,7 +80,7 @@ func (aar *APIAuthRefresh) Execute(
 		return port.APIAuthRefreshOutput{}, err
 	}
 
-	idToken, err := model.GenerateToken(session.UserID, string(session.SessionID))
+	idToken, err := model.GenerateToken(session.UserId, session.SessionId)
 	if err != nil {
 		return port.APIAuthRefreshOutput{}, err
 	}

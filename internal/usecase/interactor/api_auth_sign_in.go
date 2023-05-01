@@ -40,10 +40,15 @@ func (aas *APIAuthSignIn) Execute(
 
 	sid := uuid.New().String()
 
-	session := model.Session{
-		SessionID: model.SessionID(sid),
-		UserID:    auth.UserID,
-		PublicKey: input.PublicKey,
+	key, err := model.PublicKeyToString(input.PublicKey)
+	if err != nil {
+		return port.APIAuthSignInOutput{}, err
+	}
+
+	session := &model.Session{
+		SessionId: sid,
+		UserId:    auth.UserID,
+		PublicKey: key,
 	}
 
 	// トランザクション必要か
@@ -51,7 +56,7 @@ func (aas *APIAuthSignIn) Execute(
 		return port.APIAuthSignInOutput{}, err
 	}
 
-	if err := aas.authCache.Set(ctx, string(auth.UserID), auth, model.Age); err != nil {
+	if err := aas.authCache.Set(ctx, string(auth.UserID), &auth, model.Age); err != nil {
 		if err := aas.sessionCache.Del(ctx, sid); err != nil {
 			log.GetLogCtx(ctx).Warn("failed to delete session", log.ErrorField(err))
 		}

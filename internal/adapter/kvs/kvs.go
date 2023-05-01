@@ -20,22 +20,22 @@ type KVS[T any] struct {
 	Client *redis.Client
 }
 
-func (kvs *KVS[T]) Get(ctx context.Context, key string) (T, error) {
+func (kvs *KVS[T]) Get(ctx context.Context, key string) (*T, error) {
 	var value T
 
 	str, err := kvs.Client.Get(ctx, key).Result()
 	if err != nil {
-		return value, errors.New("1 failed to get cache")
+		return nil, errors.New("1 failed to get cache")
 	}
 
 	if err := json.Unmarshal([]byte(str), &value); err != nil {
-		return value, errors.New("failed to unmarshal json")
+		return nil, errors.New("failed to unmarshal json")
 	}
 
-	return value, nil
+	return nil, nil
 }
 
-func (kvs *KVS[T]) Set(ctx context.Context, key string, value T, ttl time.Duration) error {
+func (kvs *KVS[T]) Set(ctx context.Context, key string, value *T, ttl time.Duration) error {
 	val, err := json.Marshal(value)
 	if err != nil {
 		return errors.New("failed to marshal json")
