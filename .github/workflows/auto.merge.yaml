@@ -23,6 +23,8 @@ jobs:
           echo ${urls}
           for url in ${urls}; do
             echo ${url}
+            data='{"text":"aquaの<${url}|PR>をマージしませんか?"}'
+            echo ${data}
           done
       # - name: Auto merge
       #   env:
