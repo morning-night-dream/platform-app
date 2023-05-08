@@ -21,6 +21,10 @@ jobs:
         run: |
           urls=$(gh pr list --json url,title | jq -r '.[] | select( .title | contains("aquaproj") ) | .url ' )
           echo ${urls}
+          for url in ${urls}
+          do
+            curl -X POST -H 'Content-type: application/json' --data '{"text":"aquaの<${url}|PR>がマージしませんか？"}' ${{ secrets.TEST_SLACK_WEBHOOKS_URL }}
+          done
       # - name: Auto merge
       #   env:
       #     PR_URL: ${{ github.event.pull_request.html_url }}
