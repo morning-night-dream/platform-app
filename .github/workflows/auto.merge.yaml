@@ -17,7 +17,7 @@ jobs:
       - name: List branch
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
-        run: gh pr list
+        run: gh pr list --json url,title 
       # - name: Auto merge
       #   env:
       #     PR_URL: ${{ github.event.pull_request.html_url }}
