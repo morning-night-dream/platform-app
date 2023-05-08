@@ -18,7 +18,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         # titleにaquaprojが含まれるPRのURL一覧を取得
-        run:  gh pr list --json url,title | jq '.[] | select( .title | contains("aquaproj") ) | .url ' 
+        run: |
+          urls=$(gh pr list --json url,title | jq -r '.[] | select( .title | contains("aquaproj") ) | .url ' )
+          echo ${urls}
       # - name: Auto merge
       #   env:
       #     PR_URL: ${{ github.event.pull_request.html_url }}
