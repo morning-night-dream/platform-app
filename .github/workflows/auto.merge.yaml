@@ -22,6 +22,7 @@ jobs:
           urls=$(gh pr list --json url,title | jq -r '.[] | select( .title | contains("aquaproj") ) | .url ' )
           echo ${urls}
           for url in ${urls}; do
+            gh pr review --approve "${url}"
             gh pr merge --auto --merge "${url}"
             data="{\"text\":\"aquaの<${url}|PR>をマージしておいたよ♪\"}"
             curl -X POST -H 'Content-type: application/json' --data ${data} ${{ secrets.TEST_SLACK_WEBHOOKS_URL }}
