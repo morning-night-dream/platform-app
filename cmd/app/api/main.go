@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/httplog"
 	"github.com/morning-night-dream/platform-app/internal/adapter/handler"
 	"github.com/morning-night-dream/platform-app/internal/domain/model"
 	"github.com/morning-night-dream/platform-app/internal/driver/config"
@@ -67,6 +68,12 @@ func main() {
 	hdl := handler.New(version, config.API.APIKey, auth, c, public.New())
 
 	router := chi.NewRouter()
+
+	l := httplog.NewLogger("appapi", httplog.Options{
+		JSON: true,
+	})
+
+	router.Use(httplog.RequestLogger(l))
 
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   strings.Split(config.API.CorsAllowOrigins, ","),
