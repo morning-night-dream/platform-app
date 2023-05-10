@@ -5,6 +5,8 @@ package articletag
 import (
 	"time"
 
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -63,3 +65,45 @@ var (
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
+
+// OrderOption defines the ordering options for the ArticleTag queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByTag orders the results by the tag field.
+func ByTag(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTag, opts...).ToFunc()
+}
+
+// ByArticleID orders the results by the article_id field.
+func ByArticleID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldArticleID, opts...).ToFunc()
+}
+
+// ByCreatedAt orders the results by the created_at field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByUpdatedAt orders the results by the updated_at field.
+func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByArticleField orders the results by article field.
+func ByArticleField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newArticleStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newArticleStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ArticleInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, ArticleTable, ArticleColumn),
+	)
+}
