@@ -1,4 +1,5 @@
 include .env
+include .secret.env
 export
 
 .PHONY: aqua
@@ -111,3 +112,12 @@ secondary:
 .PHONY: migrate
 migrate:
 	@touch cmd/db/migrate/main.go
+
+.PHONY: vercel
+vercel:
+	@vercel --local-config ./func/vercel.json --prod --token ${VERCEL_TOKEN}
+
+.PHONY: vbuild
+vbuild:
+	@vercel build --local-config ./func/vercel.json --prod --token ${VERCEL_TOKEN}
+	@vercel deploy --prebuilt --local-config ./func/vercel.json --prod --token ${VERCEL_TOKEN}
