@@ -22,7 +22,7 @@ import (
 type ArticleQuery struct {
 	config
 	ctx              *QueryContext
-	order            []OrderFunc
+	order            []article.OrderOption
 	inters           []Interceptor
 	predicates       []predicate.Article
 	withTags         *ArticleTagQuery
@@ -58,7 +58,7 @@ func (aq *ArticleQuery) Unique(unique bool) *ArticleQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (aq *ArticleQuery) Order(o ...OrderFunc) *ArticleQuery {
+func (aq *ArticleQuery) Order(o ...article.OrderOption) *ArticleQuery {
 	aq.order = append(aq.order, o...)
 	return aq
 }
@@ -296,7 +296,7 @@ func (aq *ArticleQuery) Clone() *ArticleQuery {
 	return &ArticleQuery{
 		config:           aq.config,
 		ctx:              aq.ctx.Clone(),
-		order:            append([]OrderFunc{}, aq.order...),
+		order:            append([]article.OrderOption{}, aq.order...),
 		inters:           append([]Interceptor{}, aq.inters...),
 		predicates:       append([]predicate.Article{}, aq.predicates...),
 		withTags:         aq.withTags.Clone(),
@@ -457,8 +457,11 @@ func (aq *ArticleQuery) loadTags(ctx context.Context, query *ArticleTagQuery, no
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(articletag.FieldArticleID)
+	}
 	query.Where(predicate.ArticleTag(func(s *sql.Selector) {
-		s.Where(sql.InValues(article.TagsColumn, fks...))
+		s.Where(sql.InValues(s.C(article.TagsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -468,7 +471,7 @@ func (aq *ArticleQuery) loadTags(ctx context.Context, query *ArticleTagQuery, no
 		fk := n.ArticleID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "article_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "article_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -484,8 +487,11 @@ func (aq *ArticleQuery) loadReadArticles(ctx context.Context, query *ReadArticle
 			init(nodes[i])
 		}
 	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(readarticle.FieldArticleID)
+	}
 	query.Where(predicate.ReadArticle(func(s *sql.Selector) {
-		s.Where(sql.InValues(article.ReadArticlesColumn, fks...))
+		s.Where(sql.InValues(s.C(article.ReadArticlesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -495,7 +501,7 @@ func (aq *ArticleQuery) loadReadArticles(ctx context.Context, query *ReadArticle
 		fk := n.ArticleID
 		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "article_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "article_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

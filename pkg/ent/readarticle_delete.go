@@ -27,7 +27,7 @@ func (rad *ReadArticleDelete) Where(ps ...predicate.ReadArticle) *ReadArticleDel
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (rad *ReadArticleDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, ReadArticleMutation](ctx, rad.sqlExec, rad.mutation, rad.hooks)
+	return withHooks(ctx, rad.sqlExec, rad.mutation, rad.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

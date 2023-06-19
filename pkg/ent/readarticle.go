@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/morning-night-dream/platform-app/pkg/ent/article"
@@ -26,7 +27,8 @@ type ReadArticle struct {
 	ReadAt time.Time `json:"read_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ReadArticleQuery when eager-loading is set.
-	Edges ReadArticleEdges `json:"edges"`
+	Edges        ReadArticleEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // ReadArticleEdges holds the relations/edges for other nodes in the graph.
@@ -61,7 +63,7 @@ func (*ReadArticle) scanValues(columns []string) ([]any, error) {
 		case readarticle.FieldID, readarticle.FieldArticleID, readarticle.FieldUserID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type ReadArticle", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -99,9 +101,17 @@ func (ra *ReadArticle) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ra.ReadAt = value.Time
 			}
+		default:
+			ra.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the ReadArticle.
+// This includes values selected through modifiers, order, etc.
+func (ra *ReadArticle) Value(name string) (ent.Value, error) {
+	return ra.selectValues.Get(name)
 }
 
 // QueryArticle queries the "article" edge of the ReadArticle entity.

@@ -20,7 +20,7 @@ import (
 type ReadArticleQuery struct {
 	config
 	ctx         *QueryContext
-	order       []OrderFunc
+	order       []readarticle.OrderOption
 	inters      []Interceptor
 	predicates  []predicate.ReadArticle
 	withArticle *ArticleQuery
@@ -55,7 +55,7 @@ func (raq *ReadArticleQuery) Unique(unique bool) *ReadArticleQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (raq *ReadArticleQuery) Order(o ...OrderFunc) *ReadArticleQuery {
+func (raq *ReadArticleQuery) Order(o ...readarticle.OrderOption) *ReadArticleQuery {
 	raq.order = append(raq.order, o...)
 	return raq
 }
@@ -271,7 +271,7 @@ func (raq *ReadArticleQuery) Clone() *ReadArticleQuery {
 	return &ReadArticleQuery{
 		config:      raq.config,
 		ctx:         raq.ctx.Clone(),
-		order:       append([]OrderFunc{}, raq.order...),
+		order:       append([]readarticle.OrderOption{}, raq.order...),
 		inters:      append([]Interceptor{}, raq.inters...),
 		predicates:  append([]predicate.ReadArticle{}, raq.predicates...),
 		withArticle: raq.withArticle.Clone(),
@@ -455,6 +455,9 @@ func (raq *ReadArticleQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != readarticle.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if raq.withArticle != nil {
+			_spec.Node.AddColumnOnce(readarticle.FieldArticleID)
 		}
 	}
 	if ps := raq.predicates; len(ps) > 0 {

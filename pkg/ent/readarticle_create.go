@@ -78,7 +78,7 @@ func (rac *ReadArticleCreate) Mutation() *ReadArticleMutation {
 // Save creates the ReadArticle in the database.
 func (rac *ReadArticleCreate) Save(ctx context.Context) (*ReadArticle, error) {
 	rac.defaults()
-	return withHooks[*ReadArticle, ReadArticleMutation](ctx, rac.sqlSave, rac.mutation, rac.hooks)
+	return withHooks(ctx, rac.sqlSave, rac.mutation, rac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -431,8 +431,8 @@ func (racb *ReadArticleCreateBulk) Save(ctx context.Context) ([]*ReadArticle, er
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, racb.builders[i+1].mutation)
 				} else {

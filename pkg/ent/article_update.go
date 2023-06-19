@@ -175,7 +175,7 @@ func (au *ArticleUpdate) RemoveReadArticles(r ...*ReadArticle) *ArticleUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (au *ArticleUpdate) Save(ctx context.Context) (int, error) {
 	au.defaults()
-	return withHooks[int, ArticleMutation](ctx, au.sqlSave, au.mutation, au.hooks)
+	return withHooks(ctx, au.sqlSave, au.mutation, au.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -508,7 +508,7 @@ func (auo *ArticleUpdateOne) Select(field string, fields ...string) *ArticleUpda
 // Save executes the query and returns the updated Article entity.
 func (auo *ArticleUpdateOne) Save(ctx context.Context) (*Article, error) {
 	auo.defaults()
-	return withHooks[*Article, ArticleMutation](ctx, auo.sqlSave, auo.mutation, auo.hooks)
+	return withHooks(ctx, auo.sqlSave, auo.mutation, auo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

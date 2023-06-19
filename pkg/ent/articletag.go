@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
 	"github.com/morning-night-dream/platform-app/pkg/ent/article"
@@ -28,7 +29,8 @@ type ArticleTag struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ArticleTagQuery when eager-loading is set.
-	Edges ArticleTagEdges `json:"edges"`
+	Edges        ArticleTagEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // ArticleTagEdges holds the relations/edges for other nodes in the graph.
@@ -65,7 +67,7 @@ func (*ArticleTag) scanValues(columns []string) ([]any, error) {
 		case articletag.FieldID, articletag.FieldArticleID:
 			values[i] = new(uuid.UUID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type ArticleTag", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -109,9 +111,17 @@ func (at *ArticleTag) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				at.UpdatedAt = value.Time
 			}
+		default:
+			at.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the ArticleTag.
+// This includes values selected through modifiers, order, etc.
+func (at *ArticleTag) Value(name string) (ent.Value, error) {
+	return at.selectValues.Get(name)
 }
 
 // QueryArticle queries the "article" edge of the ArticleTag entity.

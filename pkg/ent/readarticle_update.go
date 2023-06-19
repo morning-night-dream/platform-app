@@ -74,7 +74,7 @@ func (rau *ReadArticleUpdate) ClearArticle() *ReadArticleUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (rau *ReadArticleUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks[int, ReadArticleMutation](ctx, rau.sqlSave, rau.mutation, rau.hooks)
+	return withHooks(ctx, rau.sqlSave, rau.mutation, rau.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -231,7 +231,7 @@ func (rauo *ReadArticleUpdateOne) Select(field string, fields ...string) *ReadAr
 
 // Save executes the query and returns the updated ReadArticle entity.
 func (rauo *ReadArticleUpdateOne) Save(ctx context.Context) (*ReadArticle, error) {
-	return withHooks[*ReadArticle, ReadArticleMutation](ctx, rauo.sqlSave, rauo.mutation, rauo.hooks)
+	return withHooks(ctx, rauo.sqlSave, rauo.mutation, rauo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

@@ -5,6 +5,8 @@ package readarticle
 import (
 	"time"
 
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/google/uuid"
 )
 
@@ -56,3 +58,40 @@ var (
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
+
+// OrderOption defines the ordering options for the ReadArticle queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByArticleID orders the results by the article_id field.
+func ByArticleID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldArticleID, opts...).ToFunc()
+}
+
+// ByUserID orders the results by the user_id field.
+func ByUserID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUserID, opts...).ToFunc()
+}
+
+// ByReadAt orders the results by the read_at field.
+func ByReadAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReadAt, opts...).ToFunc()
+}
+
+// ByArticleField orders the results by article field.
+func ByArticleField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newArticleStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newArticleStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ArticleInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, ArticleTable, ArticleColumn),
+	)
+}
